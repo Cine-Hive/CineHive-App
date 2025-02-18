@@ -20,72 +20,10 @@ struct LoginView: View {
                 Text("LOGIN")
                     .font(.system(size: 25, weight: .bold))
                 VStack {
-                    Button(action: {
-                        print("kakao")
-                    }, label: {
-                        HStack {
-                            Image("KakaoLogo")
-                                .resizable()
-                                .frame(width: 18, height: 18)
-                            Text("Kakao로 계속하기")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(.black)
-                        }
-                        .frame(width: 330, height: 44)
-                        .background(Color("KakaoColor"))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    })
-                    HStack {
-                        Button(action: {
-                            
-                        }, label: {
-                            HStack {
-                                Image("GoogleLogo")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .offset(x: 3)
-                                Text("Google로 계속하기")
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(.black)
-                            }
-                            .frame(width: 330, height: 44)
-                            .background(Color("GoogleColor"))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        })
-                    }
-                    HStack {
-                        Button(action: {}, label: {
-                            HStack {
-                                Image("NaverLogo")
-                                    .resizable()
-                                    .frame(width: 15, height: 15)
-                                Text("Naver로 계속하기")
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                            .frame(width: 330, height: 44)
-                            .background(Color("NaverColor"))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        })
-                    }
-                    HStack {
-                        Button(action: {
-                            
-                        }, label: {
-                            HStack {
-                                Image(systemName: "apple.logo")
-                                    .resizable()
-                                    .frame(width: 17, height: 20)
-                                    .foregroundStyle(.white)
-                                Text("Apple로 계속하기")
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                            .frame(width: 330, height: 44)
-                            .background(Color.black)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        })
-                    }
+                    KakaoLoginBtnView()
+                    GoogleLoginBtnView()
+                    NaverLoginBtnView()
+                    AppleLoginBtnView()
                 }
                 .frame(width: 330, height: 250)
                 
@@ -136,7 +74,7 @@ struct LoginView: View {
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(Color("FontColor"))
                     
-                    // View 변경 해야함
+                    // View 변경 필요
                     NavigationLink(destination: SignUpView()) {
                         Text("비밀번호 찾기")
                     }
