@@ -31,40 +31,7 @@ struct SignUpView: View {
             InputFieldView(title: "닉네임", text: $viewModel.nickname)
             InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
             
-            VStack {
-                Text("성별")
-                    .frame(width: 320, height: 25, alignment: .leading)
-                    .font(.system(size: 17))
-                
-                HStack {
-                    Button(action: {
-                        viewModel.selectedMan.toggle()
-                    }, label: {
-                        Text("남자")
-                            .foregroundColor(viewModel.selectedMan ? Color("LoginBtnColor") : Color("FontColor"))
-                            .frame(width: 160, height: 50)
-                    })
-                    .overlay() {
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(viewModel.selectedMan ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
-                    }
-                    
-                    Button(action: {
-                        viewModel.selectedWoman.toggle()
-                    }, label: {
-                        Text("여자")
-                            .foregroundColor(viewModel.selectedWoman ? Color("LoginBtnColor") : Color("FontColor"))
-                            .frame(width: 160, height: 50)
-                    })
-                    .overlay() {
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(viewModel.selectedWoman ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
-                    }
-                }
-                .frame(width: 330, height: 50)
-   
-            }
-            .frame(width: 330, height: 90)
+            GenderSelectedView(selectedGender: $viewModel.selectedGender)
             
             Button(action: {
             }, label: {
@@ -157,6 +124,36 @@ struct PasswordFieldView: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
                     .stroke(Color("FontColor"), lineWidth: 0.6)
+            }
+        }
+        .frame(width: 330, height: 90)
+    }
+}
+
+struct GenderSelectedView: View {
+    @Binding var selectedGender: String
+    let genders: [String] = ["남자", "여자"]
+    
+    var body: some View {
+        VStack {
+            Text("성별")
+                .frame(width: 320, height: 25, alignment: .leading)
+                .font(.system(size: 17))
+            
+            HStack {
+                ForEach(genders, id: \.self) { gender in
+                    Button(action: {
+                        selectedGender = gender
+                    }) {
+                        Text(gender)
+                            .foregroundColor(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"))
+                            .frame(width: 160, height: 50)
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
+                    )
+                }
             }
         }
         .frame(width: 330, height: 90)

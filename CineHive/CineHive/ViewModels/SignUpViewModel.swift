@@ -17,9 +17,7 @@ class SignUpViewModel {
     var password: String = ""
     var nickname: String = ""
     var name: String = ""
-    var gender: String = ""
-    var selectedMan: Bool = false
-    var selectedWoman: Bool = false
+    var selectedGender: String = ""
     var showPassword: Bool = false
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
     
