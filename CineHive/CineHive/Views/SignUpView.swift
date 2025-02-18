@@ -67,6 +67,7 @@ struct SignUpView: View {
             .frame(height: 90)
             .font(.system(size: 18, weight: .bold))
             .foregroundStyle(.white)
+            .disabled(!viewModel.isValid())
             Spacer()
         }
     }
