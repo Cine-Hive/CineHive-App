@@ -24,7 +24,3 @@ struct NaverLoginBtnView: View {
         })
     }
 }
-
-#Preview {
-    NaverLoginBtnView()
-}
