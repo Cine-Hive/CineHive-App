@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TestDummyMovieListView: View {
-    @StateObject private var viewModel = DummyViewModel()
+    @State private var viewModel = DummyViewModel()
     
     var body: some View {
         NavigationView {
