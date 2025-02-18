@@ -14,6 +14,8 @@ struct SignUpView: View {
     @State private var nickname: String = ""
     @State private var name: String = ""
     @State private var gender: String = ""
+    @State private var selectedMan: Bool = false
+    @State private var selectedWoman: Bool = false
     
     var body: some View {
         VStack {
@@ -106,14 +108,34 @@ struct SignUpView: View {
                 Text("성별")
                     .frame(width: 320, height: 25, alignment: .leading)
                     .font(.system(size: 17))
-                TextField("Gender", text: $gender)
-                    .frame(width: 300, height: 50)
-                    .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
-                    .frame(width: 330, height: 50)
+                
+                HStack {
+                    Button(action: {
+                        selectedMan.toggle()
+                    }, label: {
+                        Text("남자")
+                            .foregroundColor(selectedMan ? Color("LoginBtnColor") : Color("FontColor"))
+                            .frame(width: 160, height: 50)
+                    })
                     .overlay() {
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                            .stroke(selectedMan ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
                     }
+                    
+                    Button(action: {
+                        selectedWoman.toggle()
+                    }, label: {
+                        Text("여자")
+                            .foregroundColor(selectedWoman ? Color("LoginBtnColor") : Color("FontColor"))
+                            .frame(width: 160, height: 50)
+                    })
+                    .overlay() {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(selectedWoman ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
+                    }
+                }
+                .frame(width: 330, height: 50)
+   
             }
             .frame(width: 330, height: 90)
             
