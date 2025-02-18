@@ -27,7 +27,3 @@ struct AppleLoginBtnView: View {
         })
     }
 }
-
-#Preview {
-    AppleLoginBtnView()
-}
