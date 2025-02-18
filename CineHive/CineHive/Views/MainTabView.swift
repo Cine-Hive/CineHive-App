@@ -11,8 +11,7 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                //MovieListView
-                
+                HomeView()
             }
             .tabItem {
                 Label("홈", systemImage: "house")
