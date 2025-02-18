@@ -10,7 +10,7 @@ import SwiftUI
 struct HorizontalMovieListView: View {
     let movies: [Movie]
     let movieType: MovieListType
-    @ObservedObject var viewModel: DummyViewModel
+    @State var viewModel: DummyViewModel
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
