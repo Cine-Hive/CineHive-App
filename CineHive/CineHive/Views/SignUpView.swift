@@ -19,6 +19,14 @@ struct SignUpView: View {
                 .font(.system(size: 22, weight: .bold))
             
             InputFieldView(title: "이메일", text: $viewModel.email)
+            // 오류 메시지
+            if let emailError = viewModel.emailErrorMessage {
+                Text(emailError)
+                    .font(.system(size: 14))
+                    .foregroundColor(.red)
+                    .frame(width: 320, height: 20, alignment: .leading)
+            }
+                
             PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
             InputFieldView(title: "닉네임", text: $viewModel.nickname)
             InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
