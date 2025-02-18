@@ -9,15 +9,7 @@ import SwiftUI
 
 struct SignUpView: View {
     
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var nickname: String = ""
-    @State private var name: String = ""
-    @State private var gender: String = ""
-    @State private var selectedMan: Bool = false
-    @State private var selectedWoman: Bool = false
-    @State private var showPassword: Bool = false
-
+    @State private var viewModel = SignUpViewModel()
     
     var body: some View {
         VStack {
@@ -26,10 +18,10 @@ struct SignUpView: View {
                 .frame(width: 320, height: 70)
                 .font(.system(size: 22, weight: .bold))
             
-            InputFieldView(title: "이메일", text: $email)
-            PasswordFieldView(title: "비밀번호", text: $password, showPassword: $showPassword)
-            InputFieldView(title: "닉네임", text: $nickname)
-            InputFieldView(title: "이름", text: $name, isRequired: false)
+            InputFieldView(title: "이메일", text: $viewModel.email)
+            PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
+            InputFieldView(title: "닉네임", text: $viewModel.nickname)
+            InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
             
             VStack {
                 Text("성별")
@@ -38,27 +30,27 @@ struct SignUpView: View {
                 
                 HStack {
                     Button(action: {
-                        selectedMan.toggle()
+                        viewModel.selectedMan.toggle()
                     }, label: {
                         Text("남자")
-                            .foregroundColor(selectedMan ? Color("LoginBtnColor") : Color("FontColor"))
+                            .foregroundColor(viewModel.selectedMan ? Color("LoginBtnColor") : Color("FontColor"))
                             .frame(width: 160, height: 50)
                     })
                     .overlay() {
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedMan ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
+                            .stroke(viewModel.selectedMan ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
                     }
                     
                     Button(action: {
-                        selectedWoman.toggle()
+                        viewModel.selectedWoman.toggle()
                     }, label: {
                         Text("여자")
-                            .foregroundColor(selectedWoman ? Color("LoginBtnColor") : Color("FontColor"))
+                            .foregroundColor(viewModel.selectedWoman ? Color("LoginBtnColor") : Color("FontColor"))
                             .frame(width: 160, height: 50)
                     })
                     .overlay() {
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedWoman ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
+                            .stroke(viewModel.selectedWoman ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
                     }
                 }
                 .frame(width: 330, height: 50)
@@ -67,11 +59,10 @@ struct SignUpView: View {
             .frame(width: 330, height: 90)
             
             Button(action: {
-                print("gd")
             }, label: {
                 Text("회원가입")
                     .frame(width: 330, height: 50)
-                    .background(Color("LoginBtnColor")).clipShape(RoundedRectangle(cornerRadius: 12))
+                    .background(viewModel.isValid() ? Color("LoginBtnColor"): Color.gray).clipShape(RoundedRectangle(cornerRadius: 12))
             })
             .frame(height: 90)
             .font(.system(size: 18, weight: .bold))
