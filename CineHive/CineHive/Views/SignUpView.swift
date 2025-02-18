@@ -29,7 +29,7 @@ struct SignUpView: View {
             InputFieldView(title: "이메일", text: $email)
             PasswordFieldView(title: "비밀번호", text: $password, showPassword: $showPassword)
             InputFieldView(title: "닉네임", text: $nickname)
-            InputFieldView(title: "이름", text: $name)
+            InputFieldView(title: "이름", text: $name, isRequired: false)
             
             VStack {
                 Text("성별")
@@ -88,20 +88,24 @@ struct SignUpView: View {
 struct InputFieldView: View {
     let title: String
     @Binding var text: String
+    var isRequired: Bool = true
     
     var body: some View {
         VStack {
             HStack {
                 Text(title)
                     .font(.system(size: 17))
-                Text("*")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.red)
-                    .offset(x: -7)
+                // isRequired가 true일 때만 * 표시
+                if isRequired {
+                    Text("*")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.red)
+                        .offset(x: -7)
+                }
             }
             .frame(width: 320, height: 25, alignment: .leading)
             
-            TextField("Email", text: $text)
+            TextField("", text: $text)
                 .frame(width: 300, height: 50)
                 .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                 .frame(width: 330, height: 50)
@@ -134,9 +138,9 @@ struct PasswordFieldView: View {
             HStack {
                 Section {
                     if showPassword {
-                        TextField("Password", text: $text)
+                        TextField("", text: $text)
                     } else {
-                        SecureField("Password", text: $text)
+                        SecureField("", text: $text)
                     }
                 }
                 .frame(width: 260, height: 40)
