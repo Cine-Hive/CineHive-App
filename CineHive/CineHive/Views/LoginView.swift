@@ -68,6 +68,24 @@ struct LoginView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         })
                     }
+                    HStack {
+                        Button(action: {
+                            
+                        }, label: {
+                            HStack {
+                                Image(systemName: "apple.logo")
+                                    .resizable()
+                                    .frame(width: 17, height: 20)
+                                    .foregroundStyle(.white)
+                                Text("Apple로 계속하기")
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .frame(width: 330, height: 44)
+                            .background(Color.black)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        })
+                    }
                 }
                 .frame(width: 330, height: 250)
                 
