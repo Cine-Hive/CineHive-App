@@ -7,8 +7,9 @@
 
 import Foundation
 
-class DummyViewModel: ObservableObject {
-    @Published var movies: [Movie] = []
+@Observable
+class DummyViewModel {
+    var movies: [Movie] = []
     
     /// 일간 트렌드 영화 로드하는 함수
     func loadTrendingMovies() {
