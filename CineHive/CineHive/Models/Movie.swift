@@ -25,7 +25,7 @@ struct Movie: Codable, Identifiable {
 
     var posterURL: URL? {
         guard let path = posterPath else { return nil }
-        return URL(string: "http://localhost:8081\(path)")
+        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
     
     var backdropURL: URL? {
