@@ -20,8 +20,8 @@ class DummyViewModel {
         
         do {
             let data = try Data(contentsOf: url)
-            let movieResponse = try JSONDecoder().decode(MovieResponse.self, from: data)
-            self.movies = movieResponse.results
+            //let movieResponse = try JSONDecoder().decode(MovieResponse.self, from: data)
+            //self.movies = movieResponse.results
             print("Trending movies loaded successfully.")
         } catch {
             print("Failed to decode TrendingMoviesDummyData.json: \(error)")
