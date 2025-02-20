@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var viewModel = DummyViewModel()
+    @State private var viewModel = DummyViewModel()
     
     // 샘플 배너 (테스트용!!)
     private let bannerItems: [BannerItem] = [
