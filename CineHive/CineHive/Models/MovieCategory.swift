@@ -31,7 +31,7 @@ struct MovieCategory: Identifiable {
 //        MovieCategory(title: "Netflix Top 10 영화", type: .netflixMovies),
 //        MovieCategory(title: "Disney+ Top 10 영화", type: .disneyMovies),
 //        MovieCategory(title: "Apple TV+ Top 10 영화", type: .appleTVMovies),
-//        MovieCategory(title: "현재 상영 영화", type: .nowPlaying),
+        MovieCategory(title: "현재 상영 영화", type: .nowPlaying),
 //        MovieCategory(title: "인기 영화", type: .popular),
 //        MovieCategory(title: "최고평점 영화", type: .topRated),
 //        MovieCategory(title: "개봉예정작", type: .upcoming)
