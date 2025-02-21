@@ -26,6 +26,14 @@ struct SignUpView: View {
                     .foregroundColor(.red)
                     .frame(width: 320, height: 20, alignment: .leading)
             }
+            
+            // 이메일 중복 검사 결과 표시 (형식 오류가 없을 때만 표시)
+            else if let emailCheck = viewModel.emailCheckMessage {
+                Text(emailCheck)
+                    .font(.system(size: 14))
+                    .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
+                    .frame(width: 330, alignment: .leading)
+            }
                 
             PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
             InputFieldView(title: "닉네임", text: $viewModel.nickname)
@@ -42,6 +50,9 @@ struct SignUpView: View {
             GenderSelectedView(selectedGender: $viewModel.selectedGender)
             
             Button(action: {
+//                if !viewModel.emailAvailable {
+//                    
+//                }
             }, label: {
                 Text("회원가입")
                     .frame(width: 330, height: 50)

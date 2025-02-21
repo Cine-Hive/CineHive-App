@@ -11,7 +11,10 @@ import Foundation
 class SignUpViewModel {
     var email: String = "" {
         didSet {
-            validateEmail() // 이메일 입력이 변경될 때마다 검사
+            if isValidEmail(email) {
+                checkValidateEmail()
+            }
+            validateEmail()
         }
     }
     var password: String = ""
@@ -30,6 +33,8 @@ class SignUpViewModel {
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
     var nicknameErrorMessage: String? = nil
     var nicknameAvailable: Bool = false
+    var emailAvailable: Bool = false
+    var emailCheckMessage: String? = nil
     
     // 필수 필드 채워져 있는지 검사 및 닉네임 중복검사 결과 값에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
@@ -51,6 +56,32 @@ class SignUpViewModel {
         } else {
             emailErrorMessage = nil
         }
+    }
+    
+    // 이메일 중복 검사
+    func checkValidateEmail() {
+        guard let url = URL(string: "http://localhost:8081/checkemail/\(email)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+
+            guard let data = data,
+                  let isAvailable = try? JSONDecoder().decode(Bool.self, from: data) else {
+                print("잘못된 응답입니다.")
+                return
+            }
+            
+            if isAvailable {
+                self.emailCheckMessage = "사용 가능한 이메일입니다."
+                self.emailAvailable = true
+            } else {
+                self.emailCheckMessage = "이미 사용 중인 이메일입니다."
+                self.emailAvailable = false
+            }
+        }
+        task.resume()
     }
     
     // 닉네임 중복 검사
