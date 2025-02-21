@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var viewModel = DummyViewModel()
+    //@State private var viewModel = DummyViewModel()
+    @State private var viewModel = MovieViewModel()
     
     // 샘플 배너 (테스트용!!)
     private let bannerItems: [BannerItem] = [
@@ -43,7 +44,7 @@ struct HomeView: View {
                 .navigationTitle("CineHive")
                 .onAppear {
                     if viewModel.movies.isEmpty {
-                        viewModel.loadTrendingMovies()
+                        viewModel.fetchMovies()
                     }
                 }
             }
