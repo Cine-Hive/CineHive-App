@@ -49,11 +49,11 @@ struct TestDummyMovieListView: View {
                 .padding(.vertical, 8)
             }
             .navigationTitle("Trending Movies")
-            .onAppear {
-                if viewModel.movies.isEmpty {
-                    viewModel.loadTrendingMovies()
-                }
-            }
+//            .onAppear {
+//                if viewModel.movies.isEmpty {
+//                    viewModel.loadTrendingMovies()
+//                }
+//            }
         }
     }
 }
