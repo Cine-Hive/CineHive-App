@@ -29,10 +29,11 @@ class SignUpViewModel {
     var showPassword: Bool = false
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
     var nicknameErrorMessage: String? = nil
+    var nicknameAvailable: Bool = false
     
-    // 필수 필드 채워져 있는지 검사
+    // 필수 필드 채워져 있는지 검사 및 닉네임 중복검사 결과 값에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
-        return !email.isEmpty && !password.isEmpty && !nickname.isEmpty && isValidEmail(email)
+        return !email.isEmpty && !password.isEmpty && !nickname.isEmpty && isValidEmail(email) && nicknameAvailable
     }
     
     // 이메일 정규식 검사 함수
@@ -69,8 +70,10 @@ class SignUpViewModel {
             
             if isAvailable {
                 self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
+                self.nicknameAvailable = true
             } else {
                 self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
+                self.nicknameAvailable = false
             }
         }
         task.resume()
