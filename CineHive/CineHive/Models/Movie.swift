@@ -30,6 +30,6 @@ struct Movie: Codable, Identifiable {
     
     var backdropURL: URL? {
         guard let path = backdropPath else { return nil }
-        return URL(string: "http://localhost:8081\(path)")
+        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
 }
