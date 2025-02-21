@@ -15,11 +15,20 @@ class SignUpViewModel {
         }
     }
     var password: String = ""
-    var nickname: String = ""
+    var nickname: String = "" {
+        didSet {
+            if nickname.count >= 1 {
+                validateNickname()  // 닉네임 입력 변경때마다 검사
+            } else {
+                nicknameErrorMessage = nil
+            }
+        }
+    }
     var name: String = ""
     var selectedGender: String = ""
     var showPassword: Bool = false
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
+    var nicknameErrorMessage: String? = nil
     
     // 필수 필드 채워져 있는지 검사
     func isValid() -> Bool {
@@ -43,4 +52,27 @@ class SignUpViewModel {
         }
     }
     
+    // 닉네임 중복 검사
+    func validateNickname() {
+        guard let url = URL(string: "http://localhost:8081/checknickname/\(nickname)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+
+            guard let data = data,
+                  let isAvailable = try? JSONDecoder().decode(Bool.self, from: data) else {
+                self.nicknameErrorMessage = "잘못된 응답입니다."
+                return
+            }
+            
+            if isAvailable {
+                self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
+            } else {
+                self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
+            }
+        }
+        task.resume()
+    }
 }

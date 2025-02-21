@@ -29,6 +29,14 @@ struct SignUpView: View {
                 
             PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
             InputFieldView(title: "닉네임", text: $viewModel.nickname)
+            // 닉네임 중복 검사 결과 메시지 표시
+            if let nicknameError = viewModel.nicknameErrorMessage {
+                Text(nicknameError)
+                    .font(.system(size: 14))
+                    .foregroundColor(nicknameError == "사용 가능한 닉네임입니다." ? .green : .red)
+                    .frame(width: 330, alignment: .leading)
+                    .padding(.top, 1)
+            }
             InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
             
             GenderSelectedView(selectedGender: $viewModel.selectedGender)
