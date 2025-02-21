@@ -50,9 +50,7 @@ struct SignUpView: View {
             GenderSelectedView(selectedGender: $viewModel.selectedGender)
             
             Button(action: {
-//                if !viewModel.emailAvailable {
-//                    
-//                }
+            // 로그인 화면으로 전환하는 코드 필요
             }, label: {
                 Text("회원가입")
                     .frame(width: 330, height: 50)
