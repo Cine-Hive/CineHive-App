@@ -38,7 +38,7 @@ class SignUpViewModel {
     
     // 필수 필드 채워져 있는지 검사 및 닉네임 중복검사 결과 값에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
-        return !email.isEmpty && !password.isEmpty && !nickname.isEmpty && isValidEmail(email) && nicknameAvailable
+        return !email.isEmpty && !password.isEmpty && !nickname.isEmpty && isValidEmail(email) && nicknameAvailable && emailAvailable
     }
     
     // 이메일 정규식 검사 함수
