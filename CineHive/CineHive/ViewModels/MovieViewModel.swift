@@ -58,7 +58,11 @@ final class MovieViewModel {
             isLoading = false
         }
     }
-
+    
+    func getPosterURL(for movie: Movie) -> URL? {
+        return movie.posterURL
+    }
+    
     
     func clearError() {
         error = nil

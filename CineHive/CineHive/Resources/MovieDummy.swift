@@ -12,7 +12,7 @@ extension Movie {
         return Movie(
             id: 1,
             title: "인셉션",
-            overview: "꿈속의 꿈을 탐험하는 한 남자의 이야기.",
+            overview: "꿈속의 꿈을 탐험하는 한 남자의 이야기.꿈속의 꿈을 탐험하는 한 남자의 이야기.꿈속의 꿈을 탐험하는 한 남자의 이야기.꿈속의 꿈을 탐험하는 한 남자의 이야기.꿈속의 꿈을 탐험하는 한 남자의 이야기.",
             posterPath: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
             backdropPath: "/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
             releaseDate: "2010-07-16",
