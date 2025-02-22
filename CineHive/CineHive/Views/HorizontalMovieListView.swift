@@ -18,6 +18,7 @@ struct HorizontalMovieListView: View {
                 ForEach(movies, id: \.id) { movie in
                     NavigationLink(destination: {
                         //DetailView로 이동
+                        DetailView(movie: movie)
                     }, label: {
                         VStack {
                             if let posterURL = movie.posterURL {
