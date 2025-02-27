@@ -34,43 +34,58 @@ final class NetworkManager {
     }
     
     func fetch<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
-        // baseURL와 엔드포인트를 합쳐 URLComponents 생성
         guard var components = URLComponents(string: "\(baseURL)\(endpoint)") else {
             throw NetworkError.invalidURL
         }
-        
+
         if !queryItems.isEmpty {
             components.queryItems = queryItems
         }
-        
+
         guard let url = components.url else {
             throw NetworkError.invalidURL
         }
-        
-        // URLRequest 구성
+
+        print("🌍 요청 URL: \(url.absoluteString)")
+
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 10
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        // 로컬 서버로 요청하는 경우 별도의 인증 헤더가 필요하지 않다면 생략
-        
-        // 데이터 요청 및 응답 처리
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
-        
+
+        print("📡 서버 응답 코드: \(httpResponse.statusCode)")
+
         guard (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
         }
-        
-        // JSON 디코딩 처리
+
+        // JSON 데이터 출력
+        if let jsonString = String(data: data, encoding: .utf8) {
+            //print("📄 서버 응답 데이터: \(jsonString)")
+        } else {
+            print("⚠️ 응답 데이터를 문자열로 변환할 수 없음")
+        }
+
+        // JSONDecoder 설정 추가
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .useDefaultKeys // 기본적으로 Snake Case → Camel Case 변환 방지
+        decoder.dateDecodingStrategy = .iso8601 // 날짜 형식 설정
+
         do {
-            return try JSONDecoder().decode(T.self, from: data)
+            return try decoder.decode(T.self, from: data)
         } catch {
+            print("❌ JSON 디코딩 오류: \(error.localizedDescription)")
             throw NetworkError.decodingError(error)
         }
     }
+
+
+
 }
 

@@ -21,14 +21,15 @@ struct DetailView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         headerSection(movie: movie)
                         movieInfoSection(movie: movie)
+                        ratingPopularitySection(movie: movie) // 평점 및 인기 추가
                         overviewSection(movie: movie)
                         if !movie.actors.isEmpty {
                             actorsSection(movie: movie)
                         }
                     }
                 }
-            } else {
-                errorView
+            } else if let error = viewModel.error {
+                errorView(errorMessage: error)
             }
         }
         .navigationTitle("영화 상세 정보")
@@ -38,13 +39,10 @@ struct DetailView: View {
             viewModel.fetchMovieDetail(movieId: movieId)
         }
     }
-
     
-    // MARK: - 헤더 영역 (배경 이미지)
+    // MARK: - 헤더 (포스터 + 영화 제목)
     private func headerSection(movie: MovieDetail) -> some View {
         ZStack(alignment: .bottom) {
-            // 배경 이미지와 그라데이션 오버레이
-            // 나중에 백드롭이미지나, 예고편 넣으면 좋을듯함
             Rectangle()
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 220)
@@ -56,7 +54,6 @@ struct DetailView: View {
                     )
                 )
             
-            // 영화 제목 (배경 이미지 하단에 표시)
             Text(movie.title)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundColor(.white)
@@ -67,17 +64,13 @@ struct DetailView: View {
         }
     }
     
-    // MARK: - 영화 정보 섹션
+    // MARK: - 영화 정보 섹션 (포스터 + 개봉일 + 감독)
     private func movieInfoSection(movie: MovieDetail) -> some View {
         HStack(alignment: .top, spacing: 20) {
-            // 포스터 (그림자와 둥근 모서리 적용)
             PosterView(posterURL: movie.posterURL)
-                .frame(width: 120, height: 180)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .shadow(radius: 4)
-                .offset(y: -40) // 포스터를 위로 끌어올려 배경 이미지와 겹치게 함
+                .offset(y: -40)
             
-            // 영화 메타데이터
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text("감독")
@@ -102,6 +95,28 @@ struct DetailView: View {
             .frame(maxWidth: .infinity)
             .padding(.trailing, 8)
         }
+        .padding(.horizontal, 16)
+    }
+    
+    // MARK: - 평점 & 인기도 섹션
+    private func ratingPopularitySection(movie: MovieDetail) -> some View {
+        HStack {
+            HStack {
+                Image(systemName: "star.fill")
+                    .foregroundColor(.yellow)
+                Text(String(format: "%.1f", movie.voteAverage))
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+            }
+            
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.red)
+                Text("\(Int(movie.popularity))명 관심")
+                    .font(.subheadline)
+            }
+        }
+        .offset(y: -40)
         .padding(.horizontal, 16)
     }
     
@@ -137,7 +152,7 @@ struct DetailView: View {
                 .padding(.top, 5)
             }
         }
-        .offset(y: -30)
+        .offset(y: -40)
     }
     
     // MARK: - 출연 배우 섹션
@@ -152,7 +167,6 @@ struct DetailView: View {
                 HStack(spacing: 20) {
                     ForEach(movie.actors, id: \.id) { actor in
                         VStack(spacing: 8) {
-                            // 배우 프로필 이미지
                             if let url = actor.posterURL {
                                 AsyncImage(url: url) { image in
                                     image
@@ -189,8 +203,8 @@ struct DetailView: View {
                 .padding(.horizontal, 16)
             }
         }
+        .offset(y: -40)
     }
-
     
     // MARK: - 로딩 화면
     private var loadingView: some View {
@@ -204,23 +218,24 @@ struct DetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
-
+    
     // MARK: - 오류 화면
-    private var errorView: some View {
+    private func errorView(errorMessage: String) -> some View {
         VStack {
+            Spacer()
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
                 .foregroundColor(.gray)
                 .padding()
-            Text("영화 정보를 불러오지 못했습니다.")
+            Text(errorMessage) // 오류 메시지 표시
                 .font(.headline)
                 .foregroundColor(.secondary)
+            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
 }
 
 #Preview {
-    DetailView(movieId: 95039)
+    DetailView(movieId: 950396)
 }

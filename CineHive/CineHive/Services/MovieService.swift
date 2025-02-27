@@ -25,7 +25,24 @@ final class MovieService {
     }
     
     func fetchMovieDetail(movieId: Int) async throws -> MovieDetail {
-        return try await NetworkManager.shared.fetch(endpoint: "\(movieDetailEndPoint)\(movieId)")
+        let endpoint = "\(movieDetailEndPoint)\(movieId)"
+        
+        do {
+            print("🔵 영화 상세 정보 요청: \(endpoint)")
+            
+            let movieDetail: MovieDetail = try await NetworkManager.shared.fetch(endpoint: endpoint)
+            
+            print("🟢 응답 성공: \(movieDetail.title)")
+            return movieDetail
+        } catch let networkError as NetworkError {
+            print("❌ 네트워크 오류 발생: \(networkError.errorDescription ?? "알 수 없는 오류")")
+            throw networkError
+        } catch {
+            print("❌ 알 수 없는 오류 발생: \(error.localizedDescription)")
+            throw error
+        }
     }
+
+
     
 }
