@@ -10,10 +10,10 @@ import Foundation
 struct Actor: Identifiable, Codable {
     let id: Int
     let name: String
-    let originalName: String
-    let role: String
-    let gender: Int
+    let posterUrl: String?
     
-    
-    //Actor 프로필 추가 필요
+    var posterURL: URL? {
+        guard let path = posterUrl else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
+    }
 }
