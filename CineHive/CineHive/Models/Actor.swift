@@ -13,4 +13,7 @@ struct Actor: Identifiable, Codable {
     let originalName: String
     let role: String
     let gender: Int
+    
+    
+    //Actor 프로필 추가 필요
 }

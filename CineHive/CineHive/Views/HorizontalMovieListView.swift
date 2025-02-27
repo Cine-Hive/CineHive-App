@@ -16,7 +16,7 @@ struct HorizontalMovieListView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 15) {
                 ForEach(movies, id: \.id) { movie in
-                    NavigationLink(destination: DetailView(movie: movie)) {
+                    NavigationLink(destination: DetailView(movieId: movie.id)) {
                         VStack {
                             PosterView(posterURL: movie.posterURL)
                         }

@@ -8,42 +8,19 @@
 import SwiftUI
 
 struct DetailView: View {
-    let movie: Movie
+    let movieId: Int // 영화 Id
+    @State private var viewModel: MovieViewModel = MovieViewModel()
     @State private var isExpanded: Bool = false
-
+    
+    
     var body: some View {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                
+                if let movie = viewModel.movieDetail {
                     // MARK: - Header: 포스터와 기본 정보
                     HStack(alignment: .top, spacing: 16) {
-                        if let posterURL = movie.posterURL {
-                            AsyncImage(url: posterURL) { phase in
-                                switch phase {
-                                case .empty:
-                                    Rectangle()
-                                        .fill(Color.gray.opacity(0.3))
-                                        .frame(width: 120, height: 180)
-                                        .cornerRadius(10)
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 120, height: 180)
-                                        .clipped()
-                                        .cornerRadius(10)
-                                        .shadow(radius: 4)
-                                case .failure:
-                                    Image(systemName: "photo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 120, height: 180)
-                                        .foregroundColor(.gray)
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                        }
+                        PosterView(posterURL: movie.posterURL)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             Text(movie.title)
@@ -59,23 +36,22 @@ struct DetailView: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding(.top, 8)
-                        
-                        Spacer()
                     }
                     
-                    Divider()
+                    
+                    Spacer()
                     
                     // MARK: - 줄거리 (더보기 기능 추가)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("줄거리")
                             .font(.headline)
-
+                        
                         Text(movie.overview)
                             .font(.body)
                             .lineSpacing(4)
                             .lineLimit(isExpanded ? nil : 2) // 2줄까지만 표시 (더보기 전)
                             .animation(.easeInOut, value: isExpanded) // 애니메이션 추가
-
+                        
                         Button(action: {
                             isExpanded.toggle() // 버튼 클릭 시 상태 변경
                         }) {
@@ -84,7 +60,7 @@ struct DetailView: View {
                                 .foregroundColor(.black)
                         }
                     }
-
+                    
                     // MARK: - 출연 배우 (배열이 비어있지 않은 경우)
                     if !movie.actors.isEmpty {
                         Divider()
@@ -111,16 +87,30 @@ struct DetailView: View {
                             .padding(.vertical, 4)
                         }
                     }
-                    
+                    Divider()
                     Spacer()
+                    
+                    
+                } else if viewModel.isLoading {
+                    ProgressView("로딩 중..")
+                } else {
+                    Text("영화 정보를 불러오지 못했습니다.")
+                        .foregroundColor(.black)
+                        .font(.title2)
                 }
-                .padding()
             }
-            .navigationTitle("영화 상세 정보")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding()
+            
         }
+        .navigationTitle("영화 상세 정보")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.fetchMovieDetail(movieId: movieId)
+        }
+    }
 }
 
+
 #Preview {
-    DetailView(movie: Movie.dummyMovie)
+    DetailView(movieId: 950396)
 }
