@@ -13,29 +13,32 @@ struct DetailView: View {
     @State private var isExpanded: Bool = false // 더보기 버튼 펼침 유무
     
     var body: some View {
-        ScrollView {
-            if let movie = viewModel.movieDetail {
-                VStack(alignment: .leading, spacing: 20) {
-                    headerSection(movie: movie)
-                    movieInfoSection(movie: movie)
-                    overviewSection(movie: movie)
-                    if !movie.actors.isEmpty {
-                        actorsSection(movie: movie)
+        VStack {
+            if viewModel.isLoading {
+                loadingView
+            } else if let movie = viewModel.movieDetail {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        headerSection(movie: movie)
+                        movieInfoSection(movie: movie)
+                        overviewSection(movie: movie)
+                        if !movie.actors.isEmpty {
+                            actorsSection(movie: movie)
+                        }
                     }
                 }
-            } else if viewModel.isLoading {
-                loadingView
             } else {
                 errorView
             }
         }
         .navigationTitle("영화 상세 정보")
         .navigationBarTitleDisplayMode(.inline)
-        .edgesIgnoringSafeArea(.top) // 배경 이미지를 상단 가장자리까지 확장
+        .edgesIgnoringSafeArea(.top)
         .onAppear {
             viewModel.fetchMovieDetail(movieId: movieId)
         }
     }
+
     
     // MARK: - 헤더 영역 (배경 이미지)
     private func headerSection(movie: MovieDetail) -> some View {
@@ -150,13 +153,30 @@ struct DetailView: View {
                     ForEach(movie.actors, id: \.id) { actor in
                         VStack(spacing: 8) {
                             // 배우 프로필 이미지
-                            Circle()
-                                .fill(Color.gray.opacity(0.2))
+                            if let url = actor.posterURL {
+                                AsyncImage(url: url) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.2))
+                                }
                                 .frame(width: 70, height: 70)
+                                .clipShape(Circle())
                                 .overlay(
                                     Circle()
                                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                 )
+                            } else {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(width: 70, height: 70)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
+                            }
                             
                             Text(actor.name)
                                 .font(.system(size: 14))
@@ -170,27 +190,24 @@ struct DetailView: View {
             }
         }
     }
+
     
     // MARK: - 로딩 화면
     private var loadingView: some View {
         VStack {
-            Spacer()
             ProgressView()
                 .scaleEffect(1.5)
                 .padding()
             Text("로딩 중...")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, 100)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
-    
+
     // MARK: - 오류 화면
     private var errorView: some View {
         VStack {
-            Spacer()
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
                 .foregroundColor(.gray)
@@ -198,13 +215,12 @@ struct DetailView: View {
             Text("영화 정보를 불러오지 못했습니다.")
                 .font(.headline)
                 .foregroundColor(.secondary)
-            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, 100)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
+
 }
 
 #Preview {
-    DetailView(movieId: 950396)
+    DetailView(movieId: 95039)
 }
