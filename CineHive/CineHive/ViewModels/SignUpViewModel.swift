@@ -12,7 +12,9 @@ class SignUpViewModel {
     var email: String = "" {
         didSet {
             if isValidEmail(email) {
-                checkValidateEmail()
+                Task {
+                    await checkValidateEmail()
+                }
             }
             validateEmail()
         }
@@ -21,20 +23,28 @@ class SignUpViewModel {
     var nickname: String = "" {
         didSet {
             if nickname.count >= 1 {
-                validateNickname()  // 닉네임 입력 변경때마다 검사
+                Task {
+                    await validateNickname()  // 닉네임 입력 변경때마다 검사
+                }
             } else {
                 nicknameErrorMessage = nil
             }
         }
     }
     var name: String = ""
-    var selectedGender: String = ""
+    var gender: String = ""
     var showPassword: Bool = false
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
     var nicknameErrorMessage: String? = nil
     var nicknameAvailable: Bool = false
     var emailAvailable: Bool = false
     var emailCheckMessage: String? = nil
+    var isSignUpSuccess: Bool = false
+    private let userService: UserService
+    
+    init(userService: UserService = .shared) {
+        self.userService = userService
+    }
     
     // 필수 필드 채워져 있는지 검사 및 닉네임 중복검사 결과 값에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
@@ -59,20 +69,10 @@ class SignUpViewModel {
     }
     
     // 이메일 중복 검사
-    func checkValidateEmail() {
-        guard let url = URL(string: "http://localhost:8081/checkemail/\(email)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-
-            guard let data = data,
-                  let isAvailable = try? JSONDecoder().decode(Bool.self, from: data) else {
-                print("잘못된 응답입니다.")
-                return
-            }
-            
+    @MainActor
+    func checkValidateEmail() async {
+        do {
+            let isAvailable = try await userService.fetchUserEmail(email: email)
             if isAvailable {
                 self.emailCheckMessage = "사용 가능한 이메일입니다."
                 self.emailAvailable = true
@@ -80,25 +80,17 @@ class SignUpViewModel {
                 self.emailCheckMessage = "이미 사용 중인 이메일입니다."
                 self.emailAvailable = false
             }
+        } catch {
+            self.emailErrorMessage = "이메일 중복 검사 실패: \(error.localizedDescription)"
+            self.emailAvailable = false
         }
-        task.resume()
     }
     
     // 닉네임 중복 검사
-    func validateNickname() {
-        guard let url = URL(string: "http://localhost:8081/checknickname/\(nickname)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-
-            guard let data = data,
-                  let isAvailable = try? JSONDecoder().decode(Bool.self, from: data) else {
-                self.nicknameErrorMessage = "잘못된 응답입니다."
-                return
-            }
-            
+    @MainActor
+    func validateNickname() async {
+        do {
+            let isAvailable = try await userService.fetchUserNickname(nickname: nickname)
             if isAvailable {
                 self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
                 self.nicknameAvailable = true
@@ -106,7 +98,43 @@ class SignUpViewModel {
                 self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
                 self.nicknameAvailable = false
             }
+        } catch {
+            self.nicknameErrorMessage = "닉네임 중복 검사 실패: \(error.localizedDescription)"
+            self.nicknameAvailable = false
         }
-        task.resume()
+    }
+    
+    // 회원가입
+    @MainActor
+    func signUp() async {
+        
+        let newUser = User(
+            email: email,
+            password: password,
+            nickname: nickname,
+            name: name.isEmpty ? nil : name,
+            gender: gender.isEmpty ? nil : gender,
+            type: "일반"
+        )
+        
+        // newUser 객체 -> JSON으로 변환되는지
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            _ = try encoder.encode(newUser)
+        } catch {
+            print("JSON 변환 실패: \(error)")
+        }
+        
+        do {
+            let response = try await UserService.shared.registerUser(user: newUser)
+            print("서버 응답 메시지: \(response.message), 상태: \(response.status)")
+            
+            if response.status == "success" {
+                self.isSignUpSuccess = true // 회원가입 성공 후 로그인 화면으로 이동
+            }
+        } catch {
+            print("회원가입 실패: \(error.localizedDescription)")
+        }
     }
 }

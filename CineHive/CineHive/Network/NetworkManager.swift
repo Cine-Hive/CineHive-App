@@ -72,5 +72,46 @@ final class NetworkManager {
             throw NetworkError.decodingError(error)
         }
     }
+    
+    // 공통 POST 요청 함수
+    func post<T: Decodable, U: Encodable>(endpoint: String, body: U) async throws -> T {
+        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Encodable 데이터 -> JSON 형식 변환
+        let encoder = JSONEncoder()
+        guard let jsonData = try? encoder.encode(body) else {
+            throw NetworkError.decodingError(NSError(domain: "Encoding Error", code: -1, userInfo: nil))
+        }
+        
+        request.httpBody = jsonData
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("서버 응답 메시지: \(responseString)") // 서버가 반환한 오류 메시지를 확인
+            }
+            throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
+        }
+        
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("서버 응답 원본 데이터: \(responseString)") // 서버가 보낸 데이터를 확인
+            }
+            throw NetworkError.decodingError(error)
+        }
+    }
 }
 
