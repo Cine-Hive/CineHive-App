@@ -9,9 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     
-    @State var email: String = ""
-    @State var password: String = ""
-    @State private var showPassword: Bool = false
+    @State private var viewModel = LoginViewModel()
     
     var body: some View {
         NavigationStack {
@@ -32,19 +30,19 @@ struct LoginView: View {
                     .frame(width: 320, height: 30, alignment: .leading)
                 
                 Section {
-                    TextField("Email", text: $email)
+                    TextField("Email", text: $viewModel.email)
                         .frame(width: 300, height: 50)
                         .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                     HStack {
-                        if showPassword {
-                            TextField("Password", text: $password)
+                        if viewModel.showPassword {
+                            TextField("Password", text: $viewModel.password)
                         } else {
-                            SecureField("Password", text: $password)
+                            SecureField("Password", text: $viewModel.password)
                         }
                         Button(action: {
-                            self.showPassword.toggle()
+                            viewModel.showPassword.toggle()
                         }, label: {
-                            Image(systemName: showPassword ? "eye" : "eye.slash")
+                            Image(systemName: viewModel.showPassword ? "eye" : "eye.slash")
                                 .foregroundStyle(.gray)
                         })
                     }
