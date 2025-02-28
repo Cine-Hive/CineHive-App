@@ -28,4 +28,10 @@ final class UserService {
         let endpoint = "/checkemail/\(email)"
         return try await NetworkManager.shared.fetch(endpoint: endpoint)
     }
+    
+    // 로그인 요청 (POST)
+    func loginUser(user: User) async throws -> LoginResponse {
+        let endpoint = "/login"
+        return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
+    }
 }
