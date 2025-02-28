@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 enum NetworkError: Error, LocalizedError {
     case invalidURL
@@ -27,14 +28,14 @@ enum NetworkError: Error, LocalizedError {
 final class NetworkManager {
     static let shared = NetworkManager()
     private let baseURL: String
-    
+
     private init() {
-        // 로컬 서버 주소로 기본 URL 설정
         self.baseURL = "http://localhost:8081"
     }
-    
-    func fetch<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
+
+    func request<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
         guard var components = URLComponents(string: "\(baseURL)\(endpoint)") else {
+            Logger.log(.error, category: Logger.networking, message: "잘못된 URL: \(endpoint)")
             throw NetworkError.invalidURL
         }
 
@@ -43,49 +44,41 @@ final class NetworkManager {
         }
 
         guard let url = components.url else {
+            Logger.log(.error, category: Logger.networking, message: "URL 변환 실패: \(components.string ?? "N/A")")
             throw NetworkError.invalidURL
         }
 
-        print("🌍 요청 URL: \(url.absoluteString)")
+        Logger.log(.info, category: Logger.networking, message: "요청 URL: \(url.absoluteString)")
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 10
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-
-        print("📡 서버 응답 코드: \(httpResponse.statusCode)")
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
-        }
-
-        // JSON 데이터 출력
-        if let jsonString = String(data: data, encoding: .utf8) {
-            //print("📄 서버 응답 데이터: \(jsonString)")
-        } else {
-            print("⚠️ 응답 데이터를 문자열로 변환할 수 없음")
-        }
-
-        // JSONDecoder 설정 추가
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .useDefaultKeys // 기본적으로 Snake Case → Camel Case 변환 방지
-        decoder.dateDecodingStrategy = .iso8601 // 날짜 형식 설정
-
         do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.badResponse(statusCode: 0)
+            }
+
+            Logger.log(.info, category: Logger.networking, message: "서버 응답 코드: \(httpResponse.statusCode)")
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
+            }
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .useDefaultKeys
+            decoder.dateDecodingStrategy = .iso8601
+
             return try decoder.decode(T.self, from: data)
+        } catch let decodingError as DecodingError {
+            Logger.log(.error, category: Logger.networking, message: "JSON 디코딩 오류: \(decodingError.localizedDescription)")
+            throw NetworkError.decodingError(decodingError)
         } catch {
-            print("❌ JSON 디코딩 오류: \(error.localizedDescription)")
-            throw NetworkError.decodingError(error)
+            Logger.log(.error, category: Logger.networking, message: "네트워크 요청 실패: \(error.localizedDescription)")
+            throw error
         }
     }
-
-
-
 }
-
