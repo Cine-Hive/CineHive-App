@@ -28,13 +28,14 @@ class SignUpViewModel {
         }
     }
     var name: String = ""
-    var selectedGender: String = ""
+    var gender: String = ""
     var showPassword: Bool = false
     var emailErrorMessage: String? = nil // 이메일 오류 메시지
     var nicknameErrorMessage: String? = nil
     var nicknameAvailable: Bool = false
     var emailAvailable: Bool = false
     var emailCheckMessage: String? = nil
+    var isSignUpSuccess: Bool = false
     
     // 필수 필드 채워져 있는지 검사 및 닉네임 중복검사 결과 값에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
@@ -108,5 +109,39 @@ class SignUpViewModel {
             }
         }
         task.resume()
+    }
+    
+    // 회원가입
+    @MainActor
+    func signUp() async {
+        
+        let newUser = User(
+            email: email,
+            password: password,
+            nickname: nickname,
+            name: name.isEmpty ? nil : name,
+            gender: gender.isEmpty ? nil : gender,
+            type: "일반"
+        )
+        
+        // newUser 객체 -> JSON으로 변환되는지
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            _ = try encoder.encode(newUser)
+        } catch {
+            print("JSON 변환 실패: \(error)")
+        }
+        
+        do {
+            let response = try await UserService.shared.registerUser(user: newUser)
+            print("서버 응답 메시지: \(response.message), 상태: \(response.status)")
+            
+            if response.status == "success" {
+                self.isSignUpSuccess = true // 회원가입 성공 후 로그인 화면으로 이동
+            }
+        } catch {
+            print("회원가입 실패: \(error.localizedDescription)")
+        }
     }
 }
