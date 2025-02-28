@@ -19,13 +19,13 @@ final class UserService {
     
     // 닉네임 중복 확인 요청 (GET)
     func fetchUserNickname(nickname: String) async throws -> Bool {
-        let endpoint = "/checknickname\(nickname)"
+        let endpoint = "/checknickname/\(nickname)"
         return try await NetworkManager.shared.fetch(endpoint: endpoint)
     }
     
     // 이메일 중복 확인 요청 (GET)
     func fetchUserEmail(email: String) async throws -> Bool {
-        let endpoint = "/checkemail\(email)"
+        let endpoint = "/checkemail/\(email)"
         return try await NetworkManager.shared.fetch(endpoint: endpoint)
     }
 }
