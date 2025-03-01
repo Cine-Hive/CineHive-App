@@ -54,7 +54,9 @@ struct LoginView: View {
                         .stroke(Color("FontColor"), lineWidth: 0.6)
                 }
                 Button(action: {
-                    
+                    Task {
+                        await viewModel.login()
+                    }
                 }, label: {
                     Text("로그인")
                 })
