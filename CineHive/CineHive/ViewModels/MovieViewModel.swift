@@ -42,6 +42,7 @@ final class MovieViewModel {
         }
     }
 
+    @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {
         Task {
             do {

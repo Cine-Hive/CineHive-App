@@ -45,6 +45,7 @@ struct HomeView: View {
                 .onAppear {
                     if viewModel.movies.isEmpty {
                         viewModel.fetchMovies()
+                        viewModel.fetchNowPlayingMovies()
                     }
                 }
             }

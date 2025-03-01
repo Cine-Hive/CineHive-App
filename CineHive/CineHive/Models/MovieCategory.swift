@@ -35,6 +35,6 @@ struct MovieCategory: Identifiable {
 //        MovieCategory(title: "인기 영화", type: .popular),
 //        MovieCategory(title: "최고평점 영화", type: .topRated),
 //        MovieCategory(title: "개봉예정작", type: .upcoming)
-//        MovieCategory(title: "영화", type: .movies)
+        MovieCategory(title: "영화", type: .movies)
     ]
 }

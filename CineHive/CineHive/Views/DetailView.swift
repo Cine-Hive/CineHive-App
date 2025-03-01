@@ -15,7 +15,7 @@ struct DetailView: View {
     var body: some View {
         VStack {
             if viewModel.isLoading {
-                loadingView
+                LoadingView()
             } else if let movie = viewModel.movieDetail {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
@@ -67,7 +67,7 @@ struct DetailView: View {
     // MARK: - 영화 정보 섹션 (포스터 + 개봉일 + 감독)
     private func movieInfoSection(movie: MovieDetail) -> some View {
         HStack(alignment: .top, spacing: 20) {
-            PosterView(posterURL: movie.posterURL)
+            PosterView(posterURL: movie.posterURL, width: 150, height: 300)
                 .shadow(radius: 4)
                 .offset(y: -40)
             
@@ -93,7 +93,7 @@ struct DetailView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.trailing, 8)
+            
         }
         .padding(.horizontal, 16)
     }
@@ -204,19 +204,6 @@ struct DetailView: View {
             }
         }
         .offset(y: -40)
-    }
-    
-    // MARK: - 로딩 화면
-    private var loadingView: some View {
-        VStack {
-            ProgressView()
-                .scaleEffect(1.5)
-                .padding()
-            Text("로딩 중...")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
     
     // MARK: - 오류 화면

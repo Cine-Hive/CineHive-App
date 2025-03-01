@@ -9,32 +9,44 @@ import SwiftUI
 
 struct PosterView: View {
     let posterURL: URL?
+    let width: CGFloat
+    let height: CGFloat
     
     var body: some View {
         AsyncImage(url: posterURL) { phase in
             switch phase {
             case .empty:
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 120, height: 180)
-                    .cornerRadius(10)
+                placeholderView
             case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 120, height: 180)
-                    .clipped()
-                    .cornerRadius(10)
-                    .shadow(radius: 4)
+                imageView(image)
             case .failure:
-                Image(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 120, height: 180)
-                    .foregroundColor(.gray)
+                placeholderView
             @unknown default:
                 EmptyView()
             }
         }
+        .frame(width: width, height: height)
+    }
+    
+    private var placeholderView: some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.3))
+            .cornerRadius(10)
+            .overlay(
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: width * 0.5, height: height * 0.5)
+                    .foregroundColor(.gray.opacity(0.6))
+            )
+    }
+    
+    private func imageView(_ image: Image) -> some View {
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .clipped()
+            .cornerRadius(10)
+            .shadow(radius: 4)
     }
 }

@@ -18,7 +18,7 @@ struct HorizontalMovieListView: View {
                 ForEach(movies, id: \.id) { movie in
                     NavigationLink(destination: DetailView(movieId: movie.id)) {
                         VStack {
-                            PosterView(posterURL: movie.posterURL)
+                            PosterView(posterURL: movie.posterURL, width: 120, height: 180)
                         }
                     }
                 }

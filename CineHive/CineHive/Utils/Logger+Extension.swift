@@ -20,7 +20,6 @@ extension Logger {
     
     // 타임스탬프 함께 출력하는 로그
     // 카테고리 : error, warning, failure, info, debug, fault
-    
     static func log(_ level: OSLogType, category: Logger, message: String,
                     file: String = #fileID, function: String = #function, line: Int = #line) {
         let logMessage = "[\(timestamp())] [\(file):\(line)] \(function) \(message)"
