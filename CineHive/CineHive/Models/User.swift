@@ -46,6 +46,11 @@ struct LoginUser: Codable {
         self.email = email
         self.password = password
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case email = "memEmail"
+        case password = "memPassword"
+    }
 }
 
 struct LoginResponse: Codable {
