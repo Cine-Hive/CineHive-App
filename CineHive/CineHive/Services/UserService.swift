@@ -30,7 +30,7 @@ final class UserService {
     }
     
     // 로그인 요청 (POST)
-    func loginUser(user: User) async throws -> LoginResponse {
+    func loginUser(user: LoginUser) async throws -> LoginResponse {
         let endpoint = "/login"
         return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
     }
