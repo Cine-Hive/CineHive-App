@@ -37,3 +37,25 @@ struct User: Codable, Identifiable {
         self.type = type
     }
 }
+
+struct LoginUser: Codable {
+    let email: String
+    let password: String
+    
+    init(email: String, password: String) {
+        self.email = email
+        self.password = password
+    }
+}
+
+struct LoginResponse: Codable {
+    let message: String
+    let user: UserData
+}
+
+struct UserData: Codable {
+    let genres: [String]?
+    let name: String?
+    let nickname: String
+    let email: String
+}
