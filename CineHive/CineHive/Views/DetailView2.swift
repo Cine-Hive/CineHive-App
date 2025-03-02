@@ -29,52 +29,56 @@ struct DetailView2: View {
     private let tempTrailerURL = URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!
     
     var body: some View {
-        ScrollView {
-            if viewModel.isLoading {
-                LoadingView()
-            } else if let movie = viewModel.movieDetail {
-                ZStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // 헤더 섹션 (배경 이미지 + 영화 제목 + 버튼)
-                        heroSection(movie: movie)
+        ZStack {
+            ScrollView {
+                if viewModel.isLoading {
+                    LoadingView()
+                } else if let movie = viewModel.movieDetail {
+                    ZStack(alignment: .top) {
+
+                        VStack(alignment: .leading, spacing: 0) {
+                            // 헤더 섹션 (배경 이미지 + 영화 제목 + 버튼)
+                            heroSection(movie: movie)
+                            
+                            // 인포 바 (평점, 연도, 등급)
+                            infoBar(movie: movie)
+                            
+                            // 컨트롤 버튼
+                            actionButtons()
+                            
+                            // 탭 선택기
+                            tabSelector()
+                            
+                            // 선택된 탭에 따른 콘텐츠
+                            tabContent(movie: movie)
+                        }
                         
-                        // 인포 바 (평점, 연도, 등급)
-                        infoBar(movie: movie)
                         
-                        // 컨트롤 버튼
-                        actionButtons()
-                        
-                        // 탭 선택기
-                        tabSelector()
-                        
-                        // 선택된 탭에 따른 콘텐츠
-                        tabContent(movie: movie)
+                            
                     }
-                    
-                    
-                        
+                } else if let error = viewModel.error {
+                    errorView(errorMessage: error)
                 }
-            } else if let error = viewModel.error {
-                errorView(errorMessage: error)
+            }
+            .fullScreenCover(isPresented: $showTrailer) {
+                TrailerPlayerView(trailerURL: tempTrailerURL)
+            }
+            .background(backgroundColor)
+            .foregroundColor(textColor)
+            .edgesIgnoringSafeArea(.top)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("CineHive")
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundColor(accentColor)
+                }
+            }
+            .onAppear {
+                viewModel.fetchMovieDetail(movieId: movieId)
             }
         }
-        .fullScreenCover(isPresented: $showTrailer) {
-            TrailerPlayerView(trailerURL: tempTrailerURL)
-        }
-        .background(backgroundColor)
-        .foregroundColor(textColor)
-        .edgesIgnoringSafeArea(.top)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("CineHive")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(accentColor)
-            }
-        }
-        .onAppear {
-            viewModel.fetchMovieDetail(movieId: movieId)
-        }
+        
     }
     
     // MARK: - 히어로 섹션 (배경 이미지 + 영화 제목 + 버튼)
