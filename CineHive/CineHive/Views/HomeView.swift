@@ -55,7 +55,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                .padding(.bottom, 20)
             }
             .foregroundColor(textColor)
         }
@@ -93,14 +92,13 @@ struct HomeView: View {
                         AsyncImage(url: item.imageURL) { image in
                             image
                                 .resizable()
-                                .scaledToFill()
+                                .scaledToFit()
                         } placeholder: {
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
                                 .overlay(ProgressView().tint(.white))
                         }
-                        .frame(height: 450)
-                        .clipped()
+                        .frame(height: 250)
                         
                         // 아래쪽 그라디언트 오버레이 (텍스트 가독성 향상)
                         LinearGradient(
