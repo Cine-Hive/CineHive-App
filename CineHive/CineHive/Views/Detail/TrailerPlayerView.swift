@@ -2,30 +2,24 @@
 //  TrailerPlayerView.swift
 //  CineHive
 //
-//  Created by 이종민 on 3/4/25.
+//  Created by 이종민 on 3/5/25.
 //
 
 import SwiftUI
-import AVKit
+import youtube_ios_player_helper
 
 struct TrailerPlayerView: View {
-    let trailerURL: URL
-
-    @StateObject private var player = AVPlayerWrapper()
+    let videoID: String
     @Environment(\.dismiss) private var dismiss  // 최신 dismiss 방식 적용
-    
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VideoPlayer(player: player.player)
+            YouTubePlayer(videoID: videoID)
                 .edgesIgnoringSafeArea(.all)
-                .onAppear {
-                    player.play(url: trailerURL)
-                    observePlayerEnd()
-                }
             
             // 닫기 버튼
             Button(action: {
-                closePlayer()
+                dismiss()
             }) {
                 Image(systemName: "xmark")
                     .font(.system(size: 20, weight: .bold))
@@ -37,41 +31,22 @@ struct TrailerPlayerView: View {
             }
         }
     }
-
-    // MARK: - 플레이어 종료 감지
-    private func observePlayerEnd() {
-        NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemDidPlayToEndTime,
-            object: player.player.currentItem,
-            queue: .main
-        ) { _ in
-            closePlayer()  // 영상 종료 후 자동 닫기
-        }
-    }
-
-    // MARK: - 닫기 기능
-    private func closePlayer() {
-        player.stop()
-        dismiss()
-    }
 }
 
-// MARK: - AVPlayer 관리 클래스 (반복 생성 방지 + 자동 종료 처리)
-class AVPlayerWrapper: ObservableObject {
-    @Published var player: AVPlayer = AVPlayer()
+// MARK: - UIKit 기반 YouTube Player 뷰
+struct YouTubePlayer: UIViewRepresentable {
+    let videoID: String
 
-    func play(url: URL) {
-        player.replaceCurrentItem(with: AVPlayerItem(url: url))
-        player.play()
+    func makeUIView(context: Context) -> YTPlayerView {
+        let playerView = YTPlayerView()
+        playerView.load(withVideoId: videoID, playerVars: ["playsinline": 1])
+        return playerView
     }
 
-    func stop() {
-        player.pause()
-        player.replaceCurrentItem(with: nil)
-    }
+    func updateUIView(_ uiView: YTPlayerView, context: Context) {}
 }
 
-// MARK: - 프리뷰 (YouTube URL 대신 MP4 테스트 URL 사용 가능)
+// MARK: - Preview
 #Preview {
-    TrailerPlayerView(trailerURL: URL(string: "https://www.youtube.com/watch?v=9kPhqnqUYz4")!)
+    TrailerPlayerView(videoID: "3x6nwhsEuBo") // 예시 YouTube 영상 ID
 }

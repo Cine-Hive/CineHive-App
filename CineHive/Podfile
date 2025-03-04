@@ -8,6 +8,7 @@ target 'CineHive' do
   # Pods for CineHive
 
   # Youtube Player 라이브러리
+  use_modular_headers!
   pod 'youtube-ios-player-helper'
 
 end

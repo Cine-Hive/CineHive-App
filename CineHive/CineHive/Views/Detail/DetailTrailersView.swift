@@ -2,24 +2,23 @@
 //  DetailTrailersView.swift
 //  CineHive
 //
-//  Created by 이종민 on 3/4/25.
+//  Created by 이종민 on 3/5/25.
 //
 
 import SwiftUI
 
 struct DetailTrailersView: View {
     let videos: [Video]
-
     @State private var showTrailer: Bool = false
-    @State private var selectedTrailer: Video?
+    @State private var selectedVideoID: String?
 
     private let textColor = Color.white
-
+    private let secondaryTextColor = Color.gray
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("예고편 및 관련 영상")
+            Text("관련 영상")
                 .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(textColor)
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             
@@ -27,14 +26,14 @@ struct DetailTrailersView: View {
                 HStack(spacing: 12) {
                     ForEach(videos) { video in
                         Button(action: {
-                            selectedTrailer = video
+                            selectedVideoID = video.videoKey
                             showTrailer = true
                         }) {
                             ZStack(alignment: .center) {
                                 Rectangle()
                                     .fill(Color.gray.opacity(0.3))
                                     .frame(width: 280, height: 160)
-                                    .cornerRadius(8)
+                                    .cornerRadius(4)
                                 
                                 Image(systemName: "play.circle.fill")
                                     .font(.system(size: 42))
@@ -63,20 +62,19 @@ struct DetailTrailersView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 16)
             }
         }
         .fullScreenCover(isPresented: $showTrailer) {
-            if let selectedTrailer = selectedTrailer {
-                TrailerPlayerView(trailerURL: URL(string: "https://www.youtube.com/watch?v=\(selectedTrailer.videoKey)")!)
+            if let videoID = selectedVideoID {
+                TrailerPlayerView(videoID: videoID)
             }
         }
     }
 }
 
+// MARK: - Preview
 #Preview {
     DetailTrailersView(
         videos: [Video.dummy, Video.dummy2, Video.dummy3, Video.dummy4, Video.dummy5]
     )
-    .background(.black)
 }

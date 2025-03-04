@@ -7,21 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		031D299ADA15E829102F9F98 /* Pods_CineHive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA166C9AAA922CD2FE53B479 /* Pods_CineHive.framework */; };
+		F48F4FB86DA6455922983772 /* Pods_CineHive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70037E5FABC5E5580B099F1 /* Pods_CineHive.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		530A7C2886CB2854D243B2E4 /* Pods-CineHive.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CineHive.debug.xcconfig"; path = "Target Support Files/Pods-CineHive/Pods-CineHive.debug.xcconfig"; sourceTree = "<group>"; };
+		36D646608933E2FDCC8660C6 /* Pods-CineHive.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CineHive.release.xcconfig"; path = "Target Support Files/Pods-CineHive/Pods-CineHive.release.xcconfig"; sourceTree = "<group>"; };
 		9BF395F32D61F29E00044A64 /* CineHive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CineHive.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CA166C9AAA922CD2FE53B479 /* Pods_CineHive.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CineHive.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E6F79A7FDA6812DF8821412D /* Pods-CineHive.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CineHive.release.xcconfig"; path = "Target Support Files/Pods-CineHive/Pods-CineHive.release.xcconfig"; sourceTree = "<group>"; };
+		B564573C555320E3DF73B0D2 /* Pods-CineHive.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CineHive.debug.xcconfig"; path = "Target Support Files/Pods-CineHive/Pods-CineHive.debug.xcconfig"; sourceTree = "<group>"; };
+		E70037E5FABC5E5580B099F1 /* Pods_CineHive.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CineHive.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9BF395F52D61F29E00044A64 /* CineHive */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = CineHive;
 			sourceTree = "<group>";
 		};
@@ -32,29 +30,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				031D299ADA15E829102F9F98 /* Pods_CineHive.framework in Frameworks */,
+				F48F4FB86DA6455922983772 /* Pods_CineHive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4218B0FC869A35C24A96DF6E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E70037E5FABC5E5580B099F1 /* Pods_CineHive.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		575FE20CF465B190CE408E92 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				530A7C2886CB2854D243B2E4 /* Pods-CineHive.debug.xcconfig */,
-				E6F79A7FDA6812DF8821412D /* Pods-CineHive.release.xcconfig */,
+				B564573C555320E3DF73B0D2 /* Pods-CineHive.debug.xcconfig */,
+				36D646608933E2FDCC8660C6 /* Pods-CineHive.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		88A702D1E2FB613CBCE9A590 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CA166C9AAA922CD2FE53B479 /* Pods_CineHive.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9BF395EA2D61F29E00044A64 = {
@@ -63,7 +60,7 @@
 				9BF395F52D61F29E00044A64 /* CineHive */,
 				9BF395F42D61F29E00044A64 /* Products */,
 				575FE20CF465B190CE408E92 /* Pods */,
-				88A702D1E2FB613CBCE9A590 /* Frameworks */,
+				4218B0FC869A35C24A96DF6E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,11 +79,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9BF396012D61F2A000044A64 /* Build configuration list for PBXNativeTarget "CineHive" */;
 			buildPhases = (
-				2BA146FD2086209B15B8A3CB /* [CP] Check Pods Manifest.lock */,
+				638CCF393D3DD1E0A7A209E0 /* [CP] Check Pods Manifest.lock */,
 				9BF395EF2D61F29E00044A64 /* Sources */,
 				9BF395F02D61F29E00044A64 /* Frameworks */,
 				9BF395F12D61F29E00044A64 /* Resources */,
-				82B7B0EA9246D0AAEB322890 /* [CP] Embed Pods Frameworks */,
+				76C2FB29C5FE3794EF51F3D0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -145,7 +142,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2BA146FD2086209B15B8A3CB /* [CP] Check Pods Manifest.lock */ = {
+		638CCF393D3DD1E0A7A209E0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -167,7 +164,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		82B7B0EA9246D0AAEB322890 /* [CP] Embed Pods Frameworks */ = {
+		76C2FB29C5FE3794EF51F3D0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -234,7 +231,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -297,7 +294,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -318,7 +315,7 @@
 		};
 		9BF396022D61F2A000044A64 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 530A7C2886CB2854D243B2E4 /* Pods-CineHive.debug.xcconfig */;
+			baseConfigurationReference = B564573C555320E3DF73B0D2 /* Pods-CineHive.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -348,7 +345,7 @@
 		};
 		9BF396032D61F2A000044A64 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E6F79A7FDA6812DF8821412D /* Pods-CineHive.release.xcconfig */;
+			baseConfigurationReference = 36D646608933E2FDCC8660C6 /* Pods-CineHive.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
