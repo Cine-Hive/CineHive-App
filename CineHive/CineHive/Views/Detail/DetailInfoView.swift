@@ -43,6 +43,7 @@ struct DetailInfoView: View {
                 }
             }
         }
+        .padding(.bottom, 20)
     }
     
     // 상세 정보 행
@@ -64,4 +65,5 @@ struct DetailInfoView: View {
 
 #Preview {
     DetailInfoView(movie: MovieDetail.dummy)
+        .background(.black)
 }

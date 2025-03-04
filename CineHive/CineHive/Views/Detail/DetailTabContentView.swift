@@ -10,13 +10,18 @@ import SwiftUI
 struct DetailTabContentView: View {
     let movie: MovieDetail
     let selectedTab: DetailTab
-    @Binding var isOverviewExpanded: Bool
+    @State var isOverviewExpanded: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             switch selectedTab {
             case .overview:
                 DetailOverviewView(movie: movie, isExpanded: $isOverviewExpanded)
+                if let videos = movie.videos, !videos.isEmpty {
+                    DetailTrailersView(
+                        videos: videos
+                    )
+                }
                 DetailActorsView(actors: movie.actors)
             case .related:
                 DetailRelatedView()
@@ -31,5 +36,9 @@ struct DetailTabContentView: View {
 }
 
 #Preview {
-    DetailTabContentView(movie: MovieDetail.dummy, selectedTab: .overview, isOverviewExpanded: .constant(false))
+    DetailTabContentView(
+        movie: MovieDetail.dummy,
+        selectedTab: .overview,
+        isOverviewExpanded: false
+    ).background(.black)
 }

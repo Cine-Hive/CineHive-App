@@ -15,6 +15,7 @@ struct DetailTabView: View {
     
     var body: some View {
         HStack(spacing: 20) {
+            Spacer()
             ForEach(DetailTab.allCases, id: \.self) { tab in
                 Button(action: {
                     selectedTab = tab
@@ -31,14 +32,11 @@ struct DetailTabView: View {
             }
             Spacer()
         }
-        .padding(.horizontal, 16)
         .padding(.top, 8)
     }
 }
 
-struct DetailTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailTabView(selectedTab: .constant(.overview), accentColor: .red, textColor: .white, secondaryTextColor: .gray)
-            .previewLayout(.sizeThatFits)
-    }
+#Preview {
+    DetailTabView(selectedTab: .constant(.overview), accentColor: .red, textColor: .white, secondaryTextColor: .gray)
+        .background(.black)
 }

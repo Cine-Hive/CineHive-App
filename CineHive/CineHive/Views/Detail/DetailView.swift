@@ -25,9 +25,8 @@ struct DetailView: View {
     let movieId: Int
     @State private var viewModel = MovieViewModel()
     @State private var isOverviewExpanded: Bool = false
-    @State private var showTrailer: Bool = false
     @State private var selectedTab: DetailTab = .overview
-    
+
     // 넷플릭스 스타일 색상
     private let backgroundColor = Color.black
     private let textColor = Color.white
@@ -41,7 +40,7 @@ struct DetailView: View {
         ZStack {
             ScrollView {
                 if viewModel.isLoading {
-                    LoadingView() // 로딩 뷰 (기존 정의된 뷰)
+                    LoadingView()
                 } else if let movie = viewModel.movieDetail {
                     VStack(alignment: .leading, spacing: 0) {
                         // 헤더 섹션
@@ -50,8 +49,7 @@ struct DetailView: View {
                             backgroundColor: backgroundColor,
                             textColor: textColor,
                             accentColor: accentColor,
-                            tempGenres: tempGenres,
-                            showTrailer: $showTrailer
+                            tempGenres: tempGenres
                         )
                         // 정보 바
                         DetailInfoBarView(
@@ -75,7 +73,7 @@ struct DetailView: View {
                         DetailTabContentView(
                             movie: movie,
                             selectedTab: selectedTab,
-                            isOverviewExpanded: $isOverviewExpanded
+                            isOverviewExpanded: isOverviewExpanded
                         )
                     }
                 } else if let error = viewModel.error {
@@ -88,9 +86,6 @@ struct DetailView: View {
                         viewModel.fetchMovieDetail(movieId: movieId)
                     }
                 }
-            }
-            .fullScreenCover(isPresented: $showTrailer) {
-                TrailerPlayerView(trailerURL: URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!)
             }
             .background(backgroundColor)
             .foregroundColor(textColor)

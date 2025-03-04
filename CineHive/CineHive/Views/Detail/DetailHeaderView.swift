@@ -13,7 +13,7 @@ struct DetailHeaderView: View {
     let textColor: Color
     let accentColor: Color
     let tempGenres: [String]
-    @Binding var showTrailer: Bool
+    @State var showTrailer: Bool = false
     
     
     var body: some View {
