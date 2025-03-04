@@ -26,6 +26,7 @@ Temporary Items
 # Xcode User Settings
 xcuserdata/
 *.xcuserstate
+*.xcconfig
 
 # Compatibility with older versions of Xcode
 *.xcscmblueprint
