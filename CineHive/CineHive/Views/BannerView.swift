@@ -21,7 +21,7 @@ struct BannerView: View {
     }
 }
 
-// ✅ 배너 아이템 뷰
+//MARK: 배너 아이템 뷰
 struct BannerItemView: View {
     let item: BannerItem
     
@@ -69,7 +69,7 @@ struct BannerItemView: View {
     }
 }
 
-// ✅ 태그 뷰
+//MARK: 태그 뷰
 struct TagRow: View {
     let tags: [String]
     
@@ -87,7 +87,7 @@ struct TagRow: View {
     }
 }
 
-// ✅ 버튼 컴포넌트
+//MARK: 버튼 컴포넌트
 struct PrimaryButton: View {
     let title: String
     let icon: String
