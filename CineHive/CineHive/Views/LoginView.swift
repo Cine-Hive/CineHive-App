@@ -53,6 +53,15 @@ struct LoginView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color("FontColor"), lineWidth: 0.6)
                 }
+                
+                // 오류 메시지
+                if let emailError = viewModel.errorMessage {
+                    Text(emailError)
+                        .font(.system(size: 14))
+                        .foregroundColor(.red)
+                        .frame(width: 320, height: 20, alignment: .leading)
+                }
+                
                 Button(action: {
                     Task {
                         await viewModel.login()
