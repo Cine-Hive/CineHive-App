@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import KakaoSDKCommon
+import KakaoSDKAuth
 
 @main
 struct CineHiveApp: App {
