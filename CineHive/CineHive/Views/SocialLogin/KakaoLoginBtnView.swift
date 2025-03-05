@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct KakaoLoginBtnView: View {
+    
+    @State private var viewModel = KaKaoLoginViewModel()
+    
     var body: some View {
         Button(action: {
-
+            Task {
+                await viewModel.kakaologin()
+            }
         }, label: {
             HStack {
                 Image("KakaoLogo")

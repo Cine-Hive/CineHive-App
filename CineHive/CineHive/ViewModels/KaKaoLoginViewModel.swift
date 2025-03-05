@@ -6,37 +6,35 @@
 //
 
 import Foundation
+import UIKit
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 
+@Observable
 class KaKaoLoginViewModel {
-    func kakaologin() {
-        // 카카오톡 실행 가능 여부 확인
-        if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡으로 로그인
-            UserApi.shared.loginWithKakaoTalk { oauthToken, error in
-                if let error = error {
-                    print(error)
-                } else {
-                    print("카카오톡 로그인 success")
-                    
-                    // 추가작업
-                    _ = oauthToken
-                }
+    
+    private let userService: UserService
+    
+    init(userService: UserService = .shared) {
+        self.userService = userService
+    }
+    
+    @MainActor
+    func kakaologin() async {
+        do {
+            guard let loginURL = try await userService.loginKakao() else {
+                print("카카오 로그인 URL 생성 실패")
+                return
             }
-        } else {
-            // 카카오계정으로 로그인
-            UserApi.shared.loginWithKakaoAccount { oauthToken, error in
-                if let error = error {
-                    print(error)
-                } else {
-                    print("카카오계정 로그인 success")
-                    
-                    // 추가작업
-                    _ = oauthToken
-                }
-            }
+            
+            print("카카오 로그인 URL: \(loginURL)")
+            
+            // 브라우저에서 카카오 로그인 페이지 열기
+            await UIApplication.shared.open(loginURL)
+            
+        } catch {
+            print("❌ 카카오 로그인 요청 실패: \(error.localizedDescription)")
         }
     }
 }
