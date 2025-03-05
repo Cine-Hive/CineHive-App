@@ -34,4 +34,12 @@ final class UserService {
         let endpoint = "/login"
         return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
     }
+    
+    // 카카오 로그인 인증 (GET)
+    func loginKakao() async throws -> URL? {
+        let endpoint = "/api/auth/kakao"
+        let fullURL = "\(NetworkManager.shared.baseURL)\(endpoint)"
+
+        return URL(string: fullURL)
+    }
 }

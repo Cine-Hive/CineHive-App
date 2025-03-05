@@ -26,7 +26,7 @@ enum NetworkError: Error, LocalizedError {
 
 final class NetworkManager {
     static let shared = NetworkManager()
-    private let baseURL: String
+    let baseURL: String
     
     private init() {
         // 로컬 서버 주소로 기본 URL 설정
