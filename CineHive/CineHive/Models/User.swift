@@ -64,3 +64,9 @@ struct UserData: Codable {
     let nickname: String
     let email: String
 }
+
+struct SignUpResponse: Codable {
+    let message: String
+    let status: String
+}
+
