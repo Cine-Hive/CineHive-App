@@ -25,12 +25,6 @@ struct HorizontalMovieListView: View {
                             // 포스터 이미지
                             PosterView(posterURL: movie.posterURL, width: 120, height: 180)
                             
-                            // 평점
-                            HStack(spacing: 4) {
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.yellow)
-                            }
                         }
                     }
                 }

@@ -25,6 +25,7 @@ struct DetailView: View {
     @State private var viewModel = MovieViewModel()
     @State private var isOverviewExpanded: Bool = false
     @State private var selectedTab: DetailTab = .overview
+    @Environment(\.presentationMode) var presentationMode
     
     // 넷플릭스 스타일 색상
     private let backgroundColor = Color.black
@@ -36,57 +37,75 @@ struct DetailView: View {
     private let tempGenres = ["액션", "모험", "스릴러", "드라마", "SF", "코미디", "로맨스", "판타지", "공포", "애니메이션"]
     
     var body: some View {
-        ScrollView {
-            if viewModel.isLoading {
-                LoadingView()
-            } else if let movie = viewModel.movieDetail {
-                VStack(alignment: .leading, spacing: 0) {
-                    // 헤더 섹션
-                    DetailHeaderView(
-                        movie: movie,
+        ZStack(alignment: .topLeading) {
+            // 메인 콘텐츠
+            ScrollView {
+                if viewModel.isLoading {
+                    LoadingView()
+                } else if let movie = viewModel.movieDetail {
+                    VStack(alignment: .leading, spacing: 0) {
+                        // 헤더 섹션
+                        DetailHeaderView(
+                            movie: movie,
+                            backgroundColor: backgroundColor,
+                            textColor: textColor,
+                            accentColor: accentColor,
+                            tempGenres: tempGenres
+                        )
+                        
+                        Spacer().frame(height: 120)
+                        
+                        // 정보 바
+                        DetailInfoBarView(
+                            movie: movie,
+                            secondaryTextColor: secondaryTextColor,
+                            backgroundColor: backgroundColor
+                        )
+                        // 액션 버튼
+                        DetailActionButtonsView(
+                            backgroundColor: backgroundColor,
+                            textColor: textColor
+                        )
+                        // 탭 선택기
+                        DetailTabView(
+                            selectedTab: $selectedTab,
+                            accentColor: accentColor,
+                            textColor: textColor,
+                            secondaryTextColor: secondaryTextColor
+                        )
+                        // 탭 콘텐츠
+                        DetailTabContentView(
+                            movie: movie,
+                            selectedTab: selectedTab,
+                            isOverviewExpanded: isOverviewExpanded
+                        )
+                    }
+                } else if let error = viewModel.error {
+                    DetailErrorView(
+                        errorMessage: error,
                         backgroundColor: backgroundColor,
                         textColor: textColor,
-                        accentColor: accentColor,
-                        tempGenres: tempGenres
-                    )
-                    
-                    Spacer().frame(height: 120)
-                    
-                    // 정보 바
-                    DetailInfoBarView(
-                        movie: movie,
-                        secondaryTextColor: secondaryTextColor,
-                        backgroundColor: backgroundColor
-                    )
-                    // 액션 버튼
-                    DetailActionButtonsView(
-                        backgroundColor: backgroundColor,
-                        textColor: textColor
-                    )
-                    // 탭 선택기
-                    DetailTabView(
-                        selectedTab: $selectedTab,
-                        accentColor: accentColor,
-                        textColor: textColor,
-                        secondaryTextColor: secondaryTextColor
-                    )
-                    // 탭 콘텐츠
-                    DetailTabContentView(
-                        movie: movie,
-                        selectedTab: selectedTab,
-                        isOverviewExpanded: isOverviewExpanded
-                    )
-                }
-            } else if let error = viewModel.error {
-                DetailErrorView(
-                    errorMessage: error,
-                    backgroundColor: backgroundColor,
-                    textColor: textColor,
-                    accentColor: accentColor
-                ) {
-                    viewModel.fetchMovieDetail(movieId: movieId)
+                        accentColor: accentColor
+                    ) {
+                        viewModel.fetchMovieDetail(movieId: movieId)
+                    }
                 }
             }
+            
+            // 뒤로가기 버튼 (고정 위치)
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(textColor)
+                    .padding(12)
+                    .background(Color.black.opacity(0.6))
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            }
+            .padding(.top, 50) // 상단에서 떨어진 여백
+            .padding(.leading, 16) // 왼쪽에서 떨어진 여백
         }
         .background(backgroundColor)
         .foregroundColor(textColor)
@@ -94,13 +113,6 @@ struct DetailView: View {
         .navigationBarHidden(true)
         .statusBar(hidden: true)
         .toolbar(.hidden, for: .tabBar)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("CineHive")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(textColor)
-            }
-        }
         .onAppear {
             viewModel.fetchMovieDetail(movieId: movieId)
         }

@@ -62,9 +62,9 @@ struct DetailHeaderBackdropView: View {
         .overlay(
             LinearGradient(
                 gradient: Gradient(colors: [
-                    backgroundColor.opacity(0.3),
+                    backgroundColor.opacity(0.2),
                     backgroundColor.opacity(0.0),
-                    backgroundColor.opacity(0.5),
+                    backgroundColor.opacity(0.4),
                     backgroundColor.opacity(0.8),
                     backgroundColor
                 ]),
