@@ -10,7 +10,7 @@ import youtube_ios_player_helper
 
 struct TrailerPlayerView: View {
     let videoID: String
-    @Environment(\.dismiss) private var dismiss  // 최신 dismiss 방식 적용
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack(alignment: .topTrailing) {

@@ -31,7 +31,7 @@ extension Video {
     static var dummy: Video {
         Video(
             id: 1,
-            videoKey: "cW8bfQqsxH8",
+            videoKey: "3x6nwhsEuBo",
             name: "인셉션 - 공식 예고편"
         )
     }

@@ -163,4 +163,5 @@ struct DetailCommentsView: View {
 // MARK: - 프리뷰
 #Preview {
     DetailCommentsView()
+        .background(.black)
 }

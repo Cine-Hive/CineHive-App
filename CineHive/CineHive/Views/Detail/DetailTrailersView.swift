@@ -19,6 +19,7 @@ struct DetailTrailersView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("관련 영상")
                 .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(textColor)
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             
@@ -26,8 +27,9 @@ struct DetailTrailersView: View {
                 HStack(spacing: 12) {
                     ForEach(videos) { video in
                         Button(action: {
+                            print("선택된 비디오 ID: \(selectedVideoID ?? "None")")
                             selectedVideoID = video.videoKey
-                            showTrailer = true
+                            showTrailer = true  
                         }) {
                             ZStack(alignment: .center) {
                                 Rectangle()
@@ -62,13 +64,20 @@ struct DetailTrailersView: View {
                     }
                 }
                 .padding(.horizontal, 16)
+                .padding(.bottom, 8)
             }
         }
         .fullScreenCover(isPresented: $showTrailer) {
             if let videoID = selectedVideoID {
                 TrailerPlayerView(videoID: videoID)
+            } else {
+                Text("비디오를 불러올 수 없습니다.")
+                    .foregroundColor(.white)
+                    .background(.black)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+
     }
 }
 
@@ -77,4 +86,5 @@ struct DetailTrailersView: View {
     DetailTrailersView(
         videos: [Video.dummy, Video.dummy2, Video.dummy3, Video.dummy4, Video.dummy5]
     )
+    .background(.black)
 }

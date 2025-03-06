@@ -14,7 +14,7 @@ struct DetailInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // 영화 정보
+            //MARK: 영화 정보
             VStack(alignment: .leading, spacing: 16) {
                 Text("영화 정보")
                     .font(.system(size: 18, weight: .bold))
@@ -30,7 +30,7 @@ struct DetailInfoView: View {
                 }
             }
             
-            // 기술적 정보
+            //MARK: 기술적 정보
             VStack(alignment: .leading, spacing: 16) {
                 Text("기술 정보")
                     .font(.system(size: 18, weight: .bold))
@@ -46,7 +46,7 @@ struct DetailInfoView: View {
         .padding(.bottom, 20)
     }
     
-    // 상세 정보 행
+    //MARK: 상세 정보 행
     private func detailRow(label: String, value: String) -> some View {
         HStack(alignment: .top) {
             Text(label)

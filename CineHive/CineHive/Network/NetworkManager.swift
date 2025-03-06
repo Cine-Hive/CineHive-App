@@ -27,14 +27,12 @@ enum NetworkError: Error, LocalizedError {
 
 final class NetworkManager {
     static let shared = NetworkManager()
-    private let baseURL: String
+    static let baseURL: String = "http://localhost:8081"
 
-    private init() {
-        self.baseURL = "http://localhost:8081"
-    }
+    private init() { }
 
     func request<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
-        guard var components = URLComponents(string: "\(baseURL)\(endpoint)") else {
+        guard var components = URLComponents(string: "\(NetworkManager.baseURL)\(endpoint)") else {
             Logger.log(.error, category: Logger.networking, message: "잘못된 URL: \(endpoint)")
             throw NetworkError.invalidURL
         }
