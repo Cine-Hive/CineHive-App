@@ -20,6 +20,44 @@ class KaKaoLoginViewModel {
         self.userService = userService
     }
     
+    func login() {
+        if UserApi.isKakaoTalkLoginAvailable() {
+            loginWithKakaoTalk()
+        } else {
+            loginWithKakaoAccount()
+        }
+    }
+    
+    // 카카오톡 로그인
+    func loginWithKakaoTalk() {
+        UserApi.shared.loginWithKakaoTalk { oauthToken, error in
+            if let error = error {
+                print(error)
+            } else {
+                print("카카오톡 로그인 success")
+                
+                // 추가작업
+                _ = oauthToken
+            }
+        }
+    }
+    
+    // 카카오계정 로그인
+    func loginWithKakaoAccount() {
+        UserApi.shared.loginWithKakaoAccount { oauthToken, error in
+            if let error = error {
+                print(error)
+            } else {
+                Task {
+                    await self.kakaologin()
+                }
+                print("카카오계정 로그인 success")
+                // 추가작업
+                _ = oauthToken
+            }
+        }
+    }
+    
     @MainActor
     func kakaologin() async {
         do {
