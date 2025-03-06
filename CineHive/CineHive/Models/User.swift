@@ -37,3 +37,9 @@ struct User: Codable, Identifiable {
         self.type = type
     }
 }
+
+struct SignUpResponse: Codable {
+    let message: String
+    let status: String
+}
+
