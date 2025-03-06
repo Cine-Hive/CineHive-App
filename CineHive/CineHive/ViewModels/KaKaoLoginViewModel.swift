@@ -34,7 +34,7 @@ class KaKaoLoginViewModel {
             await UIApplication.shared.open(loginURL)
             
         } catch {
-            print("❌ 카카오 로그인 요청 실패: \(error.localizedDescription)")
+            print("카카오 로그인 요청 실패: \(error.localizedDescription)")
         }
     }
 }

@@ -39,7 +39,13 @@ final class UserService {
     func loginKakao() async throws -> URL? {
         let endpoint = "/api/auth/kakao"
         let fullURL = "\(NetworkManager.shared.baseURL)\(endpoint)"
-
-        return URL(string: fullURL)
+        
+        // 서버에 요청 후 응답 출력
+        guard let url = URL(string: fullURL) else {
+            print("유효하지 않은 URL: \(fullURL)")
+            return nil
+        }
+        
+        return url
     }
 }
