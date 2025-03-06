@@ -37,7 +37,7 @@ struct DetailActionButtonsView: View {
                 VStack(spacing: 8) {
                     Image(systemName: isLiked ? "hand.thumbsup.fill" : "hand.thumbsup")
                         .font(.system(size: 18))
-                    Text(isLiked ? "좋아요 취소" : "평가")
+                    Text(isLiked ? "좋아요 취소" : "좋아요")
                         .font(.system(size: 12))
                 }
                 .frame(maxWidth: .infinity)

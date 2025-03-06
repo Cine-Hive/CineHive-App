@@ -15,40 +15,77 @@ struct DetailHeaderView: View {
     let tempGenres: [String]
     @State var showTrailer: Bool = false
     
+    var body: some View {
+        ZStack {
+            VStack {
+                ZStack(alignment: .bottom) {
+                    // 백드롭 이미지
+                    DetailHeaderBackdropView(movie: movie, backgroundColor: backgroundColor)
+                    
+                    // 장르, 제목, 버튼
+                    DetailHeaderContentView(
+                        movie: movie,
+                        textColor: textColor,
+                        accentColor: accentColor,
+                        tempGenres: tempGenres,
+                        showTrailer: $showTrailer
+                    )
+                    .padding(.bottom, -140)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - 백드롭 이미지
+struct DetailHeaderBackdropView: View {
+    let movie: MovieDetail
+    let backgroundColor: Color
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // 백드롭 이미지
-            AsyncImage(url: movie.posterURL) { phase in
+        VStack(spacing: 0) {
+            AsyncImage(url: movie.backDropURL) { phase in
                 switch phase {
                 case .empty:
                     Rectangle().fill(Color.gray.opacity(0.3))
                 case .success(let image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .aspectRatio(contentMode: .fit)
                 case .failure:
                     Rectangle().fill(Color.gray.opacity(0.3))
                 @unknown default:
                     Rectangle().fill(Color.gray.opacity(0.3))
                 }
             }
-            .frame(height: 500)
-            .overlay(
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        backgroundColor,
-                        backgroundColor.opacity(0.0),
-                        backgroundColor.opacity(0.5),
-                        backgroundColor.opacity(0.8),
-                        backgroundColor
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+        }
+        .overlay(
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    backgroundColor.opacity(0.3),
+                    backgroundColor.opacity(0.0),
+                    backgroundColor.opacity(0.5),
+                    backgroundColor.opacity(0.8),
+                    backgroundColor
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
             )
-            
-            HStack {
+        )
+    }
+}
+
+// MARK: - 장르, 제목, 버튼
+struct DetailHeaderContentView: View {
+    let movie: MovieDetail
+    let textColor: Color
+    let accentColor: Color
+    let tempGenres: [String]
+    @Binding var showTrailer: Bool
+    
+    var body: some View {
+        VStack {
+            HStack(alignment: .top) {
                 // 작은 포스터
                 PosterView(posterURL: movie.posterURL, width: 120, height: 180)
                 VStack(alignment: .leading, spacing: 16) {
@@ -90,4 +127,15 @@ struct DetailHeaderView: View {
             .padding(.bottom, 20)
         }
     }
+}
+
+// MARK: - Preview
+#Preview {
+    DetailHeaderView(
+        movie: MovieDetail.dummy,
+        backgroundColor: .black,
+        textColor: .white,
+        accentColor: .red,
+        tempGenres: MovieDetail.dummy.genres.map { $0.name }
+    )
 }

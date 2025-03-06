@@ -40,38 +40,3 @@ struct HorizontalMovieListView: View {
         }
     }
 }
-
-// 넷플릭스 스타일 포스터 뷰
-private func netflixStylePosterView(posterURL: URL?, width: CGFloat, height: CGFloat) -> some View {
-    AsyncImage(url: posterURL) { phase in
-        switch phase {
-        case .empty:
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: width, height: height)
-                .cornerRadius(5)
-                .overlay(ProgressView().tint(.white))
-        case .success(let image):
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: width, height: height)
-                .cornerRadius(5)
-                .shadow(radius: 2)
-        case .failure:
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: width, height: height)
-                .cornerRadius(5)
-                .overlay(
-                    Image(systemName: "photo")
-                        .foregroundColor(.gray)
-                )
-        @unknown default:
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: width, height: height)
-                .cornerRadius(5)
-        }
-    }
-}

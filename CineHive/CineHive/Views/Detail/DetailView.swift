@@ -36,71 +36,73 @@ struct DetailView: View {
     private let tempGenres = ["액션", "모험", "스릴러", "드라마", "SF", "코미디", "로맨스", "판타지", "공포", "애니메이션"]
     
     var body: some View {
-        ZStack {
-            ScrollView {
-                if viewModel.isLoading {
-                    LoadingView()
-                } else if let movie = viewModel.movieDetail {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // 헤더 섹션
-                        DetailHeaderView(
-                            movie: movie,
-                            backgroundColor: backgroundColor,
-                            textColor: textColor,
-                            accentColor: accentColor,
-                            tempGenres: tempGenres
-                        )
-                        // 정보 바
-                        DetailInfoBarView(
-                            movie: movie,
-                            secondaryTextColor: secondaryTextColor,
-                            backgroundColor: backgroundColor
-                        )
-                        // 액션 버튼
-                        DetailActionButtonsView(
-                            backgroundColor: backgroundColor,
-                            textColor: textColor
-                        )
-                        // 탭 선택기
-                        DetailTabView(
-                            selectedTab: $selectedTab,
-                            accentColor: accentColor,
-                            textColor: textColor,
-                            secondaryTextColor: secondaryTextColor
-                        )
-                        // 탭 콘텐츠
-                        DetailTabContentView(
-                            movie: movie,
-                            selectedTab: selectedTab,
-                            isOverviewExpanded: isOverviewExpanded
-                        )
-                    }
-                } else if let error = viewModel.error {
-                    DetailErrorView(
-                        errorMessage: error,
+        ScrollView {
+            if viewModel.isLoading {
+                LoadingView()
+            } else if let movie = viewModel.movieDetail {
+                VStack(alignment: .leading, spacing: 0) {
+                    // 헤더 섹션
+                    DetailHeaderView(
+                        movie: movie,
                         backgroundColor: backgroundColor,
                         textColor: textColor,
-                        accentColor: accentColor
-                    ) {
-                        viewModel.fetchMovieDetail(movieId: movieId)
-                    }
+                        accentColor: accentColor,
+                        tempGenres: tempGenres
+                    )
+                    
+                    Spacer().frame(height: 120)
+                    
+                    // 정보 바
+                    DetailInfoBarView(
+                        movie: movie,
+                        secondaryTextColor: secondaryTextColor,
+                        backgroundColor: backgroundColor
+                    )
+                    // 액션 버튼
+                    DetailActionButtonsView(
+                        backgroundColor: backgroundColor,
+                        textColor: textColor
+                    )
+                    // 탭 선택기
+                    DetailTabView(
+                        selectedTab: $selectedTab,
+                        accentColor: accentColor,
+                        textColor: textColor,
+                        secondaryTextColor: secondaryTextColor
+                    )
+                    // 탭 콘텐츠
+                    DetailTabContentView(
+                        movie: movie,
+                        selectedTab: selectedTab,
+                        isOverviewExpanded: isOverviewExpanded
+                    )
+                }
+            } else if let error = viewModel.error {
+                DetailErrorView(
+                    errorMessage: error,
+                    backgroundColor: backgroundColor,
+                    textColor: textColor,
+                    accentColor: accentColor
+                ) {
+                    viewModel.fetchMovieDetail(movieId: movieId)
                 }
             }
-            .background(backgroundColor)
-            .foregroundColor(textColor)
-            .edgesIgnoringSafeArea(.top)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.hidden, for: .tabBar)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("CineHive")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(textColor)
-                }
+        }
+        .background(backgroundColor)
+        .foregroundColor(textColor)
+        .edgesIgnoringSafeArea(.top)
+        .navigationBarHidden(true)
+        .statusBar(hidden: true)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("CineHive")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(textColor)
             }
-            .onAppear {
-                viewModel.fetchMovieDetail(movieId: movieId)
-            }
+        }
+        .onAppear {
+            viewModel.fetchMovieDetail(movieId: movieId)
         }
     }
 }

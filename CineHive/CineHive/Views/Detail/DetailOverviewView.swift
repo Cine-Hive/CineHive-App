@@ -45,4 +45,5 @@ struct DetailOverviewView: View {
 
 #Preview {
     DetailOverviewView(movie: MovieDetail.dummy, isExpanded: .constant(false))
+        .background(.black)
 }

@@ -37,13 +37,11 @@ struct DetailInfoBarView: View {
     }
 }
 
-struct DetailInfoBarView_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailInfoBarView(
-            movie: MovieDetail.dummy,
-            secondaryTextColor: .gray,
-            backgroundColor: .black
-        )
-        .previewLayout(.sizeThatFits)
-    }
+#Preview {
+    DetailInfoBarView(
+        movie: MovieDetail.dummy,
+        secondaryTextColor: .gray,
+        backgroundColor: .black
+    )
+    .background(.black)
 }

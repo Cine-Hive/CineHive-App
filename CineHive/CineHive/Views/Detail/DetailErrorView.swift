@@ -43,14 +43,13 @@ struct DetailErrorView: View {
     }
 }
 
-struct DetailErrorView_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailErrorView(
-            errorMessage: "오류가 발생했습니다.",
-            backgroundColor: .black,
-            textColor: .white,
-            accentColor: .red,
-            retryAction: {}
-        )
-    }
+// MARK: - 프리뷰
+#Preview {
+    DetailErrorView(
+        errorMessage: "오류가 발생했습니다.",
+        backgroundColor: .black,
+        textColor: .white,
+        accentColor: .red,
+        retryAction: {}
+    )
 }

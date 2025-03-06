@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import OSLog
+import youtube_ios_player_helper
 
 struct DetailTrailersView: View {
     let videos: [Video]
-    @State private var showTrailer: Bool = false
     @State private var selectedVideoID: String?
-
+    @State private var showTrailer: Bool = false
+    
     private let textColor = Color.white
     private let secondaryTextColor = Color.gray
     
@@ -26,40 +28,19 @@ struct DetailTrailersView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(videos) { video in
-                        Button(action: {
-                            print("선택된 비디오 ID: \(selectedVideoID ?? "None")")
-                            selectedVideoID = video.videoKey
-                            showTrailer = true  
-                        }) {
-                            ZStack(alignment: .center) {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(width: 280, height: 160)
-                                    .cornerRadius(4)
-                                
-                                Image(systemName: "play.circle.fill")
-                                    .font(.system(size: 42))
-                                    .foregroundColor(textColor.opacity(0.8))
-                            }
-                            .overlay(
-                                VStack(alignment: .leading) {
-                                    Spacer()
-                                    Text(video.name)
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundColor(textColor)
-                                        .padding(8)
-                                        .lineLimit(1)
+                        VStack {
+                            YoutubePlayerView(videoID: video.videoKey)
+                                .frame(width: 280, height: 160)
+                                .cornerRadius(4)
+                                .onTapGesture {
+                                    selectedVideoID = video.videoKey
+                                    showTrailer = true
+                                    Logger.log(.info, category: .ui, message: "선택된 비디오 ID: \(video.videoKey)")
                                 }
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.8)]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                                .cornerRadius(4),
-                                alignment: .bottom
-                            )
+                            Text(video.name)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(textColor)
+                                .lineLimit(1)
                         }
                     }
                 }
@@ -67,16 +48,6 @@ struct DetailTrailersView: View {
                 .padding(.bottom, 8)
             }
         }
-        .fullScreenCover(isPresented: $showTrailer) {
-            if let videoID = selectedVideoID {
-                TrailerPlayerView(videoID: videoID)
-            } else {
-                VideoErrorView(onDismiss: {
-                    showTrailer = false
-                })
-            }
-        }
-
     }
 }
 

@@ -32,7 +32,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             // 배경색 설정
-            //backgroundColor.edgesIgnoringSafeArea(.all)
+            backgroundColor.edgesIgnoringSafeArea(.all)
             
             ScrollView {
                 VStack(spacing: 0) {
