@@ -16,7 +16,6 @@ struct DetailErrorView: View {
     
     var body: some View {
         VStack {
-            Spacer()
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
                 .foregroundColor(Color.gray)
@@ -38,7 +37,6 @@ struct DetailErrorView: View {
                     .cornerRadius(4)
                     .padding(.top, 24)
             }
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(backgroundColor)

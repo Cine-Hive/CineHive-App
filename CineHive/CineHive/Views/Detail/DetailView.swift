@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import AVKit
 
 enum DetailTab: CaseIterable {
     case overview, related, details, comments
@@ -26,7 +25,7 @@ struct DetailView: View {
     @State private var viewModel = MovieViewModel()
     @State private var isOverviewExpanded: Bool = false
     @State private var selectedTab: DetailTab = .overview
-
+    
     // 넷플릭스 스타일 색상
     private let backgroundColor = Color.black
     private let textColor = Color.white
@@ -96,7 +95,7 @@ struct DetailView: View {
                 ToolbarItem(placement: .principal) {
                     Text("CineHive")
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(backgroundColor)
+                        .foregroundColor(textColor)
                 }
             }
             .onAppear {

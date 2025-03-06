@@ -23,7 +23,7 @@ struct HorizontalMovieListView: View {
                     NavigationLink(destination: DetailView(movieId: movie.id)) {
                         VStack(alignment: .leading, spacing: 6) {
                             // 포스터 이미지
-                            netflixStylePosterView(posterURL: movie.posterURL, width: 120, height: 180)
+                            PosterView(posterURL: movie.posterURL, width: 120, height: 180)
                             
                             // 평점
                             HStack(spacing: 4) {

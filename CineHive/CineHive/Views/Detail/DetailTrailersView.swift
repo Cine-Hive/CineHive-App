@@ -71,10 +71,9 @@ struct DetailTrailersView: View {
             if let videoID = selectedVideoID {
                 TrailerPlayerView(videoID: videoID)
             } else {
-                Text("비디오를 불러올 수 없습니다.")
-                    .foregroundColor(.white)
-                    .background(.black)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VideoErrorView(onDismiss: {
+                    showTrailer = false
+                })
             }
         }
 

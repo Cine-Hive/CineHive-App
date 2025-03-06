@@ -11,16 +11,17 @@ struct LoadingView: View {
     var body: some View {
         VStack {
             ProgressView()
-                .scaleEffect(1.5)
+                .scaleEffect(2.0)
                 .padding()
             Text("로딩 중...")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
         }
+        .foregroundColor(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 
 #Preview {
     LoadingView()
+        .background(.black)
 }
