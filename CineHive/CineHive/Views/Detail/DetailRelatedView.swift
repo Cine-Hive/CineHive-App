@@ -16,6 +16,7 @@ struct DetailRelatedView: View {
             Text("비슷한 콘텐츠")
                 .font(.system(size: 18, weight: .bold))
                 .padding(.horizontal, 16)
+                .foregroundStyle(textColor)
             
             relatedMoviesRow(title: "장르가 비슷한 영화")
             relatedMoviesRow(title: "같은 감독의 영화")
@@ -29,6 +30,7 @@ struct DetailRelatedView: View {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))
                 .padding(.horizontal, 16)
+                .foregroundStyle(textColor)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -64,4 +66,5 @@ struct DetailRelatedView: View {
 
 #Preview {
     DetailRelatedView()
+        .background(.black)
 }

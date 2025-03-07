@@ -64,7 +64,8 @@ struct DetailView: View {
                         // 액션 버튼
                         DetailActionButtonsView(
                             backgroundColor: backgroundColor,
-                            textColor: textColor
+                            textColor: textColor,
+                            movie: movie
                         )
                         // 탭 선택기
                         DetailTabView(

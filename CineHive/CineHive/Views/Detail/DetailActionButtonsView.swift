@@ -10,68 +10,59 @@ import SwiftUI
 struct DetailActionButtonsView: View {
     let backgroundColor: Color
     let textColor: Color
-    
-    @State private var isAddedToList: Bool = false
-    @State private var isLiked: Bool = false
-    @State private var showShareAlert: Bool = false
+    let movie: MovieDetail
+
+    @Bindable private var viewModel = DetailActionButtonsViewModel()
 
     var body: some View {
         HStack(spacing: 0) {
-            // 내 리스트 버튼
-            Button(action: {
-                isAddedToList.toggle()
-            }) {
-                VStack(spacing: 8) {
-                    Image(systemName: isAddedToList ? "checkmark" : "plus")
-                        .font(.system(size: 18))
-                    Text(isAddedToList ? "추가됨" : "내 리스트")
-                        .font(.system(size: 12))
-                }
-                .frame(maxWidth: .infinity)
-            }
+            // 관심목록 버튼
+            ActionButton(
+                imageName: viewModel.isAddedToList ? "checkmark" : "plus",
+                text: viewModel.isAddedToList ? "추가됨" : "관심목록",
+                textColor: textColor,
+                isActive: viewModel.isAddedToList,
+                action: viewModel.toggleWatchlist
+            )
 
-            // 평가 버튼 (좋아요 / 취소)
-            Button(action: {
-                isLiked.toggle()
-            }) {
-                VStack(spacing: 8) {
-                    Image(systemName: isLiked ? "hand.thumbsup.fill" : "hand.thumbsup")
-                        .font(.system(size: 18))
-                    Text(isLiked ? "좋아요 취소" : "좋아요")
-                        .font(.system(size: 12))
-                }
-                .frame(maxWidth: .infinity)
+            // 시청 정보 버튼
+            ActionButton(
+                imageName: "tv",
+                text: "시청 정보",
+                textColor: textColor,
+                action: viewModel.openAvailabilitySheet
+            )
+            .sheet(isPresented: $viewModel.showAvailabilitySheet) {
+                PlatformInfoSheetView(
+                    movie: movie,
+                    onDismiss: viewModel.closeAvailabilitySheet
+                )
             }
 
             // 공유 버튼
-            Button(action: {
-                copyToClipboard(text: "CineHive - 영화 공유하기")
-                showShareAlert = true
-            }) {
-                VStack(spacing: 8) {
-                    Image(systemName: "paperplane")
-                        .font(.system(size: 18))
-                    Text("공유")
-                        .font(.system(size: 12))
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .alert(isPresented: $showShareAlert) {
-                Alert(title: Text("공유 완료"), message: Text("영화 링크가 복사되었습니다."), dismissButton: .default(Text("확인")))
+            ActionButton(
+                imageName: "square.and.arrow.up",
+                text: "공유",
+                textColor: textColor,
+                action: viewModel.openShareSheet
+            )
+            .sheet(isPresented: $viewModel.showShareSheet) {
+                ShareSheetView(
+                    movie: movie,
+                    onDismiss: viewModel.closeShareSheet
+                )
             }
         }
-        .foregroundColor(textColor)
         .padding(.vertical, 16)
         .background(backgroundColor)
-    }
-
-    // 클립보드에 텍스트 복사하는 함수
-    private func copyToClipboard(text: String) {
-        UIPasteboard.general.string = text
     }
 }
 
 // MARK: - 프리뷰
 #Preview {
-    DetailActionButtonsView(backgroundColor: .black, textColor: .white)
+    return DetailActionButtonsView(
+        backgroundColor: .black,
+        textColor: .white,
+        movie: MovieDetail.dummy
+    )
 }
