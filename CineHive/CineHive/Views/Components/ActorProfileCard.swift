@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ActorProfileView: View {
+struct ActorProfileCard: View {
     let actor: Actor
 
     var body: some View {
@@ -52,6 +52,6 @@ struct ActorProfileView: View {
 }
 
 #Preview {
-    ActorProfileView(actor: MovieDetail.dummy.actors.first!)
+    ActorProfileCard(actor: MovieDetail.dummy.actors.first!)
         .background(.black)
 }

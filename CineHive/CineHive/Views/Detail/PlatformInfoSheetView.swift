@@ -12,6 +12,16 @@ struct PlatformInfoSheetView: View {
     let onDismiss: () -> Void
     private let platforms: [StreamingPlatform]
     
+    // 테마 색상
+    private struct Theme {
+        static let background = Color.black
+        static let text = Color.white
+        static let secondaryText = Color.gray
+        static let cardBackground = Color(white: 0.15)
+        static let accent = Color.red
+        static let divider = Color.gray.opacity(0.3)
+    }
+    
     init(movie: MovieDetail, onDismiss: @escaping () -> Void) {
         self.movie = movie
         self.onDismiss = onDismiss
@@ -19,24 +29,29 @@ struct PlatformInfoSheetView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 22) {
             // 헤더
             HStack {
-                Text("\(movie.title)")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                Text(movie.title)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(Theme.text)
+                    .lineLimit(1)
                 
                 Spacer()
                 
                 Button(action: onDismiss) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
-                        .font(.title3)
+                        .foregroundColor(Theme.secondaryText)
+                        .font(.title2)
                 }
             }
             
             // 구분선
-            Divider()
+            Rectangle()
+                .fill(Theme.divider)
+                .frame(height: 1)
+                .padding(.vertical, 4)
             
             // 스트리밍 플랫폼 정보
             if platforms.isEmpty {
@@ -48,125 +63,200 @@ struct PlatformInfoSheetView: View {
             // 영화 가격 정보
             RentalPurchaseInfoView()
             
-            Spacer()
-            
             // 정보 출처 및 면책 조항
-            Text("가격 정보는 변경될 수 있습니다. 구매 전 해당 서비스에서 최신 정보를 확인하세요.")
-                .font(.caption)
-                .foregroundColor(.gray)
-                .padding(.top, 16)
+            HStack {
+                Image(systemName: "info.circle")
+                    .foregroundColor(Theme.accent)
+                    .font(.system(size: 14))
+                
+                Text("가격 정보는 변경될 수 있습니다.\n구매 전 해당 서비스에서 최신 정보를 확인하세요.")
+                    .font(.caption)
+                    .foregroundColor(Theme.secondaryText)
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 12)
+            
+            Spacer()
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(20)
+        .background(Theme.background)
+        
     }
 }
 
 // MARK: - 서브 컴포넌트
 
 struct EmptyPlatformsView: View {
+    // 테마 색상
+    private struct Theme {
+        static let background = Color(white: 0.12)
+        static let text = Color.white
+        static let accent = Color.red
+    }
+    
     var body: some View {
-        HStack {
-            Image(systemName: "exclamationmark.circle")
-                .foregroundColor(.red)
-            Text("현재 스트리밍 서비스에서 제공되지 않습니다.")
-                .font(.subheadline)
+        VStack(spacing: 16) {
+            Image(systemName: "tv.slash")
+                .font(.system(size: 40))
+                .foregroundColor(Theme.accent)
+            
+            Text("현재 스트리밍 서비스에서 제공되지 않습니다")
+                .font(.headline)
+                .foregroundColor(Theme.text)
+                .multilineTextAlignment(.center)
+                
+            Text("영화관에서 상영 중이거나 다른 플랫폼에서 출시 예정일 수 있습니다")
+                .font(.caption)
+                .foregroundColor(Color.gray)
+                .multilineTextAlignment(.center)
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .center)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(10)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .padding(.horizontal, 16)
+        .background(Theme.background)
+        .cornerRadius(12)
     }
 }
 
 struct AvailablePlatformsView: View {
     let platforms: [StreamingPlatform]
     
+    // 테마 색상
+    private struct Theme {
+        static let text = Color.white
+        static let secondaryText = Color.gray
+        static let cardBackground = Color(white: 0.15)
+        static let accent = Color.red
+        static let priceBackground = Color.black.opacity(0.3)
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("다음 플랫폼에서 시청 가능:")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.top, 10)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "play.tv.fill")
+                    .foregroundColor(Theme.accent)
+                    .font(.system(size: 16))
+                
+                Text("다음 플랫폼에서 시청 가능")
+                    .font(.headline)
+                    .foregroundColor(Theme.text)
+            }
             
             ForEach(platforms) { platform in
-                HStack(spacing: 12) {
+                HStack(spacing: 14) {
                     Image(systemName: platform.logo)
                         .foregroundColor(platform.color)
                         .font(.title3)
+                        .frame(width: 24)
                     
                     Text(platform.name)
                         .font(.body)
+                        .foregroundColor(Theme.text)
                     
                     Spacer()
                     
                     Text(platform.price)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(4)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(Theme.text)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Theme.priceBackground)
+                        .cornerRadius(8)
                 }
-                .padding(.vertical, 12)
+                .padding(.vertical, 14)
                 .padding(.horizontal, 16)
-                .background(Color.gray.opacity(0.05))
-                .cornerRadius(8)
+                .background(Theme.cardBackground)
+                .cornerRadius(10)
             }
         }
     }
 }
 
 struct RentalPurchaseInfoView: View {
+    // 테마 색상
+    private struct Theme {
+        static let text = Color.white
+        static let secondaryText = Color.gray
+        static let cardBackground = Color(white: 0.15)
+        static let accent = Color.red
+        static let priceColor = Color.green
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("대여 및 구매 정보")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.top, 16)
-            
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("대여")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Text("48시간 이용 가능")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Image(systemName: "cart.fill")
+                    .foregroundColor(Theme.accent)
+                    .font(.system(size: 16))
                 
-                Spacer()
-                
-                Text("₩3,900")
+                Text("대여 및 구매 정보")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Theme.text)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.gray.opacity(0.05))
-            .cornerRadius(8)
+            .padding(.top, 6)
             
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("구매")
-                        .font(.headline)
-                        .foregroundColor(.primary)
+            VStack(spacing: 12) {
+                // 대여 옵션
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("대여")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .foregroundColor(Theme.text)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(Theme.secondaryText)
+                            
+                            Text("48시간 이용 가능")
+                                .font(.caption)
+                                .foregroundColor(Theme.secondaryText)
+                        }
+                    }
                     
-                    Text("영구 소장")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    Spacer()
+                    
+                    Text("₩3,900")
+                        .font(.headline)
+                        .foregroundColor(Theme.priceColor)
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Theme.cardBackground)
+                .cornerRadius(10)
                 
-                Spacer()
-                
-                Text("₩12,900")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                // 구매 옵션
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("구매")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .foregroundColor(Theme.text)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "infinity")
+                                .font(.system(size: 10))
+                                .foregroundColor(Theme.secondaryText)
+                            
+                            Text("영구 소장")
+                                .font(.caption)
+                                .foregroundColor(Theme.secondaryText)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Text("₩12,900")
+                        .font(.headline)
+                        .foregroundColor(Theme.priceColor)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Theme.cardBackground)
+                .cornerRadius(10)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.gray.opacity(0.05))
-            .cornerRadius(8)
         }
     }
 }
@@ -175,5 +265,7 @@ struct RentalPurchaseInfoView: View {
     // 더미 영화 데이터 생성
     let dummyMovie = MovieDetail.dummy
     
-    return PlatformInfoSheetView(movie: dummyMovie, onDismiss: {})
+    return ZStack {
+        PlatformInfoSheetView(movie: dummyMovie, onDismiss: {})
+    }
 }

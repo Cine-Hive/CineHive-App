@@ -21,7 +21,7 @@ struct DetailActorsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(actors) { actor in
-                        ActorProfileView(actor: actor)
+                        ActorProfileCard(actor: actor)
                     }
                 }
                 .padding(.horizontal, 16)

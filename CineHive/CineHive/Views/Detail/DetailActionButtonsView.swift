@@ -11,9 +11,10 @@ struct DetailActionButtonsView: View {
     let backgroundColor: Color
     let textColor: Color
     let movie: MovieDetail
-
+    
     @Bindable private var viewModel = DetailActionButtonsViewModel()
-
+    @State private var showCustomShareSheet = false
+    
     var body: some View {
         HStack(spacing: 0) {
             // 관심목록 버튼
@@ -24,7 +25,7 @@ struct DetailActionButtonsView: View {
                 isActive: viewModel.isAddedToList,
                 action: viewModel.toggleWatchlist
             )
-
+            
             // 시청 정보 버튼
             ActionButton(
                 imageName: "tv",
@@ -38,19 +39,16 @@ struct DetailActionButtonsView: View {
                     onDismiss: viewModel.closeAvailabilitySheet
                 )
             }
-
-            // 공유 버튼
+            
+            // 공유 버튼 - 커스텀 공유 시트 표시
             ActionButton(
                 imageName: "square.and.arrow.up",
                 text: "공유",
                 textColor: textColor,
-                action: viewModel.openShareSheet
+                action: { showCustomShareSheet = true }
             )
-            .sheet(isPresented: $viewModel.showShareSheet) {
-                ShareSheetView(
-                    movie: movie,
-                    onDismiss: viewModel.closeShareSheet
-                )
+            .sheet(isPresented: $showCustomShareSheet) {
+                CustomShareSheetView(movie: movie)
             }
         }
         .padding(.vertical, 16)

@@ -12,19 +12,29 @@ struct ActionButton: View {
     let text: String
     let textColor: Color
     var isActive: Bool = false
-    let action: () -> Void
+    var action: (() -> Void)? = nil
     
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: imageName)
-                    .font(.system(size: 18))
-                    .symbolEffect(.bounce, value: isActive)
-                Text(text)
-                    .font(.system(size: 12))
+        Group {
+            if let action = action {
+                Button(action: action) {
+                    content
+                }
+            } else {
+                content //액션이 없는 경우, 단순한 버튼 모양 유지
             }
-            .foregroundColor(textColor)
-            .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private var content: some View {
+        VStack(spacing: 8) {
+            Image(systemName: imageName)
+                .font(.system(size: 18))
+                .symbolEffect(.bounce, value: isActive)
+            Text(text)
+                .font(.system(size: 12))
+        }
+        .foregroundColor(textColor)
     }
 }
