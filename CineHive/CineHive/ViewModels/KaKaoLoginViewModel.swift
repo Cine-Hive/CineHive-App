@@ -34,10 +34,9 @@ class KaKaoLoginViewModel {
             if let error = error {
                 print(error)
             } else {
-                print("카카오톡 로그인 success")
-                
-                // 추가작업
-                _ = oauthToken
+                Task {
+                    await self.kakaologin()
+                }
             }
         }
     }
@@ -51,9 +50,6 @@ class KaKaoLoginViewModel {
                 Task {
                     await self.kakaologin()
                 }
-                print("카카오계정 로그인 success")
-                // 추가작업
-                _ = oauthToken
             }
         }
     }
