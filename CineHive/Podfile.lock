@@ -1,16 +1,49 @@
 PODS:
+  - Alamofire (5.9.1)
+  - KakaoSDKAuth (2.22.7):
+    - KakaoSDKCommon (= 2.22.7)
+  - KakaoSDKCommon (2.22.7):
+    - KakaoSDKCommon/Common (= 2.22.7)
+    - KakaoSDKCommon/Network (= 2.22.7)
+  - KakaoSDKCommon/Common (2.22.7)
+  - KakaoSDKCommon/Network (2.22.7):
+    - Alamofire (~> 5.9.0)
+    - KakaoSDKCommon/Common (= 2.22.7)
+  - KakaoSDKShare (2.22.7):
+    - KakaoSDKCommon (= 2.22.7)
+    - KakaoSDKTemplate (= 2.22.7)
+  - KakaoSDKTemplate (2.22.7):
+    - KakaoSDKCommon/Common (= 2.22.7)
+  - KakaoSDKUser (2.22.7):
+    - KakaoSDKAuth (= 2.22.7)
   - youtube-ios-player-helper (1.0.4)
 
 DEPENDENCIES:
+  - KakaoSDKAuth
+  - KakaoSDKCommon
+  - KakaoSDKShare
+  - KakaoSDKUser
   - youtube-ios-player-helper
 
 SPEC REPOS:
   trunk:
+    - Alamofire
+    - KakaoSDKAuth
+    - KakaoSDKCommon
+    - KakaoSDKShare
+    - KakaoSDKTemplate
+    - KakaoSDKUser
     - youtube-ios-player-helper
 
 SPEC CHECKSUMS:
+  Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
+  KakaoSDKAuth: 45204252ff7c379c0f86c5573f97ec36885afca0
+  KakaoSDKCommon: 132164a6bac8bcd3a4346d3bf777f34f8f39fdca
+  KakaoSDKShare: 01c60c3d5394479429a51ef14ea78d3e72f48af0
+  KakaoSDKTemplate: b11ecf08777198ffafd184201baf93de476ddb84
+  KakaoSDKUser: 4c9cf1da78710d19d0b2c2dd32d1a44c544cdfa4
   youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: ee108b4298997877bb2db8c9f79e387e55ac8ef9
+PODFILE CHECKSUM: 94fbd058bf1203282e7f956b26f9867ad5c4aa7c
 
 COCOAPODS: 1.16.2
