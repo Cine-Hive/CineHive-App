@@ -13,7 +13,6 @@ struct DetailActionButtonsView: View {
     let movie: MovieDetail
     
     @Bindable private var viewModel = DetailActionButtonsViewModel()
-    @State private var showCustomShareSheet = false
     
     var body: some View {
         HStack(spacing: 0) {
@@ -38,6 +37,8 @@ struct DetailActionButtonsView: View {
                     movie: movie,
                     onDismiss: viewModel.closeAvailabilitySheet
                 )
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
             
             // 공유 버튼 - 커스텀 공유 시트 표시
@@ -45,10 +46,12 @@ struct DetailActionButtonsView: View {
                 imageName: "square.and.arrow.up",
                 text: "공유",
                 textColor: textColor,
-                action: { showCustomShareSheet = true }
+                action: viewModel.openShareSheet
             )
-            .sheet(isPresented: $showCustomShareSheet) {
+            .sheet(isPresented: $viewModel.showShareSheet) {
                 CustomShareSheetView(movie: movie)
+                    .presentationDetents([.fraction(0.5)])
+                    .presentationDragIndicator(.visible)
             }
         }
         .padding(.vertical, 16)

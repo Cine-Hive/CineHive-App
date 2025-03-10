@@ -105,8 +105,8 @@ struct DetailView: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
-            .padding(.top, 50) // 상단에서 떨어진 여백
-            .padding(.leading, 16) // 왼쪽에서 떨어진 여백
+            .padding(.top, 50)
+            .padding(.leading, 16)
         }
         .background(backgroundColor)
         .foregroundColor(textColor)

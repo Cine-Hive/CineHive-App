@@ -21,6 +21,8 @@ struct CustomShareSheetView: View {
             
             // 공유 옵션 리스트
             SharingOptionsListView(movie: movie)
+            
+            Spacer()
         }
         .padding(20)
         .background(Color.black)

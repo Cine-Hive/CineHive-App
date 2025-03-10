@@ -1,3 +1,10 @@
+//
+//  SharingOptionsListView.swift
+//  CineHive
+//
+//  Created by 이종민 on 3/8/25.
+//
+
 import SwiftUI
 import MessageUI
 import LinkPresentation
@@ -7,97 +14,48 @@ import KakaoSDKCommon
 
 struct SharingOptionsListView: View {
     let movie: MovieDetail
-    @Environment(\.dismiss) private var dismiss
-    @State private var isShowingMessageView = false
-    @State private var isShowingShareSheet = false
-    @State private var showToast = false
-    @State private var toastMessage = ""
+    @StateObject private var viewModel: SharingOptionsViewModel
+    
+    init(movie: MovieDetail) {
+        self.movie = movie
+        _viewModel = StateObject(wrappedValue: SharingOptionsViewModel(movie: movie))
+    }
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
                 ShareOptionButton(share: .copyURL) {
-                    handleCopyURL()
+                    viewModel.copyURL()
                 }
                 
                 ShareOptionButton(share: .kakaotalk) {
-                    handleKakaoTalk()
+                    viewModel.shareWithKakaoTalk()
                 }
                 
                 ShareOptionButton(share: .message) {
-                    handleMessage()
+                    viewModel.sendMessage()
                 }
                 
                 ShareOptionButton(share: .systemShare) {
-                    handleSystemShare()
+                    viewModel.systemShare()
                 }
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 4)
         }
-        .sheet(isPresented: $isShowingMessageView) {
-            MessageComposeView(movie: movie, isPresented: $isShowingMessageView)
+        .sheet(isPresented: $viewModel.isShowingMessageView) {
+            MessageComposeView(movie: movie, isPresented: $viewModel.isShowingMessageView)
         }
-        .sheet(isPresented: $isShowingShareSheet) {
+        .sheet(isPresented: $viewModel.isShowingShareSheet) {
             if let movieURL = URL(string: "https://cinehive.app/movies/\(movie.id)") {
                 ShareSheet(activityItems: [movieURL, movie.title])
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.visible)
             }
         }
-        
         .overlay(
-            ToastView(message: toastMessage, isShowing: $showToast)
+            ToastView(message: viewModel.toastMessage, isShowing: $viewModel.showToast)
         )
-    }
-    
-    // MARK: - 공유 옵션별 함수
-    private func handleCopyURL() {
-        let movieURL = "https://cinehive.app/movies/\(movie.id)"
-        UIPasteboard.general.string = movieURL
-        
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
-        
-        // 토스트 메시지 표시
-        toastMessage = "URL이 복사되었습니다"
-        showToast = true
-        
-        // 2초 후에 토스트 메시지 숨기기
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.showToast = false
-        }
-    }
-    
-    private func handleKakaoTalk() {
-        // 카카오톡 공유 로직 구현 (KakaoSDK 사용)
-    }
-    
-    private func showErrorToast(message: String) {
-        DispatchQueue.main.async {
-            self.toastMessage = message
-            self.showToast = true
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.showToast = false
-            }
-        }
-    }
-    
-    private func handleMessage() {
-        // MFMessageComposeViewController로 SMS/MMS 공유
-        if MFMessageComposeViewController.canSendText() {
-            isShowingMessageView = true
-        } else {
-            // SMS 서비스를 사용할 수 없는 경우 (시뮬레이터 등)
-            print("SMS 서비스를 사용할 수 없습니다.")
-            // 사용자에게 알림 표시
-        }
-    }
-    
-    private func handleSystemShare() {
-        // 시스템 공유 시트 표시
-        isShowingShareSheet = true
     }
 }
 
