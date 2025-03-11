@@ -16,14 +16,14 @@ final class MovieService {
     private let movieDetailEndPoint = "/movies/"
 
     func fetchMovies() async throws -> [Movie] {
-        return try await NetworkManager.shared.request(endpoint: moviesEndpoint)
+        return try await NetworkManager.shared.fetch(endpoint: moviesEndpoint)
     }
 
     func fetchNowPlayingMovies() async throws -> [Movie] {
-        return try await NetworkManager.shared.request(endpoint: nowPlayingEndpoint)
+        return try await NetworkManager.shared.fetch(endpoint: nowPlayingEndpoint)
     }
 
     func fetchMovieDetail(movieId: Int) async throws -> MovieDetail {
-        return try await NetworkManager.shared.request(endpoint: "\(movieDetailEndPoint)\(movieId)")
+        return try await NetworkManager.shared.fetch(endpoint: "\(movieDetailEndPoint)\(movieId)")
     }
 }

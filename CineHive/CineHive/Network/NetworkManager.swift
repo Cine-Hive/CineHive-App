@@ -31,7 +31,7 @@ final class NetworkManager {
 
     private init() { }
 
-    func request<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
+    func fetch<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
         guard var components = URLComponents(string: "\(NetworkManager.baseURL)\(endpoint)") else {
             Logger.log(.error, category: Logger.networking, message: "잘못된 URL: \(endpoint)")
             throw NetworkError.invalidURL
@@ -82,7 +82,7 @@ final class NetworkManager {
     
     // 공통 POST 요청 함수
     func post<T: Decodable, U: Encodable>(endpoint: String, body: U) async throws -> T {
-        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
+        guard let url = URL(string: "\(NetworkManager.baseURL)\(endpoint)") else {
             throw NetworkError.invalidURL
         }
         
