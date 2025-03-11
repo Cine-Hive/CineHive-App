@@ -14,7 +14,7 @@ struct DetailActionButtonsView: View {
     
     @Bindable private var viewModel = DetailActionButtonsViewModel()
     @State private var showShareSheetState: Bool = false
-    
+    @State private var showAvailabilitySheetState: Bool = false
     
     var body: some View {
         HStack(spacing: 0) {
@@ -32,12 +32,20 @@ struct DetailActionButtonsView: View {
                 imageName: "tv",
                 text: "시청 정보",
                 textColor: textColor,
-                action: viewModel.openAvailabilitySheet
+                action: {
+                    viewModel.openAvailabilitySheet()
+                    showAvailabilitySheetState = true
+                }
             )
-            .sheet(isPresented: $viewModel.showAvailabilitySheet) {
+            .sheet(isPresented: $showAvailabilitySheetState, onDismiss: {
+                viewModel.closeAvailabilitySheet()
+            }) {
                 PlatformInfoSheetView(
                     movie: movie,
-                    onDismiss: viewModel.closeAvailabilitySheet
+                    onDismiss: {
+                        viewModel.closeAvailabilitySheet()
+                        showAvailabilitySheetState = false
+                    }
                 )
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
