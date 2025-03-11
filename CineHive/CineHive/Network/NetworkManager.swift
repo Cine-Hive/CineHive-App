@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 enum NetworkError: Error, LocalizedError {
     case invalidURL
@@ -26,50 +27,56 @@ enum NetworkError: Error, LocalizedError {
 
 final class NetworkManager {
     static let shared = NetworkManager()
-    private let baseURL: String
-    
-    private init() {
-        // 로컬 서버 주소로 기본 URL 설정
-        self.baseURL = "http://localhost:8081"
-    }
-    
-    func fetch<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
-        // baseURL와 엔드포인트를 합쳐 URLComponents 생성
-        guard var components = URLComponents(string: "\(baseURL)\(endpoint)") else {
+    static let baseURL: String = "http://localhost:8081"
+
+    private init() { }
+
+    func request<T: Decodable>(endpoint: String, queryItems: [URLQueryItem] = []) async throws -> T {
+        guard var components = URLComponents(string: "\(NetworkManager.baseURL)\(endpoint)") else {
+            Logger.log(.error, category: Logger.networking, message: "잘못된 URL: \(endpoint)")
             throw NetworkError.invalidURL
         }
-        
+
         if !queryItems.isEmpty {
             components.queryItems = queryItems
         }
-        
+
         guard let url = components.url else {
+            Logger.log(.error, category: Logger.networking, message: "URL 변환 실패: \(components.string ?? "N/A")")
             throw NetworkError.invalidURL
         }
-        
-        // URLRequest 구성
+
+        Logger.log(.info, category: Logger.networking, message: "요청 URL: \(url.absoluteString)")
+
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 10
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        // 로컬 서버로 요청하는 경우 별도의 인증 헤더가 필요하지 않다면 생략
-        
-        // 데이터 요청 및 응답 처리
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-        
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
-        }
-        
-        // JSON 디코딩 처리
+
         do {
-            return try JSONDecoder().decode(T.self, from: data)
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.badResponse(statusCode: 0)
+            }
+
+            Logger.log(.info, category: Logger.networking, message: "서버 응답 코드: \(httpResponse.statusCode)")
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                throw NetworkError.badResponse(statusCode: httpResponse.statusCode)
+            }
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .useDefaultKeys
+            decoder.dateDecodingStrategy = .iso8601
+
+            return try decoder.decode(T.self, from: data)
+        } catch let decodingError as DecodingError {
+            Logger.log(.error, category: Logger.networking, message: "JSON 디코딩 오류: \(decodingError.localizedDescription)")
+            throw NetworkError.decodingError(decodingError)
         } catch {
-            throw NetworkError.decodingError(error)
+            Logger.log(.error, category: Logger.networking, message: "네트워크 요청 실패: \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -114,4 +121,3 @@ final class NetworkManager {
         }
     }
 }
-

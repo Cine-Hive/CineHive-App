@@ -10,6 +10,4 @@ import Foundation
 struct Director: Codable {
     let id: Int
     let name: String
-    let gender: Int
-    let job: String
 }

@@ -57,6 +57,7 @@ Package.resolved
 # CocoaPods
 Pods/
 *.xcworkspace
+Podfile.lock
 
 # Carthage
 Carthage/Build/
