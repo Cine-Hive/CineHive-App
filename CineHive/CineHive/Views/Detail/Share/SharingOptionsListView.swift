@@ -22,6 +22,7 @@ struct SharingOptionsListView: View {
     }
     
     var body: some View {
+        
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
                 ShareOptionButton(share: .copyURL) {
@@ -39,9 +40,10 @@ struct SharingOptionsListView: View {
                 ShareOptionButton(share: .systemShare) {
                     viewModel.systemShare()
                 }
+                Spacer()
             }
             .padding(.vertical, 8)
-            .padding(.horizontal, 4)
+            
         }
         .sheet(isPresented: $viewModel.isShowingMessageView) {
             MessageComposeView(movie: movie, isPresented: $viewModel.isShowingMessageView)

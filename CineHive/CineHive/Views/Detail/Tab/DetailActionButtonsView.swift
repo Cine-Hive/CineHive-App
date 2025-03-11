@@ -13,6 +13,8 @@ struct DetailActionButtonsView: View {
     let movie: MovieDetail
     
     @Bindable private var viewModel = DetailActionButtonsViewModel()
+    @State private var showShareSheetState: Bool = false
+    
     
     var body: some View {
         HStack(spacing: 0) {
@@ -46,9 +48,14 @@ struct DetailActionButtonsView: View {
                 imageName: "square.and.arrow.up",
                 text: "공유",
                 textColor: textColor,
-                action: viewModel.openShareSheet
+                action: {
+                    viewModel.openShareSheet()
+                    showShareSheetState = true
+                }
             )
-            .sheet(isPresented: $viewModel.showShareSheet) {
+            .sheet(isPresented: $showShareSheetState, onDismiss: {
+                viewModel.closeShareSheet()
+            }) {
                 CustomShareSheetView(movie: movie)
                     .presentationDetents([.fraction(0.5)])
                     .presentationDragIndicator(.visible)

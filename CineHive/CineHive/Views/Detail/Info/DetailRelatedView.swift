@@ -11,6 +11,11 @@ struct DetailRelatedView: View {
     private let textColor = Color.white
     private let secondaryTextColor = Color.gray
     
+    // 더미 영화 데이터
+    private let relatedMovies: [Movie] = [
+        .dummy1, .dummy2, .dummy3, .dummy4, .dummy5, .dummy6
+    ]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("비슷한 콘텐츠")
@@ -18,14 +23,14 @@ struct DetailRelatedView: View {
                 .padding(.horizontal, 16)
                 .foregroundStyle(textColor)
             
-            relatedMoviesRow(title: "장르가 비슷한 영화")
-            relatedMoviesRow(title: "같은 감독의 영화")
-            relatedMoviesRow(title: "팬들이 좋아하는 영화")
+            relatedMoviesRow(title: "장르가 비슷한 영화", movies: relatedMovies)
+            relatedMoviesRow(title: "같은 감독의 영화", movies: relatedMovies.shuffled())
+            relatedMoviesRow(title: "팬들이 좋아하는 영화", movies: relatedMovies.shuffled())
         }
     }
     
-    // 관련 영화 행
-    private func relatedMoviesRow(title: String) -> some View {
+    //MARK: - 관련 영화 행 (포스터 추가)
+    private func relatedMoviesRow(title: String, movies: [Movie]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))
@@ -34,19 +39,18 @@ struct DetailRelatedView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(1...6, id: \.self) { _ in
+                    ForEach(movies) { movie in
                         VStack(alignment: .leading, spacing: 6) {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 120, height: 180)
-                                .cornerRadius(4)
-                            
-                            Text(["어벤져스", "인셉션", "인터스텔라", "기생충", "다크 나이트"].randomElement() ?? "영화 제목")
+                            PosterView(posterURL: movie.posterURL, width: 120, height: 180)
+
+                            // 제목
+                            Text("영화 제목")
                                 .font(.system(size: 14))
                                 .foregroundColor(textColor)
                                 .lineLimit(1)
                                 .frame(width: 120, alignment: .leading)
                             
+                            // 평점
                             HStack {
                                 Image(systemName: "star.fill")
                                     .foregroundColor(.yellow)
@@ -64,6 +68,7 @@ struct DetailRelatedView: View {
     }
 }
 
+// MARK: - Preview
 #Preview {
     DetailRelatedView()
         .background(.black)

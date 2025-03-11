@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HorizontalMovieListView: View {
+struct MovieListView: View {
     let movies: [Movie]
     let movieType: MovieListType
     @State var viewModel: MovieViewModel
@@ -24,7 +24,22 @@ struct HorizontalMovieListView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             // 포스터 이미지
                             PosterView(posterURL: movie.posterURL, width: 120, height: 180)
+                            // 제목
+                            Text("영화 제목")
+                                .font(.system(size: 14))
+                                .foregroundColor(textColor)
+                                .lineLimit(1)
+                                .frame(width: 120, alignment: .leading)
                             
+                            // 평점
+                            HStack {
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.yellow)
+                                    .font(.system(size: 12))
+                                Text(String(format: "%.1f", Double.random(in: 6.0...9.8)))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(secondaryColor)
+                            }
                         }
                     }
                 }
@@ -33,4 +48,9 @@ struct HorizontalMovieListView: View {
             .padding(.trailing, 15)
         }
     }
+}
+
+#Preview {
+    MovieListView(movies: Movie.dummyMovies, movieType: .popular, viewModel: MovieViewModel())
+        .background(.black)
 }

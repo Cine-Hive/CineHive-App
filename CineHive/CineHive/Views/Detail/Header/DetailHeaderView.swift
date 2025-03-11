@@ -41,37 +41,24 @@ struct DetailHeaderView: View {
 struct DetailHeaderBackdropView: View {
     let movie: MovieDetail
     let backgroundColor: Color
+
+    private var overlayGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(colors: [
+                backgroundColor.opacity(0.2),
+                backgroundColor.opacity(0.0),
+                backgroundColor.opacity(0.4),
+                backgroundColor.opacity(0.8),
+                backgroundColor
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
     
     var body: some View {
-        VStack(spacing: 0) {
-            AsyncImage(url: movie.backDropURL) { phase in
-                switch phase {
-                case .empty:
-                    Rectangle().fill(Color.gray.opacity(0.3))
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                case .failure:
-                    Rectangle().fill(Color.gray.opacity(0.3))
-                @unknown default:
-                    Rectangle().fill(Color.gray.opacity(0.3))
-                }
-            }
-        }
-        .overlay(
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    backgroundColor.opacity(0.2),
-                    backgroundColor.opacity(0.0),
-                    backgroundColor.opacity(0.4),
-                    backgroundColor.opacity(0.8),
-                    backgroundColor
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
+        BackdropImageView(url: movie.backDropURL)
+            .overlay(overlayGradient)
     }
 }
 
@@ -105,20 +92,42 @@ struct DetailHeaderContentView: View {
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(textColor)
                         .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
-                    // 예고편 보기 버튼
-                    Button(action: {
-                        showTrailer = true
-                    }) {
-                        HStack {
-                            Image(systemName: "play.fill")
-                            Text("예고편 보기")
-                                .fontWeight(.semibold)
+                    // 예고편 보기 버튼 (첫 비디오 있을 경우에만 표시)
+                    if let firstVideo = movie.videos?.first {
+                        Button(action: {
+                            NotificationCenter.default.post(
+                                name: Notification.Name("PlayVideo"),
+                                object: nil,
+                                userInfo: ["videoID": firstVideo.videoKey]
+                            )
+                        }) {
+                            HStack {
+                                Image(systemName: "play.fill")
+                                Text("예고편 보기")
+                                    .fontWeight(.semibold)
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(accentColor)
+                            .cornerRadius(4)
+                            .foregroundColor(textColor)
                         }
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(accentColor)
-                        .cornerRadius(4)
-                        .foregroundColor(textColor)
+                    } else {
+                        // 예고편이 없을 경우 대체 버튼
+                        Button(action: {
+                            // 영화 정보로 스크롤
+                        }) {
+                            HStack {
+                                Image(systemName: "info.circle")
+                                Text("상세 정보")
+                                    .fontWeight(.semibold)
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(accentColor)
+                            .cornerRadius(4)
+                            .foregroundColor(textColor)
+                        }
                     }
                 }
                 .padding(.horizontal, 16)
@@ -128,6 +137,8 @@ struct DetailHeaderContentView: View {
         }
     }
 }
+
+
 
 // MARK: - Preview
 #Preview {

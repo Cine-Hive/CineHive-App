@@ -35,12 +35,7 @@ final class MovieViewModel {
         }
     }
 
-    @MainActor
-    func fetchMovieDetail(movieId: Int) {
-        performNetworkRequest {
-            self.movieDetail = try await self.movieService.fetchMovieDetail(movieId: movieId)
-        }
-    }
+    
 
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {

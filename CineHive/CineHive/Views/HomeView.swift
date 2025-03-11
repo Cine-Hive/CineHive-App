@@ -50,7 +50,7 @@ struct HomeView: View {
                                 .padding(.top, 30)
                             
                             // 기존의 HorizontalMovieListView 사용
-                            HorizontalMovieListView(movies: viewModel.movies, movieType: category.type, viewModel: viewModel)
+                            MovieListView(movies: viewModel.movies, movieType: category.type, viewModel: viewModel)
                                 .padding(.leading, 15)
                         }
                     }

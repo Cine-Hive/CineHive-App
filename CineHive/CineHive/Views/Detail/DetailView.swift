@@ -1,10 +1,3 @@
-//
-//  DetailView.swift
-//  CineHive
-//
-//  Created by 이종민 on 2/22/25.
-//
-
 import SwiftUI
 
 enum DetailTab: CaseIterable {
@@ -22,23 +15,25 @@ enum DetailTab: CaseIterable {
 
 struct DetailView: View {
     let movieId: Int
-    @State private var viewModel = MovieViewModel()
-    @State private var isOverviewExpanded: Bool = false
-    @State private var selectedTab: DetailTab = .overview
-    @Environment(\.presentationMode) var presentationMode
-    
-    // 넷플릭스 스타일 색상
+    @State private var viewModel: DetailViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    // 넷플릭스 스타일 색상 상수
     private let backgroundColor = Color.black
     private let textColor = Color.white
     private let accentColor = Color.red
     private let secondaryTextColor = Color.gray
     
-    // 임시 데이터 (추후 별도 파일로 분리 가능: DetailConstants.swift)
+    // 임시 데이터 (추후 별도 파일로 분리 가능)
     private let tempGenres = ["액션", "모험", "스릴러", "드라마", "SF", "코미디", "로맨스", "판타지", "공포", "애니메이션"]
+    
+    init(movieId: Int) {
+        self.movieId = movieId
+        _viewModel = State(wrappedValue: DetailViewModel(movieId: movieId))
+    }
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            // 메인 콘텐츠
             ScrollView {
                 if viewModel.isLoading {
                     LoadingView()
@@ -61,24 +56,27 @@ struct DetailView: View {
                             secondaryTextColor: secondaryTextColor,
                             backgroundColor: backgroundColor
                         )
+                        
                         // 액션 버튼
                         DetailActionButtonsView(
                             backgroundColor: backgroundColor,
                             textColor: textColor,
                             movie: movie
                         )
+                        
                         // 탭 선택기
                         DetailTabView(
-                            selectedTab: $selectedTab,
+                            selectedTab: $viewModel.selectedTab,
                             accentColor: accentColor,
                             textColor: textColor,
                             secondaryTextColor: secondaryTextColor
                         )
+                        
                         // 탭 콘텐츠
                         DetailTabContentView(
                             movie: movie,
-                            selectedTab: selectedTab,
-                            isOverviewExpanded: isOverviewExpanded
+                            selectedTab: viewModel.selectedTab,
+                            isOverviewExpanded: viewModel.isOverviewExpanded
                         )
                     }
                 } else if let error = viewModel.error {
@@ -88,37 +86,37 @@ struct DetailView: View {
                         textColor: textColor,
                         accentColor: accentColor
                     ) {
-                        viewModel.fetchMovieDetail(movieId: movieId)
+                        viewModel.fetchMovieDetail()
                     }
                 }
             }
+            .background(backgroundColor)
+            .foregroundColor(textColor)
+            .edgesIgnoringSafeArea(.top)
+            .navigationBarHidden(true)
+            .statusBar(hidden: true)
+            .toolbar(.hidden, for: .tabBar)
             
-            // 뒤로가기 버튼 (고정 위치)
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(textColor)
-                    .padding(12)
-                    .background(Color.black.opacity(0.6))
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-            }
-            .padding(.top, 50)
-            .padding(.leading, 16)
+            BackButtonView(action: { dismiss() }, color: textColor)
         }
-        .background(backgroundColor)
-        .foregroundColor(textColor)
-        .edgesIgnoringSafeArea(.top)
-        .navigationBarHidden(true)
-        .statusBar(hidden: true)
-        .toolbar(.hidden, for: .tabBar)
+        .fullScreenCover(isPresented: $viewModel.showFullScreenVideo) {
+            if let videoID = viewModel.selectedVideoID {
+                FullScreenVideoView(videoID: videoID, onClose: {
+                    viewModel.showFullScreenVideo = false
+                })
+            } else {
+                VideoErrorView {
+                    viewModel.showFullScreenVideo = false
+                }
+            }
+        }
         .onAppear {
-            viewModel.fetchMovieDetail(movieId: movieId)
+            viewModel.fetchMovieDetail()
         }
     }
 }
+
+
 
 #Preview {
     NavigationView {
