@@ -29,11 +29,9 @@ struct AdditionalInfoView: View {
                             if let image = selectedImage {
                                 Image(uiImage: image)
                                     .resizable()
-                                    .scaledToFit()
+                                    .scaledToFill()
                                     .frame(width: 128, height: 128)
                                     .clipShape(Circle()) // 원형 이미지
-                                
-                                
                             } else {
                                 Circle()
                                     .stroke(Color.gray, lineWidth: 1) // 회색 테두리
