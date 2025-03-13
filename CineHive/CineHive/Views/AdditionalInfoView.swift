@@ -76,6 +76,7 @@ struct AdditionalInfoView: View {
                                     .background(
                                         selectedGenres.contains(genres) ? Color.blue.opacity(0.2) : Color.white
                                     )
+                                    .clipShape(RoundedRectangle(cornerRadius: 15))
                                     .frame(width: 105, height: 95)
                                 Text(genres)
                                     .font(.system(size: 16, weight: .medium))
