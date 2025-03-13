@@ -12,11 +12,14 @@ struct AdditionalInfoView: View {
     
     @State private var selectedImage: UIImage? = nil
     @State private var pickerItem: PhotosPickerItem?
+    private let genres = ["영화", "드라마", "애니메이션"]
+    @State private var selectedGenres: Set<String> = []
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: -45), count: 3)
     
     var body: some View {
+        
         ScrollView {
             VStack {
-                Spacer()
                 Text("프로필을 완성해보세요!")
                     .frame(width: 330, height: 70, alignment: .leading)
                     .font(.system(size: 23, weight: .semibold))
@@ -52,11 +55,44 @@ struct AdditionalInfoView: View {
                             }
                         }
                     }
-                    
                     Text("터치해서 프로필을 등록해보세요")
                         .frame(width: 330, height: 50, alignment: .center)
                         .font(.system(size: 14, weight: .light))
-                    
+                    Spacer()
+                }
+                Spacer()
+                VStack {
+                    Text("장르 선택")
+                        .frame(width: 330, height: 30, alignment: .leading)
+                        .font(.system(size: 18, weight: .semibold))
+                    Text("선호하는 장르를 선택해보세요")
+                        .frame(width: 330, height: 20, alignment: .leading)
+                        .font(.system(size: 14, weight: .light))
+                    LazyVGrid(columns: columns) {
+                        ForEach(genres, id: \.self) { genres in
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(selectedGenres.contains(genres) ? Color.blue : Color.gray, lineWidth: 1)
+                                    .background(
+                                        selectedGenres.contains(genres) ? Color.blue.opacity(0.2) : Color.white
+                                    )
+                                    .frame(width: 105, height: 95)
+                                Text(genres)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(selectedGenres.contains(genres) ? Color.blue : Color.gray)
+                            }
+                            
+                            .onTapGesture {
+                                if selectedGenres.contains(genres) {
+                                    selectedGenres.remove(genres)
+                                } else {
+                                    selectedGenres.insert(genres)
+                                }
+                            }
+                            
+                            
+                        }
+                    }
                     
                 }
             }
