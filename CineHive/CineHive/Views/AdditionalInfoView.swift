@@ -19,6 +19,9 @@ struct AdditionalInfoView: View {
     private let services = ["Netflix", "Disney+", "TVING", "Apple TV+", "Wavve", "Watcha", "coupang \nplay", "kakao TV"]
     @State private var selectedServices: Set<String> = []
     
+    private let countries: [String] = ["대한민국", "미국", "일본", "중국", "영국", "프랑스", "이탈리아", "스페인", "호주", "독일"]
+    @State private var selectedCountry: String = "대한민국"
+    
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
     
     var body: some View {
@@ -139,6 +142,36 @@ struct AdditionalInfoView: View {
                     }
                 }
                 .frame(width: 350, height: 380)
+                
+                
+                VStack {
+                    Text("서비스 지역")
+                        .frame(width: 330, height: 30, alignment: .leading)
+                        .font(.system(size: 18, weight: .semibold))
+                    Text("현지 추천을 위해 선택해보세요")
+                        .frame(width: 330, height: 20, alignment: .leading)
+                        .font(.system(size: 14, weight: .light))
+                    Menu(selectedCountry) {
+                        ForEach(countries, id: \.self) { region in
+                            Button(action: {
+                                selectedCountry = region
+                            }, label: {
+                                Text(region)
+                                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.black))
+                            })
+                            
+                        }
+                    }
+                    .frame(width: 330, height: 50)
+                    .background(Color(UIColor.systemBackground))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+                    .tint(Color.black)
+                    
+                }
+                .frame(width: 350, height: 180)
             }
         })
         .frame(width: .infinity, height: .infinity)
