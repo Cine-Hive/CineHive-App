@@ -81,3 +81,41 @@ struct MovieCategory: Identifiable {
         MovieCategory(title: "영화", type: .movies)
     ]
 }
+
+// MARK: - Make MovieCategory Equatable
+extension MovieCategory: Equatable {
+    static func == (lhs: MovieCategory, rhs: MovieCategory) -> Bool {
+        return lhs.id == rhs.id && lhs.title == rhs.title && lhs.type == rhs.type
+    }
+}
+
+// MARK: - Make MovieListType Equatable
+extension MovieListType: Equatable {
+    static func == (lhs: MovieListType, rhs: MovieListType) -> Bool {
+        switch (lhs, rhs) {
+        case (.nowPlaying, .nowPlaying),
+             (.netflixMovies, .netflixMovies),
+             (.disneyMovies, .disneyMovies),
+             (.appleTVMovies, .appleTVMovies),
+             (.isLoading, .isLoading),
+             (.popular, .popular),
+             (.topRated, .topRated),
+             (.upcoming, .upcoming),
+             (.movies, .movies),
+             (.etc, .etc):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: - Make BannerItem Equatable
+extension BannerItem: Equatable {
+    static func == (lhs: BannerItem, rhs: BannerItem) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.title == rhs.title &&
+               lhs.subtitle == rhs.subtitle &&
+               lhs.imageURL == rhs.imageURL
+    }
+}
