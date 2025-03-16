@@ -22,8 +22,7 @@ struct AdditionalInfoView: View {
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
     
     var body: some View {
-        
-        ScrollView {
+        ScrollView(.vertical, showsIndicators: false, content: {
             VStack {
                 Text("프로필을 완성해보세요!")
                     .frame(width: 330, height: 70, alignment: .leading)
