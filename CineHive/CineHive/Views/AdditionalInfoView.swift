@@ -12,9 +12,14 @@ struct AdditionalInfoView: View {
     
     @State private var selectedImage: UIImage? = nil
     @State private var pickerItem: PhotosPickerItem?
+    
     private let genres = ["영화", "드라마", "애니메이션"]
     @State private var selectedGenres: Set<String> = []
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: -45), count: 3)
+    
+    private let services = ["Netflix", "Disney+", "TVING", "Apple TV+", "Wavve", "Watcha", "coupang \nplay", "kakao TV"]
+    @State private var selectedServices: Set<String> = []
+    
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
     
     var body: some View {
         
@@ -96,8 +101,48 @@ struct AdditionalInfoView: View {
                     }
                     
                 }
+                .frame(width: 350, height: 180)
+                // 구독 중인 서비스 선택
+                VStack {
+                    Spacer()
+                    Text("구독 중인 서비스")
+                        .frame(width: 330, height: 30, alignment: .leading)
+                        .font(.system(size: 18, weight: .semibold))
+                    Text("구독 중인 서비스를 선택해보세요")
+                        .frame(width: 330, height: 20, alignment: .leading)
+                        .font(.system(size: 14, weight: .light))
+                    
+                    LazyVGrid(columns: columns) {
+                        ForEach(services, id: \.self) { services in
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(selectedServices.contains(services) ? Color.blue : Color.gray, lineWidth: 1)
+                                    .background(
+                                        selectedServices.contains(services) ? Color.blue.opacity(0.2) : Color.white
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                                    .frame(width: 105, height: 95)
+                                Text(services)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(selectedServices.contains(services) ? Color.blue : Color.gray)
+                            }
+                            
+                            .onTapGesture {
+                                if selectedServices.contains(services) {
+                                    selectedServices.remove(services)
+                                } else {
+                                    selectedServices.insert(services)
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                }
+                .frame(width: 350, height: 380)
             }
-        }
+        })
+        .frame(width: .infinity, height: .infinity)
     }
 }
 
