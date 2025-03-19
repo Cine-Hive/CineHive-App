@@ -12,9 +12,6 @@ struct DramaListView: View {
     let dramaType: DramaListType
     @State var viewModel: DramaViewModel
     
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
-    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 15) {
@@ -26,7 +23,7 @@ struct DramaListView: View {
                             // 제목
                             Text("드라마 제목")
                                 .font(.system(size: 14))
-                                .foregroundColor(textColor)
+                                .foregroundColor(CHColors.textColor)
                                 .lineLimit(1)
                                 .frame(width: 120, alignment: .leading)
                             
@@ -37,7 +34,7 @@ struct DramaListView: View {
                                     .font(.system(size: 12))
                                 Text(String(format: "%.1f", Double.random(in: 6.0...9.8)))
                                     .font(.system(size: 12))
-                                    .foregroundColor(secondaryColor)
+                                    .foregroundColor(CHColors.secondaryColor)
                             }
                         }
                     }

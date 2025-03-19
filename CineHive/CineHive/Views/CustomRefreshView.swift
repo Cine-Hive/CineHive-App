@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CustomRefreshView: View {
     let isRefreshing: Bool
-    let accentColor: Color = .red
     
     @State private var rotation: Double = 0
     
@@ -18,12 +17,12 @@ struct CustomRefreshView: View {
             if isRefreshing {
                 ZStack {
                     Circle()
-                        .stroke(accentColor.opacity(0.3), lineWidth: 4)
+                        .stroke(CHColors.primaryColor.opacity(0.3), lineWidth: 4)
                         .frame(width: 40, height: 40)
                     
                     Circle()
                         .trim(from: 0, to: 0.7)
-                        .stroke(accentColor, lineWidth: 4)
+                        .stroke(CHColors.primaryColor, lineWidth: 4)
                         .frame(width: 40, height: 40)
                         .rotationEffect(Angle(degrees: rotation))
                         .onAppear {

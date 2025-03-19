@@ -14,18 +14,12 @@ struct AnimationTabView: View {
     @State private var searchText = ""
     @State private var isSearchActive = false
     
-    // 색상 테마
-    private let backgroundColor = Color.black
-    private let primaryColor = Color(hex: "#FF2F6E")
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
-    
     // 장르 목록
     private let genres = ["전체", "가족", "액션", "코미디", "판타지", "SF", "모험", "일본"]
     
     var body: some View {
         ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
+            CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 0) {
                 // 검색 및 프로필 헤더
@@ -54,7 +48,7 @@ struct AnimationTabView: View {
                 }
             }
         }
-        .foregroundColor(textColor)
+        .foregroundColor(CHColors.textColor)
         .navigationBarHidden(true)
         .overlay(
             isSearchActive ? searchOverlay() : nil
@@ -75,7 +69,7 @@ struct AnimationTabView: View {
             // 제목
             Text("애니메이션")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             Spacer()
             
@@ -86,7 +80,7 @@ struct AnimationTabView: View {
                 }
             } label: {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .font(.system(size: 18))
             }
             .buttonStyle(ScaleButtonStyle())
@@ -99,19 +93,19 @@ struct AnimationTabView: View {
         VStack(spacing: 20) {
             Image(systemName: "popcorn.fill")
                 .font(.system(size: 50))
-                .foregroundColor(primaryColor)
+                .foregroundColor(CHColors.primaryColor)
                 .padding()
             
             Text("애니메이션 준비중...")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             Text("곧 다양한 애니메이션을 만나보실 수 있습니다!")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-                .foregroundColor(secondaryColor)
+                .foregroundColor(CHColors.secondaryColor)
             
             Button {
                 Task {
@@ -125,7 +119,7 @@ struct AnimationTabView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(primaryColor)
+                    .background(CHColors.primaryColor)
                     .cornerRadius(8)
             }
             .padding(.top, 20)
@@ -149,7 +143,7 @@ struct AnimationTabView: View {
                                 .font(.system(size: 14))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(selectedGenre == genre ? primaryColor : Color.gray.opacity(0.2))
+                                .background(selectedGenre == genre ? CHColors.primaryColor : Color.gray.opacity(0.2))
                                 .foregroundColor(selectedGenre == genre ? .white : .gray)
                                 .cornerRadius(16)
                         }
@@ -219,7 +213,7 @@ struct AnimationTabView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(primaryColor)
+                    .background(CHColors.primaryColor)
                     .cornerRadius(4)
                     .padding(8)
             }
@@ -227,12 +221,12 @@ struct AnimationTabView: View {
             // 애니메이션 제목
             Text("애니메이션 시리즈 \(index)")
                 .font(.headline)
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             // 정보
             Text("\(2023) • 에피소드 \(index * 4)")
                 .font(.caption)
-                .foregroundColor(secondaryColor)
+                .foregroundColor(CHColors.secondaryColor)
                 .lineLimit(1)
             
             // 평점
@@ -243,7 +237,7 @@ struct AnimationTabView: View {
                 
                 Text(String(format: "%.1f", 7.5 + Double(index) / 10))
                     .font(.caption)
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
             }
         }
         .frame(width: 200)
@@ -255,10 +249,10 @@ struct AnimationTabView: View {
             // 검색 헤더
             HStack {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(CHColors.secondaryColor)
                 
                 TextField("애니메이션 검색", text: $searchText)
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                 
@@ -267,7 +261,7 @@ struct AnimationTabView: View {
                         searchText = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                     }
                 }
                 
@@ -278,7 +272,7 @@ struct AnimationTabView: View {
                     }
                 } label: {
                     Text("취소")
-                        .foregroundColor(primaryColor)
+                        .foregroundColor(CHColors.primaryColor)
                 }
             }
             .padding()
@@ -298,12 +292,12 @@ struct AnimationTabView: View {
                             HStack {
                                 Text("\(index)")
                                     .font(.system(size: 14))
-                                    .foregroundColor(index <= 3 ? primaryColor : secondaryColor)
+                                    .foregroundColor(index <= 3 ? CHColors.primaryColor : CHColors.secondaryColor)
                                     .frame(width: 20)
                                 
                                 Text("인기 애니메이션 \(index)")
                                     .font(.system(size: 16))
-                                    .foregroundColor(textColor)
+                                    .foregroundColor(CHColors.textColor)
                                 
                                 Spacer()
                             }
@@ -322,24 +316,24 @@ struct AnimationTabView: View {
                         searchResultsView()
                     } else {
                         Text("검색어를 더 입력해주세요")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                             .padding()
                     }
                 }
             }
-            .background(backgroundColor)
+            .background(CHColors.backgroundColor)
         }
-        .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        .background(CHColors.backgroundColor.edgesIgnoringSafeArea(.all))
     }
     
     private func searchResultsView() -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("검색 결과가 없습니다.")
-                .foregroundColor(secondaryColor)
+                .foregroundColor(CHColors.secondaryColor)
                 .padding(.horizontal)
             
             Text("현재 애니메이션 데이터를 준비 중입니다.")
-                .foregroundColor(secondaryColor)
+                .foregroundColor(CHColors.secondaryColor)
                 .font(.caption)
                 .padding(.horizontal)
         }

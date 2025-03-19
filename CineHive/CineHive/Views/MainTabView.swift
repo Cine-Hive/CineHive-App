@@ -42,7 +42,7 @@ struct MainTabView: View {
                 Label("마이", systemImage: "person")
             }
         }
-        .accentColor(CHColors.primary)
+        .accentColor(CHColors.primaryColor)
     }
 }
 
