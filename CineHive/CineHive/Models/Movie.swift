@@ -55,7 +55,6 @@ enum MovieListType {
     case netflixMovies
     case disneyMovies
     case appleTVMovies
-    case isLoading
     case popular
     case topRated
     case upcoming
@@ -97,7 +96,6 @@ extension MovieListType: Equatable {
              (.netflixMovies, .netflixMovies),
              (.disneyMovies, .disneyMovies),
              (.appleTVMovies, .appleTVMovies),
-             (.isLoading, .isLoading),
              (.popular, .popular),
              (.topRated, .topRated),
              (.upcoming, .upcoming),
