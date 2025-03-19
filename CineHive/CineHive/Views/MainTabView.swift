@@ -8,44 +8,43 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @State private var selectedTab = 0
+    
     var body: some View {
-        TabView {
-            // 홈 탭
-            NavigationStack {
-                HomeTabView()
+        ZStack(alignment: .bottom) {
+            TabView(selection: $selectedTab) {
+                NavigationStack {
+                    HomeTabView()
+                }
+                .tag(0)
+                
+                NavigationStack {
+                    ExploreTabView()
+                }
+                .tag(1)
+                
+                NavigationStack {
+                    CommunityTabView()
+                }
+                .tag(2)
+                
+                NavigationStack {
+                    ProfileTabView()
+                }
+                .tag(3)
             }
-            .tabItem {
-                Label("홈", systemImage: "house")
-            }
+            .background(CHColors.backgroundColor)
             
-            // 탐색 탭
-            NavigationStack {
-                ExploreTabView()
-            }
-            .tabItem {
-                Label("탐색", systemImage: "magnifyingglass")
-            }
-            
-            // 커뮤니티 탭 (게시판)
-            NavigationStack {
-                CommunityTabView()
-            }
-            .tabItem {
-                Label("커뮤니티", systemImage: "bubble.left.and.bubble.right")
-            }
-            
-            // 마이 탭 (프로필)
-            NavigationStack {
-                ProfileTabView()
-            }
-            .tabItem {
-                Label("마이", systemImage: "person")
-            }
+            // 커스텀 탭바를 오버레이로 표시
+            CustomTabBar(selectedTab: $selectedTab, items: TabItem.items)
+                .ignoresSafeArea(.all, edges: .bottom)
         }
-        .accentColor(CHColors.primaryColor)
+        .background(CHColors.backgroundColor)
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
 #Preview {
     MainTabView()
+        .preferredColorScheme(.dark)
 }
