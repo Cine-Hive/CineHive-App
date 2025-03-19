@@ -16,15 +16,9 @@ struct HomeTabView: View {
     @State private var searchText = ""
     @State private var isSearchActive = false
     
-    // 색상 테마
-    private let backgroundColor = Color.black
-    private let primaryColor = Color.red
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
-    
     var body: some View {
         ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
+            CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 0) {
                 // 검색 및 프로필 헤더
@@ -48,7 +42,7 @@ struct HomeTabView: View {
                 }
             }
         }
-        .foregroundColor(textColor)
+        .foregroundColor(CHColors.textColor)
         .navigationBarHidden(true)
         .overlay(
             isSearchActive ? searchOverlay() : nil
@@ -61,8 +55,7 @@ struct HomeTabView: View {
         .notification(
             isPresented: $showNotification,
             message: notificationMessage,
-            icon: "bell.fill",
-            accentColor: primaryColor
+            icon: "bell.fill"
         )
         .onAppear {
             if viewModel.movies.isEmpty {
@@ -91,7 +84,7 @@ struct HomeTabView: View {
             // 로고
             Text("CINEHIVE")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             Spacer()
             
@@ -102,7 +95,7 @@ struct HomeTabView: View {
                 }
             } label: {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .font(.system(size: 18))
             }
             .buttonStyle(ScaleButtonStyle())
@@ -118,7 +111,7 @@ struct HomeTabView: View {
                 impactFeedback.impactOccurred()
             } label: {
                 Image(systemName: "person.circle")
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .font(.system(size: 18))
             }
             .buttonStyle(ScaleButtonStyle())
@@ -132,10 +125,10 @@ struct HomeTabView: View {
             // 검색 헤더
             HStack {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(CHColors.secondaryColor)
                 
                 TextField("영화, TV 프로그램, 인물 검색", text: $searchText)
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                 
@@ -144,7 +137,7 @@ struct HomeTabView: View {
                         searchText = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                     }
                 }
                 
@@ -155,7 +148,7 @@ struct HomeTabView: View {
                     }
                 } label: {
                     Text("취소")
-                        .foregroundColor(primaryColor)
+                        .foregroundColor(CHColors.primaryColor)
                 }
             }
             .padding()
@@ -176,12 +169,12 @@ struct HomeTabView: View {
                                 HStack {
                                     Text("\(movie.id)")
                                         .font(.system(size: 14))
-                                        .foregroundColor(movie.id <= 3 ? primaryColor : secondaryColor)
+                                        .foregroundColor(movie.id <= 3 ? CHColors.primaryColor : CHColors.secondaryColor)
                                         .frame(width: 20)
                                     
                                     Text("인기 영화 \(movie.id)")
                                         .font(.system(size: 16))
-                                        .foregroundColor(textColor)
+                                        .foregroundColor(CHColors.textColor)
                                     
                                     Spacer()
                                 }
@@ -201,18 +194,18 @@ struct HomeTabView: View {
                         // 여기서 실제 검색 결과를 표시할 수 있습니다.
                         // 서버의 검색 API를 호출하여 결과를 가져올 수 있습니다.
                         Text("검색 중...")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                             .padding()
                     } else {
                         Text("검색어를 더 입력해주세요")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                             .padding()
                     }
                 }
             }
-            .background(backgroundColor)
+            .background(CHColors.backgroundColor)
         }
-        .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        .background(CHColors.backgroundColor.edgesIgnoringSafeArea(.all))
     }
     
     // MARK: - Tab Contents

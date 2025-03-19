@@ -60,7 +60,6 @@ struct NotificationContainer: ViewModifier {
     @Binding var isPresented: Bool
     let message: String
     let icon: String
-    let accentColor: Color
     
     func body(content: Content) -> some View {
         ZStack {
@@ -87,7 +86,7 @@ struct NotificationContainer: ViewModifier {
 }
 
 extension View {
-    func notification(isPresented: Binding<Bool>, message: String, icon: String = "bell.fill", accentColor: Color = .red) -> some View {
-        self.modifier(NotificationContainer(isPresented: isPresented, message: message, icon: icon, accentColor: accentColor))
+    func notification(isPresented: Binding<Bool>, message: String, icon: String = "bell.fill") -> some View {
+        self.modifier(NotificationContainer(isPresented: isPresented, message: message, icon: icon))
     }
 }
