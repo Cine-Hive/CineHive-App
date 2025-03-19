@@ -10,38 +10,39 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
+            // 홈 탭
             NavigationStack {
-                HomeView()
+                HomeTabView()
             }
             .tabItem {
                 Label("홈", systemImage: "house")
             }
-            .refreshable { }
             
+            // 탐색 탭
             NavigationStack {
-                Text("검색 뷰")
+                ExploreTabView()
             }
             .tabItem {
-                Label("검색", systemImage: "magnifyingglass")
+                Label("탐색", systemImage: "magnifyingglass")
             }
-            .refreshable { }
             
+            // 커뮤니티 탭 (게시판)
             NavigationStack {
-                Text("게시판 뷰")
+                CommunityTabView()
             }
             .tabItem {
-                Label("게시판", systemImage: "quote.bubble")
+                Label("커뮤니티", systemImage: "bubble.left.and.bubble.right")
             }
-            .refreshable { }
             
+            // 마이 탭 (프로필)
             NavigationStack {
-                Text("프로필 뷰")
+                ProfileTabView()
             }
             .tabItem {
-                Label("프로필", systemImage: "person")
+                Label("마이", systemImage: "person")
             }
-            .refreshable { }
         }
+        .accentColor(CHColors.primary)
     }
 }
 
