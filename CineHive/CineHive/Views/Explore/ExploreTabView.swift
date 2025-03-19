@@ -16,12 +16,6 @@ struct ExploreTabView: View {
     @State private var searchText = ""
     @State private var isSearchActive = false
     
-    // 색상 테마
-    private let backgroundColor = Color.black
-    private let primaryColor = Color.red
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
-    
     // 콘텐츠 타입
     enum ContentType: String, CaseIterable {
         case movie = "영화"
@@ -45,7 +39,7 @@ struct ExploreTabView: View {
     
     var body: some View {
         ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
+            CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 0) {
                 // 검색 및 프로필 헤더
@@ -83,7 +77,7 @@ struct ExploreTabView: View {
                 }
             }
         }
-        .foregroundColor(textColor)
+        .foregroundColor(CHColors.textColor)
         .navigationBarHidden(true)
         .overlay(
             isSearchActive ? searchOverlay() : nil
@@ -113,7 +107,7 @@ struct ExploreTabView: View {
             // 제목
             Text("탐색")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             Spacer()
             
@@ -124,7 +118,7 @@ struct ExploreTabView: View {
                 }
             } label: {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .font(.system(size: 18))
             }
             .buttonStyle(ScaleButtonStyle())
@@ -144,7 +138,7 @@ struct ExploreTabView: View {
                 } label: {
                     Text(type.rawValue)
                         .font(.system(size: 16, weight: contentType == type ? .bold : .regular))
-                        .foregroundColor(contentType == type ? textColor : secondaryColor)
+                        .foregroundColor(contentType == type ? CHColors.textColor : CHColors.secondaryColor)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                 }
@@ -158,7 +152,7 @@ struct ExploreTabView: View {
                     .frame(height: 2)
                 
                 Rectangle()
-                    .fill(primaryColor)
+                    .fill(CHColors.primaryColor)
                     .frame(width: UIScreen.main.bounds.width / CGFloat(ContentType.allCases.count), height: 2)
                     .offset(x: CGFloat(ContentType.allCases.firstIndex(of: contentType) ?? 0) * UIScreen.main.bounds.width / CGFloat(ContentType.allCases.count))
                     .animation(.spring(response: 0.3), value: contentType)
@@ -179,7 +173,7 @@ struct ExploreTabView: View {
                             .font(.system(size: 14))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(selectedGenre == genre ? primaryColor : Color.gray.opacity(0.2))
+                            .background(selectedGenre == genre ? CHColors.primaryColor : Color.gray.opacity(0.2))
                             .foregroundColor(selectedGenre == genre ? .white : .gray)
                             .cornerRadius(16)
                     }
@@ -195,10 +189,10 @@ struct ExploreTabView: View {
             // 검색 헤더
             HStack {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(CHColors.secondaryColor)
                 
                 TextField("\(contentType.rawValue) 검색", text: $searchText)
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                 
@@ -207,7 +201,7 @@ struct ExploreTabView: View {
                         searchText = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                     }
                 }
                 
@@ -218,7 +212,7 @@ struct ExploreTabView: View {
                     }
                 } label: {
                     Text("취소")
-                        .foregroundColor(primaryColor)
+                        .foregroundColor(CHColors.primaryColor)
                 }
             }
             .padding()
@@ -238,12 +232,12 @@ struct ExploreTabView: View {
                             HStack {
                                 Text("\(index)")
                                     .font(.system(size: 14))
-                                    .foregroundColor(index <= 3 ? primaryColor : secondaryColor)
+                                    .foregroundColor(index <= 3 ? CHColors.primaryColor : CHColors.secondaryColor)
                                     .frame(width: 20)
                                 
                                 Text("인기 \(contentType.rawValue) \(index)")
                                     .font(.system(size: 16))
-                                    .foregroundColor(textColor)
+                                    .foregroundColor(CHColors.textColor)
                                 
                                 Spacer()
                             }
@@ -269,19 +263,19 @@ struct ExploreTabView: View {
                         } else {
                             // 드라마/애니메이션은 준비 중 메시지
                             Text("현재 \(contentType.rawValue) 검색 기능을 준비 중입니다")
-                                .foregroundColor(secondaryColor)
+                                .foregroundColor(CHColors.secondaryColor)
                                 .padding()
                         }
                     } else {
                         Text("검색어를 더 입력해주세요")
-                            .foregroundColor(secondaryColor)
+                            .foregroundColor(CHColors.secondaryColor)
                             .padding()
                     }
                 }
             }
-            .background(backgroundColor)
+            .background(CHColors.backgroundColor)
         }
-        .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        .background(CHColors.backgroundColor.edgesIgnoringSafeArea(.all))
         .onAppear {
             if searchText.count > 1 {
                 Task {
@@ -307,11 +301,11 @@ struct ExploreTabView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("\(contentType.rawValue) \(id)")
                     .font(.headline)
-                    .foregroundColor(textColor)
+                    .foregroundColor(CHColors.textColor)
                 
                 Text(genres.dropFirst().prefix(2).joined(separator: " • "))
                     .font(.subheadline)
-                    .foregroundColor(secondaryColor)
+                    .foregroundColor(CHColors.secondaryColor)
             }
             
             Spacer()
@@ -391,19 +385,19 @@ struct ExploreTabView: View {
             
             Image(systemName: type == "드라마" ? "tv" : "sparkles")
                 .font(.system(size: 60))
-                .foregroundColor(primaryColor)
+                .foregroundColor(CHColors.primaryColor)
                 .padding()
             
             Text("\(type) 콘텐츠 준비 중...")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(textColor)
+                .foregroundColor(CHColors.textColor)
             
             Text("곧 다양한 \(type) 콘텐츠를 제공해 드릴 예정입니다.\n조금만 기다려주세요!")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-                .foregroundColor(secondaryColor)
+                .foregroundColor(CHColors.secondaryColor)
             
             Button {
                 contentType = .movie
@@ -413,7 +407,7 @@ struct ExploreTabView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(primaryColor)
+                    .background(CHColors.primaryColor)
                     .cornerRadius(8)
                     .padding(.top, 20)
             }
