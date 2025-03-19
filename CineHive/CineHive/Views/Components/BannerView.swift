@@ -1,111 +1,127 @@
 //
-//  BannerView.swift
+//  FeaturedBannerItemView.swift
 //  CineHive
 //
-//  Created by 이종민 on 2/18/25.
+//  Created by 이종민 on 3/18/25.
 //
 
 import SwiftUI
 
 struct BannerView: View {
-    let items: [BannerItem]
-    
-    var body: some View {
-        TabView {
-            ForEach(items) { item in
-                BannerItemView(item: item)
-            }
-        }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
-        .frame(height: 450)
-    }
-}
-
-//MARK: 배너 아이템 뷰
-struct BannerItemView: View {
     let item: BannerItem
+    @State private var isHovered = false
+    
+    private let backgroundColor = Color.black
+    private let textColor = Color.white
+    private let accentColor = Color.red
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            AsyncImage(url: item.imageURL) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 250)
-                    .clipped()
-            } placeholder: {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .overlay(ProgressView().tint(.white))
+            // Banner image with proper aspect ratio
+            AsyncImage(url: item.imageURL) { phase in
+                switch phase {
+                case .empty:
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .aspectRatio(16/9, contentMode: .fit)
+                        .overlay(ProgressView().tint(.white))
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                case .failure:
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .aspectRatio(16/9, contentMode: .fit)
+                        .overlay(
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                                .foregroundColor(.white.opacity(0.7))
+                        )
+                @unknown default:
+                    EmptyView()
+                }
             }
+            .frame(height: 250)
+            .clipped()
             
+            // Gradient overlay
             LinearGradient(
-                gradient: Gradient(colors: [.clear, Color.black.opacity(0.8)]),
+                gradient: Gradient(colors: [
+                    Color.clear,
+                    backgroundColor.opacity(0.5),
+                    backgroundColor.opacity(0.8),
+                    backgroundColor
+                ]),
                 startPoint: .center,
                 endPoint: .bottom
             )
             .frame(height: 250)
             .allowsHitTesting(false)
             
+            // Text and buttons
             VStack(alignment: .leading, spacing: 16) {
-                Text(item.title)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                // Title information
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(item.title)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Text(item.subtitle)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.top, 2)
+                }
                 
-                Text(item.subtitle)
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(.white)
-                
+                // Genre tags
                 TagRow(tags: ["액션", "SF", "스릴러"])
                 
+                // Action buttons
                 HStack(spacing: 16) {
-                    PrimaryButton(title: "재생", icon: "play.fill", backgroundColor: .white, textColor: .black)
-                    PrimaryButton(title: "내 리스트", icon: "plus", backgroundColor: .gray.opacity(0.3), textColor: .white)
+                    // Info button
+                    Button {
+                        // Navigate to detail view
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "info.circle")
+                            Text("상세 정보")
+                                .fontWeight(.semibold)
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
+                        .background(accentColor)
+                        .foregroundColor(textColor)
+                        .cornerRadius(4)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    
+                    // My list button
+                    Button {
+                        // Add to my list
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        isHovered.toggle() // Toggle to trigger the symbol effect
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus")
+                                .symbolEffect(.bounce, options: .speed(2), value: isHovered)
+                            Text("내 리스트")
+                                .fontWeight(.medium)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.gray.opacity(0.3))
+                        .foregroundColor(textColor)
+                        .cornerRadius(4)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(ScaleButtonStyle())
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+            .padding(.bottom, 24)
         }
     }
 }
 
-//MARK: 태그 뷰
-struct TagRow: View {
-    let tags: [String]
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(tags, id: \.self) { tag in
-                Text(tag)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.gray.opacity(0.3))
-                    .cornerRadius(3)
-            }
-        }
-    }
-}
-
-//MARK: 버튼 컴포넌트
-struct PrimaryButton: View {
-    let title: String
-    let icon: String
-    let backgroundColor: Color
-    let textColor: Color
-    
-    var body: some View {
-        Button(action: {}) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                Text(title)
-                    .fontWeight(.semibold)
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 8)
-            .background(backgroundColor)
-            .foregroundColor(textColor)
-            .cornerRadius(4)
-        }
-    }
-}

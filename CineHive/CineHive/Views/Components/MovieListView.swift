@@ -12,7 +12,6 @@ struct MovieListView: View {
     let movieType: MovieListType
     @State var viewModel: MovieViewModel
     
-    // 넷플릭스 스타일 색상
     private let textColor = Color.white
     private let secondaryColor = Color.gray
     
