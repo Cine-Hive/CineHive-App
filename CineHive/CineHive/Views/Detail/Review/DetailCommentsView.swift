@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct DetailCommentsView: View {
-    private let textColor = Color.white
-    private let secondaryTextColor = Color.gray
-    private let accentColor = Color.red
 
     @Bindable private var viewModel = DetailCommentsViewModel()
 
@@ -27,7 +24,7 @@ struct DetailCommentsView: View {
                 }) {
                     Text("리뷰 작성")
                         .font(.system(size: 14))
-                        .foregroundColor(accentColor)
+                        .foregroundColor(CHColors.primaryColor)
                 }
             }
             .padding(.horizontal, 16)
