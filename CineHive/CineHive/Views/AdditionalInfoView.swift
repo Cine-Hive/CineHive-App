@@ -79,15 +79,15 @@ struct AdditionalInfoView: View {
                         ForEach(genres, id: \.self) { genres in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .stroke(selectedGenres.contains(genres) ? Color.blue : Color.gray, lineWidth: 1)
+                                    .stroke(selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
                                     .background(
-                                        selectedGenres.contains(genres) ? Color.blue.opacity(0.2) : Color.white
+                                        selectedGenres.contains(genres) ? Color("LoginBtnColor").opacity(0.1) : Color.white
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 15))
                                     .frame(width: 105, height: 95)
                                 Text(genres)
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(selectedGenres.contains(genres) ? Color.blue : Color.gray)
+                                    .foregroundColor(selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray)
                             }
                             
                             .onTapGesture {
@@ -118,15 +118,15 @@ struct AdditionalInfoView: View {
                         ForEach(services, id: \.self) { services in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .stroke(selectedServices.contains(services) ? Color.blue : Color.gray, lineWidth: 1)
+                                    .stroke(selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
                                     .background(
-                                        selectedServices.contains(services) ? Color.blue.opacity(0.2) : Color.white
+                                        selectedServices.contains(services) ? Color("LoginBtnColor").opacity(0.1) : Color.white
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 15))
                                     .frame(width: 105, height: 95)
                                 Text(services)
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(selectedServices.contains(services) ? Color.blue : Color.gray)
+                                    .foregroundColor(selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
                             }
                             
                             .onTapGesture {
@@ -172,6 +172,33 @@ struct AdditionalInfoView: View {
                     
                 }
                 .frame(width: 350, height: 180)
+                
+                Button(action: {
+                }, label: {
+                    Text("건너 뛰기")
+                        .frame(width: 330, height: 50)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Color("LoginBtnColor"))
+                        .background(Color(UIColor.systemBackground))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color("LoginBtnColor"), lineWidth: 1)
+                        )
+                })
+                
+                Button(action: {
+                }, label: {
+                    Text("선택 완료")
+                        .frame(width: 330, height: 50)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Color("LoginBtnColor"))
+                        .background(Color(UIColor.systemBackground))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color("LoginBtnColor"), lineWidth: 1)
+                        )
+                })
+
             }
         })
         .frame(width: .infinity, height: .infinity)
