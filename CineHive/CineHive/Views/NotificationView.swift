@@ -11,13 +11,13 @@ struct NotificationView: View {
     let message: String
     let icon: String
     @Binding var isPresented: Bool
-    let accentColor: Color
+    
     
     var body: some View {
         HStack(spacing: 15) {
             Image(systemName: icon)
                 .font(.system(size: 22))
-                .foregroundColor(accentColor)
+                .foregroundColor(CHColors.primary)
             
             Text(message)
                 .font(.system(size: 16))
@@ -43,7 +43,7 @@ struct NotificationView: View {
         .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(accentColor.opacity(0.5), lineWidth: 1)
+                .stroke(CHColors.primary.opacity(0.5), lineWidth: 1)
         )
         .onAppear {
             // Auto-dismiss after 3 seconds
@@ -71,8 +71,7 @@ struct NotificationContainer: ViewModifier {
                     NotificationView(
                         message: message,
                         icon: icon,
-                        isPresented: $isPresented,
-                        accentColor: accentColor
+                        isPresented: $isPresented
                     )
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .zIndex(100)
@@ -84,6 +83,7 @@ struct NotificationContainer: ViewModifier {
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPresented)
+    }
 }
 
 extension View {
