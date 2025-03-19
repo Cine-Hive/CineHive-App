@@ -17,7 +17,7 @@ struct NotificationView: View {
         HStack(spacing: 15) {
             Image(systemName: icon)
                 .font(.system(size: 22))
-                .foregroundColor(CHColors.primary)
+                .foregroundColor(CHColors.primaryColor)
             
             Text(message)
                 .font(.system(size: 16))
@@ -43,7 +43,7 @@ struct NotificationView: View {
         .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(CHColors.primary.opacity(0.5), lineWidth: 1)
+                .stroke(CHColors.primaryColor.opacity(0.5), lineWidth: 1)
         )
         .onAppear {
             // Auto-dismiss after 3 seconds

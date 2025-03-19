@@ -17,8 +17,6 @@ struct CommunityTabView: View {
     @State private var isLoading = false
     @State private var errorMessage: String? = nil
     
-    // 색상 테마
-    private let backgroundColor = Color.black
     private let primaryColor = Color.red
     private let textColor = Color.white
     private let secondaryColor = Color.gray
@@ -34,7 +32,7 @@ struct CommunityTabView: View {
     
     var body: some View {
         ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
+            CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 0) {
                 // 헤더
@@ -344,9 +342,9 @@ struct CommunityTabView: View {
                     }
                 }
             }
-            .background(backgroundColor)
+            .background(CHColors.backgroundColor)
         }
-        .background(backgroundColor.edgesIgnoringSafeArea(.all))
+        .background(CHColors.backgroundColor.edgesIgnoringSafeArea(.all))
     }
     
     // MARK: - API Methods
