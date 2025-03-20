@@ -22,11 +22,11 @@ extension Movie {
     }
     
     static var dummy4: Movie {
-        Movie(id: 104, posterPath: "/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg", backDropPath: "/dM2w364MScsjFf8pfMbaWUcWrR.jpg")
+        Movie(id: 104, posterPath: "/xu7JiLVSXW0PSLCJMwqLKAAJGM2.jpg", backDropPath: "/dM2w364MScsjFf8pfMbaWUcWrR.jpg")
     }
     
     static var dummy5: Movie {
-        Movie(id: 105, posterPath: "/t/t/p/w500/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg", backDropPath: "/w2PMyoyLU22YvrGK3smVM9fW1jj.jpg")
+        Movie(id: 105, posterPath: "/t/t/p/w500/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg", backDropPath: "/vnNLcHsXQ5N9dDLsNJW2Bm8UNmG.jpg")
     }
     
     static var dummy6: Movie {
