@@ -347,8 +347,6 @@ struct CommunityTabView: View {
         .background(CHColors.backgroundColor.edgesIgnoringSafeArea(.all))
     }
     
-    // MARK: - API Methods
-    
     private func loadBoards(category: BoardCategory = .all) async {
         isLoading = true
         errorMessage = nil
@@ -357,7 +355,7 @@ struct CommunityTabView: View {
             // 서버 API 호출
             // 실제 구현 시 BoardService 등을 통해 호출
             // 현재는 임시 데이터 사용
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
+            try await Task.sleep(nanoseconds: 500_000_000) // 1초 대기
             
             // 임시 데이터
             boards = createDummyBoards(category: category)
@@ -722,7 +720,7 @@ struct BoardDetailView: View {
         isLoading = true
         
         // 임시 데이터 - 서버 API 연동 시 실제 호출로 변경
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        try? await Task.sleep(nanoseconds: 500_000_000)
         
         board = Board(
             id: boardId,

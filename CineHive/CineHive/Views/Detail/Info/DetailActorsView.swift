@@ -25,6 +25,7 @@ struct DetailActorsView: View {
                     }
                 }
                 .padding(.horizontal, 16)
+                .padding(.bottom, 55)
             }
         }
         .background(Color.black)
