@@ -21,41 +21,7 @@ struct AdditionalInfoView: View {
                     .font(.system(size: 23, weight: .semibold))
                 Spacer()
                 // 프로필 이미지 추가
-                VStack {
-                    Spacer()
-                    PhotosPicker(selection: $viewModel.pickerItem, matching: .images) {
-                        ZStack {
-                            if let image = viewModel.selectedImage {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 128, height: 128)
-                                    .clipShape(Circle()) // 원형 이미지
-                            } else {
-                                Circle()
-                                    .stroke(Color.gray, lineWidth: 1) // 회색 테두리
-                                    .frame(width: 128, height: 128)
-                                    .overlay(
-                                        Image(systemName: "camera") // SF Symbol 추가
-                                            .font(.system(size: 30))
-                                            .foregroundColor(.gray)
-                                    )
-                            }
-                        }
-                        .onChange(of: viewModel.pickerItem != nil) {
-                            Task {
-                                if let data = try? await viewModel.pickerItem?.loadTransferable(type: Data.self),
-                                   let image = UIImage(data: data) {
-                                    await viewModel.selectedImage = image
-                                }
-                            }
-                        }
-                    }
-                    Text("터치해서 프로필을 등록해보세요")
-                        .frame(width: 330, height: 50, alignment: .center)
-                        .font(.system(size: 14, weight: .light))
-                    Spacer()
-                }
+                ProfileSelectedView(selectedImage: $viewModel.selectedImage, pickerItem: $viewModel.pickerItem)
                 Spacer()
                 VStack {
                     Text("장르 선택")
@@ -195,4 +161,46 @@ struct AdditionalInfoView: View {
 
 #Preview {
     AdditionalInfoView()
+}
+
+struct ProfileSelectedView: View {
+    @Binding var selectedImage: UIImage?
+    @Binding var pickerItem: PhotosPickerItem?
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            PhotosPicker(selection: $pickerItem, matching: .images) {
+                ZStack {
+                    if let image = selectedImage {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 128, height: 128)
+                            .clipShape(Circle()) // 원형 이미지
+                    } else {
+                        Circle()
+                            .stroke(Color.gray, lineWidth: 1) // 회색 테두리
+                            .frame(width: 128, height: 128)
+                            .overlay(
+                                Image(systemName: "camera") // SF Symbol 추가
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.gray)
+                            )
+                    }
+                }
+                .onChange(of: pickerItem) {
+                    Task {
+                        if let data = try? await pickerItem?.loadTransferable(type: Data.self),
+                           let image = UIImage(data: data) {
+                            selectedImage = image
+                        }
+                    }
+                }
+            }
+            Text("터치해서 프로필을 등록해보세요")
+                .frame(width: 330, height: 50, alignment: .center)
+                .font(.system(size: 14, weight: .light))
+        }
+    }
 }
