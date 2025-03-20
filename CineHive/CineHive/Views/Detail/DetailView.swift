@@ -1,3 +1,10 @@
+//
+//  DetailView.swift
+//  CineHive
+//
+//  Created by 이종민 on 3/4/25.
+//
+
 import SwiftUI
 
 enum DetailTab: CaseIterable {
@@ -16,6 +23,7 @@ enum DetailTab: CaseIterable {
 struct DetailView: View {
     let movieId: Int
     @State private var viewModel: DetailViewModel
+    @State private var tabBarManager = TabBarManager.shared
     @Environment(\.dismiss) private var dismiss
 
     // 넷플릭스 스타일 색상 상수
@@ -111,7 +119,11 @@ struct DetailView: View {
             }
         }
         .onAppear {
+            tabBarManager.hide()
             viewModel.fetchMovieDetail()
+        }
+        .onDisappear {
+            tabBarManager.show()
         }
     }
 }
