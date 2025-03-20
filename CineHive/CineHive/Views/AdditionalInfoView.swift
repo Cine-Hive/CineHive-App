@@ -11,7 +11,6 @@ import PhotosUI
 struct AdditionalInfoView: View {
     
     @State var viewModel = AdditionalInfoViewModel()
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false, content: {
@@ -23,42 +22,8 @@ struct AdditionalInfoView: View {
                 // 프로필 이미지 추가
                 ProfileSelectedView(viewModel: viewModel)
                 Spacer()
-                VStack {
-                    Text("장르 선택")
-                        .frame(width: 330, height: 30, alignment: .leading)
-                        .font(.system(size: 18, weight: .semibold))
-                    Text("선호하는 장르를 선택해보세요")
-                        .frame(width: 330, height: 20, alignment: .leading)
-                        .font(.system(size: 14, weight: .light))
-                    LazyVGrid(columns: columns) {
-                        ForEach(viewModel.genres, id: \.self) { genres in
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .stroke(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
-                                    .background(
-                                        viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor").opacity(0.1) : Color.white
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                                    .frame(width: 105, height: 95)
-                                Text(genres)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray)
-                            }
-                            
-                            .onTapGesture {
-                                if viewModel.selectedGenres.contains(genres) {
-                                    viewModel.selectedGenres.remove(genres)
-                                } else {
-                                    viewModel.selectedGenres.insert(genres)
-                                }
-                            }
-                            
-                            
-                        }
-                    }
-                    
-                }
-                .frame(width: 350, height: 180)
+                // 장르 선택
+                GenreSelectedView(viewModel: viewModel)
                 // 구독 중인 서비스 선택
                 VStack {
                     Spacer()
@@ -69,7 +34,7 @@ struct AdditionalInfoView: View {
                         .frame(width: 330, height: 20, alignment: .leading)
                         .font(.system(size: 14, weight: .light))
                     
-                    LazyVGrid(columns: columns) {
+                    LazyVGrid(columns: viewModel.columns) {
                         ForEach(viewModel.services, id: \.self) { services in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
@@ -200,5 +165,46 @@ struct ProfileSelectedView: View {
                 .frame(width: 330, height: 50, alignment: .center)
                 .font(.system(size: 14, weight: .light))
         }
+    }
+}
+
+struct GenreSelectedView: View {
+    @Bindable var viewModel: AdditionalInfoViewModel
+    
+    var body: some View {
+        VStack {
+            Text("장르 선택")
+                .frame(width: 330, height: 30, alignment: .leading)
+                .font(.system(size: 18, weight: .semibold))
+            Text("선호하는 장르를 선택해보세요")
+                .frame(width: 330, height: 20, alignment: .leading)
+                .font(.system(size: 14, weight: .light))
+            LazyVGrid(columns: viewModel.columns) {
+                ForEach(viewModel.genres, id: \.self) { genres in
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
+                            .background(
+                                viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor").opacity(0.1) : Color.white
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            .frame(width: 105, height: 95)
+                        Text(genres)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray)
+                    }
+                    
+                    .onTapGesture {
+                        if viewModel.selectedGenres.contains(genres) {
+                            viewModel.selectedGenres.remove(genres)
+                        } else {
+                            viewModel.selectedGenres.insert(genres)
+                        }
+                    }
+                }
+            }
+            
+        }
+        .frame(width: 350, height: 180)
     }
 }
