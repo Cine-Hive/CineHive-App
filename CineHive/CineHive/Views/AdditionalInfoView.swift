@@ -10,18 +10,7 @@ import PhotosUI
 
 struct AdditionalInfoView: View {
     
-    @State private var selectedImage: UIImage? = nil
-    @State private var pickerItem: PhotosPickerItem?
-    
-    private let genres = ["영화", "드라마", "애니메이션"]
-    @State private var selectedGenres: Set<String> = []
-    
-    private let services = ["Netflix", "Disney+", "TVING", "Apple TV+", "Wavve", "Watcha", "coupang \nplay", "kakao TV"]
-    @State private var selectedServices: Set<String> = []
-    
-    private let countries: [String] = ["대한민국", "미국", "일본", "중국", "영국", "프랑스", "이탈리아", "스페인", "호주", "독일"]
-    @State private var selectedCountry: String = "대한민국"
-    
+    @State var viewModel = AdditionalInfoViewModel()
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
     
     var body: some View {
@@ -34,9 +23,9 @@ struct AdditionalInfoView: View {
                 // 프로필 이미지 추가
                 VStack {
                     Spacer()
-                    PhotosPicker(selection: $pickerItem, matching: .images) {
+                    PhotosPicker(selection: $viewModel.pickerItem, matching: .images) {
                         ZStack {
-                            if let image = selectedImage {
+                            if let image = viewModel.selectedImage {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
@@ -53,11 +42,11 @@ struct AdditionalInfoView: View {
                                     )
                             }
                         }
-                        .onChange(of: pickerItem) { _, _ in
+                        .onChange(of: viewModel.pickerItem != nil) {
                             Task {
-                                if let data = try? await pickerItem?.loadTransferable(type: Data.self),
+                                if let data = try? await viewModel.pickerItem?.loadTransferable(type: Data.self),
                                    let image = UIImage(data: data) {
-                                    selectedImage = image
+                                    await viewModel.selectedImage = image
                                 }
                             }
                         }
@@ -76,25 +65,25 @@ struct AdditionalInfoView: View {
                         .frame(width: 330, height: 20, alignment: .leading)
                         .font(.system(size: 14, weight: .light))
                     LazyVGrid(columns: columns) {
-                        ForEach(genres, id: \.self) { genres in
+                        ForEach(viewModel.genres, id: \.self) { genres in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .stroke(selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
+                                    .stroke(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
                                     .background(
-                                        selectedGenres.contains(genres) ? Color("LoginBtnColor").opacity(0.1) : Color.white
+                                        viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor").opacity(0.1) : Color.white
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 15))
                                     .frame(width: 105, height: 95)
                                 Text(genres)
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray)
+                                    .foregroundColor(viewModel.selectedGenres.contains(genres) ? Color("LoginBtnColor") : Color.gray)
                             }
                             
                             .onTapGesture {
-                                if selectedGenres.contains(genres) {
-                                    selectedGenres.remove(genres)
+                                if viewModel.selectedGenres.contains(genres) {
+                                    viewModel.selectedGenres.remove(genres)
                                 } else {
-                                    selectedGenres.insert(genres)
+                                    viewModel.selectedGenres.insert(genres)
                                 }
                             }
                             
@@ -115,25 +104,24 @@ struct AdditionalInfoView: View {
                         .font(.system(size: 14, weight: .light))
                     
                     LazyVGrid(columns: columns) {
-                        ForEach(services, id: \.self) { services in
+                        ForEach(viewModel.services, id: \.self) { services in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .stroke(selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
+                                    .stroke(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
                                     .background(
-                                        selectedServices.contains(services) ? Color("LoginBtnColor").opacity(0.1) : Color.white
+                                        viewModel.selectedServices.contains(services) ? Color("LoginBtnColor").opacity(0.1) : Color.white
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 15))
                                     .frame(width: 105, height: 95)
                                 Text(services)
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
+                                    .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
                             }
-                            
                             .onTapGesture {
-                                if selectedServices.contains(services) {
-                                    selectedServices.remove(services)
+                                if viewModel.selectedServices.contains(services) {
+                                    viewModel.selectedServices.remove(services)
                                 } else {
-                                    selectedServices.insert(services)
+                                    viewModel.selectedServices.insert(services)
                                 }
                             }
                             
@@ -151,10 +139,10 @@ struct AdditionalInfoView: View {
                     Text("현지 추천을 위해 선택해보세요")
                         .frame(width: 330, height: 20, alignment: .leading)
                         .font(.system(size: 14, weight: .light))
-                    Menu(selectedCountry) {
-                        ForEach(countries, id: \.self) { region in
+                    Menu(viewModel.selectedCountry) {
+                        ForEach(viewModel.countries, id: \.self) { region in
                             Button(action: {
-                                selectedCountry = region
+                                viewModel.selectedCountry = region
                             }, label: {
                                 Text(region)
                                     .background(RoundedRectangle(cornerRadius: 16).fill(Color.black))
