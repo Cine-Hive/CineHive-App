@@ -21,7 +21,7 @@ struct AdditionalInfoView: View {
                     .font(.system(size: 23, weight: .semibold))
                 Spacer()
                 // 프로필 이미지 추가
-                ProfileSelectedView(selectedImage: $viewModel.selectedImage, pickerItem: $viewModel.pickerItem)
+                ProfileSelectedView(viewModel: viewModel)
                 Spacer()
                 VStack {
                     Text("장르 선택")
@@ -155,7 +155,6 @@ struct AdditionalInfoView: View {
 
             }
         })
-        .frame(width: .infinity, height: .infinity)
     }
 }
 
@@ -164,15 +163,14 @@ struct AdditionalInfoView: View {
 }
 
 struct ProfileSelectedView: View {
-    @Binding var selectedImage: UIImage?
-    @Binding var pickerItem: PhotosPickerItem?
+    @Bindable var viewModel: AdditionalInfoViewModel
     
     var body: some View {
         VStack {
             Spacer()
-            PhotosPicker(selection: $pickerItem, matching: .images) {
+            PhotosPicker(selection: $viewModel.pickerItem, matching: .images) {
                 ZStack {
-                    if let image = selectedImage {
+                    if let image = viewModel.selectedImage {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
@@ -189,11 +187,11 @@ struct ProfileSelectedView: View {
                             )
                     }
                 }
-                .onChange(of: pickerItem) {
+                .onChange(of: viewModel.pickerItem) {
                     Task {
-                        if let data = try? await pickerItem?.loadTransferable(type: Data.self),
+                        if let data = try? await viewModel.pickerItem?.loadTransferable(type: Data.self),
                            let image = UIImage(data: data) {
-                            selectedImage = image
+                            await viewModel.updateSelectedImage(image)
                         }
                     }
                 }
