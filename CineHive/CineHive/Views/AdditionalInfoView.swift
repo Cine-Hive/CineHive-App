@@ -31,6 +31,19 @@ struct AdditionalInfoView: View {
                 
                 Button(action: {
                 }, label: {
+                    Text("선택 완료")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
+                        .frame(width: 330, height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
+                        )
+                })
+                .disabled(!viewModel.isSelectionValid())
+                
+                Button(action: {
+                }, label: {
                     Text("건너 뛰기")
                         .frame(width: 330, height: 50)
                         .font(.system(size: 18, weight: .semibold))
@@ -41,20 +54,6 @@ struct AdditionalInfoView: View {
                                 .stroke(Color("LoginBtnColor"), lineWidth: 1)
                         )
                 })
-                
-                Button(action: {
-                }, label: {
-                    Text("선택 완료")
-                        .frame(width: 330, height: 50)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(Color("LoginBtnColor"))
-                        .background(Color(UIColor.systemBackground))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color("LoginBtnColor"), lineWidth: 1)
-                        )
-                })
-
             }
         })
     }
@@ -198,7 +197,7 @@ struct RegionSelectedView: View {
             Text("현지 추천을 위해 선택해보세요")
                 .frame(width: 330, height: 20, alignment: .leading)
                 .font(.system(size: 14, weight: .light))
-            Menu(viewModel.selectedCountry) {
+            Menu(viewModel.selectedCountry ?? "클릭하여 지역 선택") {
                 ForEach(viewModel.countries, id: \.self) { region in
                     Button(action: {
                         viewModel.selectedCountry = region

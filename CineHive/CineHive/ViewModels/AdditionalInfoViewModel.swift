@@ -17,7 +17,7 @@ class AdditionalInfoViewModel {
     // 장르 및 서비스 선택 상태
     var selectedGenres: Set<String> = []
     var selectedServices: Set<String> = []
-    var selectedCountry: String = "대한민국"
+    var selectedCountry: String? = nil
     
     // 선택 가능한 데이터 (상수)
     let genres = ["영화", "드라마", "애니메이션"]
@@ -29,5 +29,10 @@ class AdditionalInfoViewModel {
     @MainActor
     func updateSelectedImage(_ image: UIImage?) {
         self.selectedImage = image
+    }
+    
+    // 선택 값에 따른 버튼 활성화
+    func isSelectionValid() -> Bool {
+        return selectedImage != nil || !selectedGenres.isEmpty || !selectedServices.isEmpty || selectedCountry != nil
     }
 }
