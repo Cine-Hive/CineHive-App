@@ -25,43 +25,7 @@ struct AdditionalInfoView: View {
                 // 장르 선택
                 GenreSelectedView(viewModel: viewModel)
                 // 구독 중인 서비스 선택
-                VStack {
-                    Spacer()
-                    Text("구독 중인 서비스")
-                        .frame(width: 330, height: 30, alignment: .leading)
-                        .font(.system(size: 18, weight: .semibold))
-                    Text("구독 중인 서비스를 선택해보세요")
-                        .frame(width: 330, height: 20, alignment: .leading)
-                        .font(.system(size: 14, weight: .light))
-                    
-                    LazyVGrid(columns: viewModel.columns) {
-                        ForEach(viewModel.services, id: \.self) { services in
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .stroke(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
-                                    .background(
-                                        viewModel.selectedServices.contains(services) ? Color("LoginBtnColor").opacity(0.1) : Color.white
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                                    .frame(width: 105, height: 95)
-                                Text(services)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
-                            }
-                            .onTapGesture {
-                                if viewModel.selectedServices.contains(services) {
-                                    viewModel.selectedServices.remove(services)
-                                } else {
-                                    viewModel.selectedServices.insert(services)
-                                }
-                            }
-                            
-                            
-                        }
-                    }
-                }
-                .frame(width: 350, height: 380)
-                
+                ServiceSelectedView(viewModel: viewModel)
                 
                 VStack {
                     Text("서비스 지역")
@@ -206,5 +170,46 @@ struct GenreSelectedView: View {
             
         }
         .frame(width: 350, height: 180)
+    }
+}
+
+struct ServiceSelectedView: View {
+    @Bindable var viewModel: AdditionalInfoViewModel
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            Text("구독 중인 서비스")
+                .frame(width: 330, height: 30, alignment: .leading)
+                .font(.system(size: 18, weight: .semibold))
+            Text("구독 중인 서비스를 선택해보세요")
+                .frame(width: 330, height: 20, alignment: .leading)
+                .font(.system(size: 14, weight: .light))
+            
+            LazyVGrid(columns: viewModel.columns) {
+                ForEach(viewModel.services, id: \.self) { services in
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray, lineWidth: 1)
+                            .background(
+                                viewModel.selectedServices.contains(services) ? Color("LoginBtnColor").opacity(0.1) : Color.white
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            .frame(width: 105, height: 95)
+                        Text(services)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
+                    }
+                    .onTapGesture {
+                        if viewModel.selectedServices.contains(services) {
+                            viewModel.selectedServices.remove(services)
+                        } else {
+                            viewModel.selectedServices.insert(services)
+                        }
+                    }
+                }
+            }
+        }
+        .frame(width: 350, height: 380)
     }
 }
