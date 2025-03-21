@@ -26,35 +26,8 @@ struct AdditionalInfoView: View {
                 GenreSelectedView(viewModel: viewModel)
                 // 구독 중인 서비스 선택
                 ServiceSelectedView(viewModel: viewModel)
-                
-                VStack {
-                    Text("서비스 지역")
-                        .frame(width: 330, height: 30, alignment: .leading)
-                        .font(.system(size: 18, weight: .semibold))
-                    Text("현지 추천을 위해 선택해보세요")
-                        .frame(width: 330, height: 20, alignment: .leading)
-                        .font(.system(size: 14, weight: .light))
-                    Menu(viewModel.selectedCountry) {
-                        ForEach(viewModel.countries, id: \.self) { region in
-                            Button(action: {
-                                viewModel.selectedCountry = region
-                            }, label: {
-                                Text(region)
-                                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.black))
-                            })
-                            
-                        }
-                    }
-                    .frame(width: 330, height: 50)
-                    .background(Color(UIColor.systemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
-                    .tint(Color.black)
-                    
-                }
-                .frame(width: 350, height: 180)
+                // 서비스 지역 선택
+                RegionSelectedView(viewModel: viewModel)
                 
                 Button(action: {
                 }, label: {
@@ -211,5 +184,38 @@ struct ServiceSelectedView: View {
             }
         }
         .frame(width: 350, height: 380)
+    }
+}
+
+struct RegionSelectedView: View {
+    @Bindable var viewModel: AdditionalInfoViewModel
+    
+    var body: some View {
+        VStack {
+            Text("서비스 지역")
+                .frame(width: 330, height: 30, alignment: .leading)
+                .font(.system(size: 18, weight: .semibold))
+            Text("현지 추천을 위해 선택해보세요")
+                .frame(width: 330, height: 20, alignment: .leading)
+                .font(.system(size: 14, weight: .light))
+            Menu(viewModel.selectedCountry) {
+                ForEach(viewModel.countries, id: \.self) { region in
+                    Button(action: {
+                        viewModel.selectedCountry = region
+                    }, label: {
+                        Text(region)
+                            .background(RoundedRectangle(cornerRadius: 16).fill(Color.black))
+                    })
+                }
+            }
+            .frame(width: 330, height: 50)
+            .background(Color(UIColor.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.gray, lineWidth: 1)
+            )
+            .tint(Color.black)
+        }
+        .frame(width: 350, height: 180)
     }
 }
