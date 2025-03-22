@@ -8,7 +8,7 @@
 import SwiftUI
 
 // OTT 서비스 타입 정의
-enum OTTService: String, CaseIterable {
+enum OTT: String, CaseIterable {
     case netflix = "넷플릭스"
     case disney = "디즈니+"
     case apple = "애플TV+"

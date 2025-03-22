@@ -15,7 +15,7 @@ struct HomeTabView: View {
     @State private var notificationMessage = "최신 OTT 정보가 업데이트 되었습니다"
     @State private var searchText = ""
     @State private var isSearchActive = false
-    @State private var selectedOTT: OTTService = .netflix
+    @State private var selectedOTT: OTT = .netflix
     
     var body: some View {
         ZStack {
@@ -200,120 +200,6 @@ struct HomeHeaderView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
-    }
-}
-
-
-
-
-
-
-
-// OTT별 인기 콘텐츠 섹션 컴포넌트
-struct OTTPopularContentsView: View {
-    let movies: [Movie]
-    @Binding var selectedOTT: OTTService
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "OTT별 인기 콘텐츠", actionTitle: "더보기")
-            
-            // OTT 선택 버튼
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(OTTService.allCases, id: \.self) { ott in
-                        ottPlatformButton(ott: ott, isSelected: selectedOTT == ott)
-                            .onTapGesture {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    selectedOTT = ott
-                                }
-                            }
-                    }
-                }
-                .padding(.horizontal, 15)
-            }
-            
-            // 선택된 OTT의 콘텐츠
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    ForEach(movies.prefix(8), id: \.id) { movie in
-                        NavigationLink(destination: DetailView(movieId: movie.id)) {
-                            ottContentCard(movie: movie)
-                        }
-                    }
-                }
-                .padding(.horizontal, 15)
-                .padding(.top, 8)
-            }
-        }
-        .padding(.top, 30)
-    }
-    
-    // OTT 플랫폼 버튼
-    private func ottPlatformButton(ott: OTTService, isSelected: Bool) -> some View {
-        VStack(spacing: 8) {
-            ZStack {
-                Circle()
-                    .fill(isSelected ? ott.color.opacity(0.3) : Color.gray.opacity(0.1))
-                    .frame(width: 50, height: 50)
-                
-                Image(systemName: ott.iconName)
-                    .foregroundColor(isSelected ? ott.color : CHColors.secondaryColor)
-                    .font(.system(size: 24))
-            }
-            
-            Text(ott.name)
-                .font(.system(size: 12))
-                .foregroundColor(isSelected ? CHColors.textColor : CHColors.secondaryColor)
-        }
-    }
-    
-    // OTT 콘텐츠 카드
-    private func ottContentCard(movie: Movie) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // 포스터 이미지
-            PosterView(posterURL: movie.posterURL, width: 120, height: 180)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
-                )
-            
-            // 제목
-            VStack(alignment: .leading, spacing: 4) {
-                Text("영화 \(movie.id)")
-                    .font(.system(size: 14))
-                    .foregroundColor(CHColors.textColor)
-                    .lineLimit(1)
-                
-                // 평점
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(CHColors.starColor)
-                        .font(.system(size: 12))
-                    
-                    Text(String(format: "%.1f", 8.0 + Double(movie.id % 20) / 10))
-                        .font(.system(size: 12))
-                        .foregroundColor(CHColors.secondaryColor)
-                }
-                
-                // OTT 플랫폼 뱃지 (선택된 OTT)
-                HStack(spacing: 2) {
-                    Image(systemName: selectedOTT.iconName)
-                        .foregroundColor(selectedOTT.color)
-                        .font(.system(size: 10))
-                    
-                    Text("독점")
-                        .font(.system(size: 9))
-                        .foregroundColor(CHColors.textColor)
-                }
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background(selectedOTT.color.opacity(0.2))
-                .cornerRadius(3)
-            }
-            .frame(width: 120)
-        }
     }
 }
 
