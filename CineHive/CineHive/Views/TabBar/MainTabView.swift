@@ -15,13 +15,10 @@ struct MainTabView: View {
         NavigationStack{
             ZStack(alignment: .bottom) {
                 CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
-                
                 ZStack {
                     switch selectedTab {
                     case 0:
-                        
                         HomeTabView()
-                        
                             .transition(.opacity)
                     case 1:
                         ExploreTabView()
@@ -44,12 +41,9 @@ struct MainTabView: View {
                     .offset(y: tabBarManager.isVisible ? 0 : 100)
                     .animation(.spring(response: 0.3), value: tabBarManager.isVisible)
                     .ignoresSafeArea(.all, edges: .bottom)
-                
+                    .padding(.bottom, -30)
             }
         }
-        
-        .background(CHColors.backgroundColor)
-        .edgesIgnoringSafeArea(.bottom)
     }
 }
 

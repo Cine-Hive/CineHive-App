@@ -21,7 +21,7 @@ struct CustomTabBar: View {
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-                .background(Color.gray.opacity(0.2))
+                .background(Color.gray.opacity(0.4))
             
             HStack(spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
