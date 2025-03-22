@@ -46,7 +46,6 @@ struct NotificationView: View {
                 .stroke(CHColors.primaryColor.opacity(0.5), lineWidth: 1)
         )
         .onAppear {
-            // Auto-dismiss after 3 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation(.easeOut(duration: 0.3)) {
                     isPresented = false

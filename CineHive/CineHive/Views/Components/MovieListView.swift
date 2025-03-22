@@ -12,8 +12,8 @@ struct MovieListView: View {
     let movieType: MovieListType
     @State var viewModel: MovieViewModel
     
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
+    private let textColor = CHColors.textColor
+    private let secondaryColor = CHColors.secondaryColor
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
