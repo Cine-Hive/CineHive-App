@@ -19,6 +19,16 @@ enum OTT: String, CaseIterable {
         return self.rawValue
     }
     
+    var shortName: String {
+        switch self {
+        case .netflix: return "넷플"
+        case .disney: return "디즈니"
+        case .apple: return "애플"
+        case .wavve: return "웨이브"
+        case .tving: return "티빙"
+        }
+    }
+    
     var iconName: String {
         switch self {
         case .netflix: return "n.square.fill"
