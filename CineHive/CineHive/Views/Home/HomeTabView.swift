@@ -48,35 +48,13 @@ struct HomeTabView: View {
                         GenreExploreView()
                         
                         // 현재 상영 영화
-                        if !viewModel.nowPlayingMovies.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                SectionHeader(title: "현재 상영 영화", actionTitle: "더보기")
-                                
-                                MovieListView(
-                                    movies: viewModel.nowPlayingMovies,
-                                    movieType: .nowPlaying,
-                                    viewModel: viewModel
-                                )
-                            }
-                            .padding(.top, 30)
-                        }
+                        nowPlayingSection()
                         
                         // 커뮤니티 하이라이트 섹션
                         CommunityHighlightsView()
                         
                         // 개봉 예정작
-                        if !viewModel.upcomingMovies.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                SectionHeader(title: "개봉 예정작", actionTitle: "더보기")
-                                
-                                MovieListView(
-                                    movies: viewModel.upcomingMovies,
-                                    movieType: .upcoming,
-                                    viewModel: viewModel
-                                )
-                            }
-                            .padding(.top, 30)
-                        }
+                        upcomingSection()
                         
                         // OTT별 인기 콘텐츠 섹션
                         OTTPopularContentsView(
@@ -165,6 +143,42 @@ struct HomeTabView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             withAnimation {
                 showNotification = true
+            }
+        }
+    }
+    
+    private func nowPlayingSection() -> some View {
+        Group {
+            if !viewModel.nowPlayingMovies.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "현재 상영 영화", actionTitle: "더보기")
+
+                    MovieListView(
+                        movies: viewModel.nowPlayingMovies,
+                        movieType: .nowPlaying,
+                        viewModel: viewModel
+                    )
+                }
+                .padding(.horizontal, 15)
+                .padding(.top, 30)
+            }
+        }
+    }
+    
+    private func upcomingSection() -> some View {
+        Group {
+            if !viewModel.upcomingMovies.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "개봉 예정작", actionTitle: "더보기")
+
+                    MovieListView(
+                        movies: viewModel.upcomingMovies,
+                        movieType: .upcoming,
+                        viewModel: viewModel
+                    )
+                }
+                .padding(.top, 30)
+                .padding(.horizontal, 15)
             }
         }
     }
