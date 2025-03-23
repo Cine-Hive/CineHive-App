@@ -34,9 +34,9 @@ struct MovieDetail: Codable, Identifiable {
     let genres: [Genre]
     let voteAverage: Double
     let popularity: Double
-    let actors: [Actor]
+    let actors: [Actor]?
     let videos: [Video]?
-    let director: Director
+    let director: Director?
     let runtime: Int
     
     var posterURL: URL? {
