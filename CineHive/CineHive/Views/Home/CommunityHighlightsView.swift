@@ -29,9 +29,9 @@ struct CommunityHighlightsView: View {
                     }
                 }
             }
-            .padding(.horizontal, 15)
         }
         .padding(.top, 30)
+        .padding(.horizontal, 15)
         
     }
     

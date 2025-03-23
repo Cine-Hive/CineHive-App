@@ -27,7 +27,6 @@ struct OTTPopularContentsView: View {
                             }
                     }
                 }
-                .padding(.horizontal, 15)
             }
             
             // 선택된 OTT의 콘텐츠
@@ -39,10 +38,10 @@ struct OTTPopularContentsView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 15)
                 .padding(.top, 8)
             }
         }
+        .padding(.horizontal, 15)
         .padding(.top, 30)
     }
     

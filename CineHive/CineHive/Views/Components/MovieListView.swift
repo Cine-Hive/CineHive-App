@@ -43,8 +43,6 @@ struct MovieListView: View {
                     }
                 }
             }
-            .padding(.leading, 5)
-            .padding(.trailing, 15)
         }
     }
 }

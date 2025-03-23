@@ -34,6 +34,7 @@ struct TopRatedMoviesView: View {
             }
         }
         .padding(.top, 30)
+        .padding(.horizontal, 15)
     }
     
     // 최고 평점 영화 카드
@@ -93,7 +94,6 @@ struct TopRatedMoviesView: View {
             Spacer()
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 15)
         .background(Color.clear)
         .contentShape(Rectangle())
     }

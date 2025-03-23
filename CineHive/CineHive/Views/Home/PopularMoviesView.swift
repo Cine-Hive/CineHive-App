@@ -24,7 +24,6 @@ struct PopularMoviesView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 15)
                 }
             } else {
                 Text("로딩 중...")
@@ -33,6 +32,7 @@ struct PopularMoviesView: View {
                     .frame(maxWidth: .infinity)
             }
         }
+        .padding(.horizontal, 15)
         .padding(.top, 30)
     }
     

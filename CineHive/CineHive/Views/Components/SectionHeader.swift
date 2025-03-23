@@ -28,7 +28,6 @@ struct SectionHeader: View {
                     .foregroundColor(.gray)
             }
         }
-        .padding(.horizontal, 15)
     }
 }
 
