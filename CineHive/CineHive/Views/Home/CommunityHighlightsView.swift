@@ -7,32 +7,44 @@
 
 import SwiftUI
 
-// 커뮤니티 하이라이트 섹션 컴포넌트
 struct CommunityHighlightsView: View {
+    @State private var showPreparingView = false
+    @State private var selectedPostIndex = 0
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             SectionHeader(title: "커뮤니티 화제", actionTitle: "더보기")
             
             VStack(spacing: 12) {
-                ForEach(1...3, id: \.self) { index in
-                    NavigationLink(destination: EmptyView()) {
-                        // 나중에 커뮤니티 상세 페이지로 연결
-                        // 커뮤니티 인기글 3개나 상위 3개
+                ForEach(0..<3, id: \.self) { index in
+                    Button {
+                        selectedPostIndex = index
+                        showPreparingView = true
+                    } label: {
                         communityPostCard(
-                            title: ["넷플릭스 3월 신작 총정리", "디즈니+ 꿀팁 공유합니다", "최근 본 영화 TOP 5"][index-1],
-                            author: "유저\(index)",
-                            category: ["정보", "꿀팁", "리뷰"][index-1],
-                            commentCount: [24, 18, 32][index-1],
-                            likeCount: [86, 45, 120][index-1],
-                            time: ["\(index)시간 전"][0]
+                            title: ["넷플릭스 3월 신작 총정리", "디즈니+ 꿀팁 공유합니다", "최근 본 영화 TOP 5"][index],
+                            author: "유저\(index+1)",
+                            category: ["정보", "꿀팁", "리뷰"][index],
+                            commentCount: [24, 18, 32][index],
+                            likeCount: [86, 45, 120][index],
+                            time: "\(index+1)시간 전"
                         )
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
         }
         .padding(.top, 30)
         .padding(.horizontal, 15)
-        
+        .navigationDestination(isPresented: $showPreparingView) {
+            PreparingView(
+                type: "커뮤니티",
+                actionTitle: "확인"
+            ) {
+                showPreparingView = false
+            }
+            .navigationBarBackButtonHidden(true)
+        }
     }
     
     // 커뮤니티 게시글 카드

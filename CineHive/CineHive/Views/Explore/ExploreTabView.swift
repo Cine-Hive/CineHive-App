@@ -372,53 +372,16 @@ struct ExploreTabView: View {
 //                }
 //            }
 //        }
-        contentPreparingView(type: "드라마")
+        PreparingView(type: "드라마", actionTitle: "영화 콘텐츠 보러가기") {
+            contentType = .movie
+        }
     }
     
     private func animationContent() -> some View {
-        contentPreparingView(type: "애니메이션")
-    }
-    
-    private func contentPreparingView(type: String) -> some View {
-        VStack(spacing: 20) {
-            Spacer().frame(height: 30)
-            
-            Image(systemName: type == "드라마" ? "tv" : "sparkles")
-                .font(.system(size: 60))
-                .foregroundColor(CHColors.primaryColor)
-                .padding()
-            
-            Text("\(type) 콘텐츠 준비 중...")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(CHColors.textColor)
-            
-            Text("곧 다양한 \(type) 콘텐츠를 제공해 드릴 예정입니다.\n조금만 기다려주세요!")
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-                .foregroundColor(CHColors.secondaryColor)
-            
-            Button {
-                contentType = .movie
-            } label: {
-                Text("영화 콘텐츠 보기")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(CHColors.primaryColor)
-                    .cornerRadius(8)
-                    .padding(.top, 20)
-            }
-            
-            Spacer()
+        PreparingView(type: "애니메이션", actionTitle: "영화 콘텐츠 보러가기") {
+            contentType = .movie
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
     }
-    
-    // MARK: - Helper Methods
     
     private func refreshContent() async {
         isRefreshing = true
