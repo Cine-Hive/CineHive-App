@@ -16,6 +16,7 @@ struct HomeTabView: View {
     @State private var searchText = ""
     @State private var isSearchActive = false
     @State private var selectedOTT: OTT = .netflix
+    @State private var showErrorToast = false
     
     var body: some View {
         ZStack {
@@ -91,6 +92,8 @@ struct HomeTabView: View {
                     await refreshContent()
                 }
             }
+            .errorToast(message: viewModel.error, isPresented: $showErrorToast)
+            
         }
         .foregroundColor(CHColors.textColor)
         .navigationBarHidden(true)
@@ -100,6 +103,17 @@ struct HomeTabView: View {
                 isSearchActive: $isSearchActive
             ) : nil
         )
+        .onChange(of: viewModel.error) { _, newValue in
+            if let newValue, !newValue.isEmpty {
+                showErrorToast = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation {
+                        showErrorToast = false
+                        viewModel.clearError()
+                    }
+                }
+            }
+        }
         .sheet(isPresented: $showProfileOptions) {
             // ProfileOptionsView()
             Text("프로필 옵션")
