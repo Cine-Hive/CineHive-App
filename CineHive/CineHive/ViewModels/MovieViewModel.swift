@@ -13,7 +13,9 @@ final class MovieViewModel {
     private(set) var movies: [Movie] = []
     private(set) var movieDetail: MovieDetail?
     private(set) var isLoading = false
-    private(set) var error: String?
+    
+    // 에러 처리
+    var error: String?
     
     // 각 카테고리별 영화 데이터
     private(set) var nowPlayingMovies: [Movie] = []
@@ -29,18 +31,18 @@ final class MovieViewModel {
     var currentUser: UserData? = nil
     
     private let movieService: MovieService
-
+    
     init(movieService: MovieService = .shared) {
         self.movieService = movieService
     }
-
+    
     @MainActor
     func fetchMovies() async {
         performNetworkRequest {
             self.movies = try await self.movieService.fetchMovies()
         }
     }
-
+    
     @MainActor
     func fetchNowPlayingMovies() async {
         performNetworkRequest {
@@ -136,7 +138,16 @@ final class MovieViewModel {
         isLoggedIn = false
         currentUser = nil
     }
-
+    
+    func showError(_ error: Error) {
+        let uiError = ErrorMapper.map(error)
+        self.error = uiError.errorDescription
+    }
+    
+    func clearError() {
+        self.error = nil
+    }
+    
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {
         Task {
@@ -144,10 +155,8 @@ final class MovieViewModel {
                 isLoading = true
                 error = nil
                 try await task()
-            } catch let error as NetworkError {
-                self.error = error.errorDescription
             } catch {
-                self.error = "알 수 없는 오류가 발생했습니다."
+                showError(error)
             }
             isLoading = false
         }

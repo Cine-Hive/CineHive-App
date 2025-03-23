@@ -31,7 +31,7 @@ struct CommunityHighlightsView: View {
             }
             .padding(.horizontal, 15)
         }
-        .padding(.vertical, 15)
+        .padding(.top, 30)
         
     }
     
