@@ -26,10 +26,7 @@ struct PopularMoviesView: View {
                     }
                 }
             } else {
-                Text("로딩 중...")
-                    .foregroundColor(CHColors.secondaryColor)
-                    .frame(height: 220)
-                    .frame(maxWidth: .infinity)
+                LoadingView()
             }
         }
         .padding(.horizontal, 15)

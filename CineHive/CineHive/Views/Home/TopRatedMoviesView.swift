@@ -27,10 +27,7 @@ struct TopRatedMoviesView: View {
                     .padding(.horizontal, 15)
                 }
             } else {
-                Text("로딩 중...")
-                    .foregroundColor(CHColors.secondaryColor)
-                    .frame(height: 100)
-                    .frame(maxWidth: .infinity)
+                LoadingView()
             }
         }
         .padding(.top, 30)

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @State private var previousTab = 0
     @State private var tabBarManager = TabBarManager.shared
     
     var body: some View {
@@ -24,11 +25,23 @@ struct MainTabView: View {
                         ExploreTabView()
                             .transition(.opacity)
                     case 2:
-                        CommunityTabView()
-                            .transition(.opacity)
+                        //CommunityTabView()
+                        PreparingView(
+                            type: "커뮤니티",
+                            actionTitle: "확인"
+                        ) {
+                            selectedTab = previousTab
+                        }
+                        .transition(.opacity)
                     case 3:
-                        ProfileTabView()
-                            .transition(.opacity)
+                        //ProfileTabView()
+                        PreparingView(
+                            type: "프로필",
+                            actionTitle: "확인"
+                        ) {
+                            selectedTab = previousTab
+                        }
+                        .transition(.opacity)
                     default:
                         EmptyView()
                     }
