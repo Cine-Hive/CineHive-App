@@ -57,10 +57,12 @@ struct GenreExploreView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    // 임시 데이터 - 실제로는 API로 장르별 영화 가져와야 함
-                    ForEach(1...8, id: \.self) { index in
-                        NavigationLink(destination: DetailView(movieId: index)) {
-                            genreMovieCard(title: "\(genre) 영화 \(index)", rating: Double.random(in: 7.0...9.5))
+                    // 장르에 맞는 더미 데이터 가져오기
+                    if let movies = Movie.genreMovies[genre] {
+                        ForEach(movies) { movie in
+                            NavigationLink(destination: DetailView(movieId: movie.id)) {
+                                genreMovieCard(movie: movie)
+                            }
                         }
                     }
                 }
@@ -72,21 +74,13 @@ struct GenreExploreView: View {
     }
     
     // 장르 영화 카드
-    private func genreMovieCard(title: String, rating: Double) -> some View {
+    private func genreMovieCard(movie: Movie) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            // 임시 포스터 이미지
-            ZStack {
-                Rectangle()
-                    .fill(CHColors.cardBackground)
-                    .frame(width: 120, height: 180)
-                    .cornerRadius(8)
-                
-                Image(systemName: "film")
-                    .font(.system(size: 30))
-                    .foregroundColor(CHColors.secondaryColor)
-            }
+            // 포스터 이미지
+            PosterView(posterURL: movie.posterURL, width: 120, height: 180)
+                .cornerRadius(8)
             
-            Text(title)
+            Text("영화 \(movie.id)")
                 .font(.system(size: 14))
                 .foregroundColor(CHColors.textColor)
                 .lineLimit(1)
@@ -97,7 +91,8 @@ struct GenreExploreView: View {
                     .foregroundColor(CHColors.starColor)
                     .font(.system(size: 12))
                 
-                Text(String(format: "%.1f", rating))
+                // 평점은 ID를 기반으로 가상으로 생성
+                Text(String(format: "%.1f", 7.0 + Double(movie.id % 30) / 10.0))
                     .font(.system(size: 12))
                     .foregroundColor(CHColors.secondaryColor)
             }
