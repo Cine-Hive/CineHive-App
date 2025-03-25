@@ -179,9 +179,15 @@ struct ServiceSelectedView: View {
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .frame(width: 105, height: 95)
-                        Text(services)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
+                        VStack(spacing: 5) {
+                            Image(systemName: viewModel.serviceIcons[services] ?? "questionmark")
+                                .font(.system(size: 20))
+                                .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
+                            Text(services)
+                                .font(.system(size: 13, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
+                        }
                     }
                     .onTapGesture {
                         if viewModel.selectedServices.contains(services) {
