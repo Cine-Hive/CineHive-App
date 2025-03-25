@@ -11,6 +11,7 @@ import PhotosUI
 struct AdditionalInfoView: View {
     
     @State var viewModel = AdditionalInfoViewModel()
+    @State private var isShowingView = false
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false, content: {
@@ -29,31 +30,41 @@ struct AdditionalInfoView: View {
                 // 서비스 지역 선택
                 RegionSelectedView(viewModel: viewModel)
                 
-                Button(action: {
-                }, label: {
-                    Text("선택 완료")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
-                        .frame(width: 330, height: 50)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
-                        )
-                })
-                .disabled(!viewModel.isSelectionValid())
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        isShowingView = true
+                    }, label: {
+                        Text("건너 뛰기")
+                            .frame(width: 140, height: 50)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.gray)
+                            .background(Color(UIColor.systemBackground))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    })
+                    .fullScreenCover(isPresented: $isShowingView) {
+                        MainTabView()
+                    }
+                    Button(action: {
+                        isShowingView = true
+                    }, label: {
+                        Text("선택 완료")
+                            .frame(width: 180, height: 50)
+                            .font(.system(size: 17, weight: .semibold))
+                            .background(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    })
+                    .foregroundStyle(.white)
+                    .disabled(!viewModel.isSelectionValid())
+                    .fullScreenCover(isPresented: $isShowingView) {
+                        MainTabView()
+                    }
+                    Spacer()
+                }
                 
-                Button(action: {
-                }, label: {
-                    Text("건너 뛰기")
-                        .frame(width: 330, height: 50)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(Color("LoginBtnColor"))
-                        .background(Color(UIColor.systemBackground))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color("LoginBtnColor"), lineWidth: 1)
-                        )
-                })
             }
         })
     }
@@ -169,7 +180,7 @@ struct ServiceSelectedView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .frame(width: 105, height: 95)
                         Text(services)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 15, weight: .medium))
                             .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
                     }
                     .onTapGesture {
