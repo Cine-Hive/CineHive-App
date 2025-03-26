@@ -21,6 +21,9 @@ class BoardViewModel {
     var searchResults: [Board] = []
     var isSearching: Bool = false
     
+    // 카테고리 관련 상태
+    var selectedCategory: BoardCategory = .all
+    
     private let boardService: BoardService
     
     init(boardService: BoardService = .shared) {
@@ -170,5 +173,20 @@ class BoardViewModel {
             }
             isLoading = false
         }
+    }
+    
+    // MARK: - 검색 관련 메소드
+    func clearSearch() {
+        searchText = ""
+        searchResults = []
+        isSearching = false
+    }
+    
+    // MARK: - 카테고리 변경 메소드
+    @MainActor
+    func changeCategory(to category: BoardCategory) {
+        selectedCategory = category
+        // 카테고리에 맞는 게시글을 가져오는 로직은 추후 API 구현 시 업데이트 필요
+        fetchBoards()
     }
 }
