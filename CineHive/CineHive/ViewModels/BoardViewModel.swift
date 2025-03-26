@@ -158,6 +158,35 @@ class BoardViewModel {
         }
     }
     
+    // MARK: - 좋아요 기능 메소드
+    @MainActor
+    func toggleLike(boardId: Int, userEmail: String) async {
+        do {
+            // 좋아요 API 호출
+            try await boardService.addLike(boardId: boardId, userEmail: userEmail)
+            
+            // 좋아요 수 가져오기
+            let newLikeCount = try await boardService.fetchLikeCount(boardId: boardId)
+            
+            // 목록에서 해당 게시글 업데이트
+            if let index = boards.firstIndex(where: { $0.id == boardId }) {
+                // mutating 메소드를 사용하여 좋아요 수만 업데이트
+                var updatedBoard = boards[index]
+                updatedBoard.updateLikeCount(newLikeCount)
+                boards[index] = updatedBoard
+            }
+            
+            // 선택된 게시글 업데이트
+            if selectedBoard?.id == boardId {
+                var updatedSelectedBoard = selectedBoard!
+                updatedSelectedBoard.updateLikeCount(newLikeCount)
+                selectedBoard = updatedSelectedBoard
+            }
+        } catch {
+            print("좋아요 처리 중 오류: \(error.localizedDescription)")
+        }
+    }
+    
     // MARK: - 네트워크 요청 공통 처리 메소드
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {

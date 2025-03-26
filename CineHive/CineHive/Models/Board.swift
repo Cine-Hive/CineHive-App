@@ -15,9 +15,26 @@ struct Board: Identifiable, Codable {
     let category: String
     let createdAt: String
     let viewCount: Int
-    let likeCount: Int
+    var likeCount: Int  // var로 변경
     let commentCount: Int
+
+    // 좋아요 수 업데이트 메소드
+    mutating func updateLikeCount(_ newCount: Int) {
+        self.likeCount = newCount
+    }
     
+    // 좋아요 증가 메소드
+    mutating func incrementLike() {
+        self.likeCount += 1
+    }
+    
+    // 좋아요 감소 메소드
+    mutating func decrementLike() {
+        if self.likeCount > 0 {
+            self.likeCount -= 1
+        }
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case title = "brdTitle"
