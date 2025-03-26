@@ -47,6 +47,5 @@ struct PosterView: View {
             .aspectRatio(contentMode: .fill)
             .clipped()
             .cornerRadius(10)
-            .shadow(radius: 4)
     }
 }

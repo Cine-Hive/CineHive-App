@@ -34,7 +34,7 @@ struct DetailOverviewView: View {
                 }
             }
             
-            Text("감독: \(movie.director.name)")
+            Text("감독: \(movie.director?.name ?? "정보 없음")")
                 .font(.system(size: 14))
                 .foregroundColor(.gray)
                 .padding(.horizontal, 16)

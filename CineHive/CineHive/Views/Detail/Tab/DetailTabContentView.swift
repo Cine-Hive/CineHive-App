@@ -22,7 +22,7 @@ struct DetailTabContentView: View {
                         videos: videos
                     )
                 }
-                DetailActorsView(actors: movie.actors)
+                DetailActorsView(actors: movie.actors ?? [])
             case .related:
                 DetailRelatedView()
             case .details:

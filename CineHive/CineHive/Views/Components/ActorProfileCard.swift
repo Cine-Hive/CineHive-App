@@ -52,6 +52,6 @@ struct ActorProfileCard: View {
 }
 
 #Preview {
-    ActorProfileCard(actor: MovieDetail.dummy.actors.first!)
+    ActorProfileCard(actor: MovieDetail.dummy.actors!.first!)
         .background(.black)
 }

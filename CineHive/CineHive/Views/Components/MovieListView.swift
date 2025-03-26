@@ -12,9 +12,8 @@ struct MovieListView: View {
     let movieType: MovieListType
     @State var viewModel: MovieViewModel
     
-    // 넷플릭스 스타일 색상
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
+    private let textColor = CHColors.textColor
+    private let secondaryColor = CHColors.secondaryColor
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -44,8 +43,6 @@ struct MovieListView: View {
                     }
                 }
             }
-            .padding(.leading, 5)
-            .padding(.trailing, 15)
         }
     }
 }

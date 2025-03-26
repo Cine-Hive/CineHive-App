@@ -13,10 +13,11 @@ struct LoadingView: View {
             ProgressView()
                 .scaleEffect(2.0)
                 .padding()
+                .tint(CHColors.textColor)
             Text("로딩 중...")
                 .font(.subheadline)
         }
-        .foregroundColor(.white)
+        .foregroundColor(CHColors.textColor)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
