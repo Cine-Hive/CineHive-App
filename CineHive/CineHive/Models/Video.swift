@@ -11,6 +11,4 @@ struct Video: Identifiable, Codable {
     let id: Int
     let videoKey: String
     let name: String
-    let site: String
-    let type: String
 }
