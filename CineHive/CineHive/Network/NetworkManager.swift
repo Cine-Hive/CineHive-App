@@ -206,3 +206,9 @@ final class NetworkManager {
         }
     }
 }
+
+extension NetworkManager {
+    func post(endpoint: String, body: some Encodable) async throws {
+        let _: String = try await post(endpoint: endpoint, body: body)
+    }
+}
