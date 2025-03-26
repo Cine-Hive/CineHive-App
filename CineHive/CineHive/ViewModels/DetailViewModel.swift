@@ -73,7 +73,7 @@ final class DetailViewModel {
         
         // 최소 1초 동안 스켈레톤 UI를 표시하는 타이머 시작
         skeletonTimerTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 500_000_000) // 1초 대기
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
             
             guard let self = self, !Task.isCancelled else { return }
             
