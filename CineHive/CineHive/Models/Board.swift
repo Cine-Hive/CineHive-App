@@ -12,17 +12,21 @@ struct Board: Identifiable, Codable {
     let title: String
     let content: String
     let author: String
+    let category: String
     let createdAt: String
+    let viewCount: Int
     let likeCount: Int
-    let views: Int
-    
+    let commentCount: Int
+
     enum CodingKeys: String, CodingKey {
         case id
         case title = "brdTitle"
         case content = "brdContent"
         case author = "memNickname"
+        case category = "brdCategory"
         case createdAt = "brgRegDate"
+        case viewCount = "views"
         case likeCount
-        case views
+        case commentCount
     }
 }
