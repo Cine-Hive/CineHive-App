@@ -104,6 +104,7 @@ struct DetailView: View {
             .navigationBarHidden(true)
             .statusBar(hidden: true)
             .toolbar(.hidden, for: .tabBar)
+            .redacted(reason: viewModel.isLoading ? .placeholder : [])
             
             BackButtonView(action: { dismiss() }, color: textColor)
         }
