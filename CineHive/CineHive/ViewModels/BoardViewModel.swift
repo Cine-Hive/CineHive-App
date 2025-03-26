@@ -87,6 +87,44 @@ class BoardViewModel {
         }
     }
     
+    // MARK: - 게시글 수정 메소드
+    @MainActor
+    func updateBoard(id: Int, title: String, content: String, email: String) async -> Bool {
+        do {
+            isLoading = true
+            error = nil
+            
+            let request = BoardForRequest(
+                email: email,
+                title: title,
+                content: content
+            )
+            
+            let updatedBoard = try await boardService.updateBoard(id: id, request: request)
+            
+            // 목록에서 해당 게시글 업데이트
+            if let index = boards.firstIndex(where: { $0.id == id }) {
+                boards[index] = updatedBoard
+            }
+            
+            // 현재 선택된 게시글이 수정한 게시글이면 업데이트
+            if selectedBoard?.id == id {
+                selectedBoard = updatedBoard
+            }
+            
+            isLoading = false
+            return true
+        } catch let networkError as NetworkError {
+            error = networkError.errorDescription
+            isLoading = false
+            return false
+        } catch {
+            self.error = "게시글 수정 중 오류가 발생했습니다."
+            isLoading = false
+            return false
+        }
+    }
+    
     // MARK: - 네트워크 요청 공통 처리 메소드
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {
