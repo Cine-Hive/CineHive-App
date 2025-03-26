@@ -25,13 +25,7 @@ struct MainTabView: View {
                         ExploreTabView()
                             .transition(.opacity)
                     case 2:
-                        //CommunityTabView()
-                        PreparingView(
-                            type: "커뮤니티",
-                            actionTitle: "확인"
-                        ) {
-                            selectedTab = previousTab
-                        }
+                        CommunityTabView()
                         .transition(.opacity)
                     case 3:
                         //ProfileTabView()
