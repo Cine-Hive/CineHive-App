@@ -26,11 +26,10 @@ struct DetailView: View {
     @State private var tabBarManager = TabBarManager.shared
     @Environment(\.dismiss) private var dismiss
 
-    // 넷플릭스 스타일 색상 상수
-    private let backgroundColor = Color.black
-    private let textColor = Color.white
-    private let accentColor = Color.red
-    private let secondaryTextColor = Color.gray
+    private let backgroundColor = CHColors.backgroundColor
+    private let textColor = CHColors.textColor
+    private let accentColor = CHColors.primaryColor
+    private let secondaryTextColor = CHColors.secondaryColor
     
     // 임시 데이터 (추후 별도 파일로 분리 가능)
     private let tempGenres = ["액션", "모험", "스릴러", "드라마", "SF", "코미디", "로맨스", "판타지", "공포", "애니메이션"]
@@ -44,7 +43,7 @@ struct DetailView: View {
         ZStack(alignment: .topLeading) {
             ScrollView {
                 if viewModel.isLoading {
-                    LoadingView()
+                    DetailSkeletonView()
                 } else if let movie = viewModel.movieDetail {
                     VStack(alignment: .leading, spacing: 0) {
                         // 헤더 섹션
@@ -94,7 +93,7 @@ struct DetailView: View {
                         textColor: textColor,
                         accentColor: accentColor
                     ) {
-                        viewModel.fetchMovieDetail()
+                        viewModel.refreshData()
                     }
                 }
             }
@@ -104,7 +103,6 @@ struct DetailView: View {
             .navigationBarHidden(true)
             .statusBar(hidden: true)
             .toolbar(.hidden, for: .tabBar)
-            .redacted(reason: viewModel.isLoading ? .placeholder : [])
             
             BackButtonView(action: { dismiss() }, color: textColor)
         }
@@ -121,7 +119,7 @@ struct DetailView: View {
         }
         .onAppear {
             tabBarManager.hide()
-            viewModel.fetchMovieDetail()
+            viewModel.loadData()
         }
         .onDisappear {
             tabBarManager.show()
