@@ -7,23 +7,18 @@
 
 import Foundation
 
-struct Comment: Identifiable {
+struct Comment: Identifiable, Codable {
     let id: Int
     let content: String
-    let author: String
-    let email: String
+    let user: User
     let createdAt: String
+    var author: String { user.nickname }
+    var email: String { user.email }
 
     enum CodingKeys: String, CodingKey {
         case id
         case content
-        case board
         case user
-        case createdAt
-    }
-
-    enum UserCodingKeys: String, CodingKey {
-        case nickname = "memNickname"
-        case email = "memEmail"
+        case createdAt = "brgRedDate"
     }
 }
