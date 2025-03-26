@@ -49,6 +49,14 @@ class BoardViewModel {
         }
     }
     
+    // MARK: - 게시글 상세 조회 메소드
+    @MainActor
+    func fetchBoardDetail(id: Int) {
+        performNetworkRequest {
+            self.selectedBoard = try await self.boardService.fetchBoardDetail(id: id)
+        }
+    }
+    
     // MARK: - 네트워크 요청 공통 처리 메소드
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {
