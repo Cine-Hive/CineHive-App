@@ -57,6 +57,36 @@ class BoardViewModel {
         }
     }
     
+    // MARK: - 게시글 생성 메소드
+    @MainActor
+    func createBoard(title: String, content: String, email: String) async -> Bool {
+        do {
+            isLoading = true
+            error = nil
+            
+            let request = BoardForRequest(
+                email: email,
+                title: title,
+                content: content
+            )
+            
+            let newBoard = try await boardService.createBoard(request: request)
+            // 새 게시글을 목록에 추가
+            boards.insert(newBoard, at: 0)
+            
+            isLoading = false
+            return true
+        } catch let networkError as NetworkError {
+            error = networkError.errorDescription
+            isLoading = false
+            return false
+        } catch {
+            self.error = "게시글 작성 중 오류가 발생했습니다."
+            isLoading = false
+            return false
+        }
+    }
+    
     // MARK: - 네트워크 요청 공통 처리 메소드
     @MainActor
     private func performNetworkRequest(_ task: @escaping @Sendable () async throws -> Void) {
