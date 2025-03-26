@@ -17,7 +17,7 @@ struct Board: Identifiable, Codable {
     let viewCount: Int
     let likeCount: Int
     let commentCount: Int
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case title = "brdTitle"
@@ -28,5 +28,25 @@ struct Board: Identifiable, Codable {
         case viewCount = "views"
         case likeCount
         case commentCount
+    }
+}
+
+// 게시판 카테고리
+enum BoardCategory: String, CaseIterable {
+    case all = "전체"
+    case free = "자유"
+    case review = "리뷰"
+    case question = "질문"
+    case info = "정보"
+    
+    // 서버 카테고리 문자열 변환 함수
+    func toServerCategory() -> String? {
+        switch self {
+        case .all: return nil  // 전체는 서버에 카테고리 파라미터 없음
+        case .free: return "자유"
+        case .review: return "리뷰"
+        case .question: return "질문"
+        case .info: return "정보"
+        }
     }
 }
