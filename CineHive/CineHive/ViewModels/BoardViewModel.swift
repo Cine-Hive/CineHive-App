@@ -16,6 +16,11 @@ class BoardViewModel {
     var isLoading: Bool = false
     var error: String? = nil
     
+    // 검색 관련 상태
+    var searchText: String = ""
+    var searchResults: [Board] = []
+    var isSearching: Bool = false
+    
     private let boardService: BoardService
     
     init(boardService: BoardService = .shared) {
@@ -27,6 +32,20 @@ class BoardViewModel {
     func fetchBoards() {
         performNetworkRequest {
             self.boards = try await self.boardService.fetchBoards()
+        }
+    }
+    
+    // MARK: - 게시글 검색 메소드
+    @MainActor
+    func searchBoards(keyword: String) {
+        guard !keyword.isEmpty else {
+            self.searchResults = []
+            return
+        }
+        
+        performNetworkRequest {
+            self.searchResults = try await self.boardService.searchBoards(keyword: keyword)
+            self.isSearching = true
         }
     }
     
