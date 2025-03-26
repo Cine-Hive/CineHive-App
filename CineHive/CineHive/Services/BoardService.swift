@@ -18,4 +18,10 @@ final class BoardService {
     func fetchBoards() async throws -> [Board] {
         return try await NetworkManager.shared.fetch(endpoint: boardsEndpoint)
     }
+    
+    /// 게시글을 등록합니다.
+    func createBoard(request: BoardForRequest) async throws -> Board {
+        return try await NetworkManager.shared.post(endpoint: "/boards/create", body: request)
+    }
+    
 }
