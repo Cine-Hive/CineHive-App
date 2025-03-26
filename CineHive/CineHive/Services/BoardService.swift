@@ -70,4 +70,10 @@ final class BoardService {
         let endpoint = "\(likeBaseEndpoint)/\(boardId)/users/\(userEmail)"
         try await NetworkManager.shared.delete(endpoint: endpoint)
     }
+    
+    // MARK: - 좋아요 수 조회
+    func fetchLikeCount(boardId: Int) async throws -> Int {
+        let endpoint = "\(likeBaseEndpoint)/\(boardId)/count"
+        return try await NetworkManager.shared.fetch(endpoint: endpoint)
+    }
 }
