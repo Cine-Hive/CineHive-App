@@ -21,4 +21,12 @@ struct CommentForRequest: Codable {
         case email = "memEmail"
         case createdAt = "brgRedDate"
     }
+    
+    init(id: Int? = nil, content: String, nickname: String, email: String, createdAt: String = "") {
+        self.id = id
+        self.content = content
+        self.nickname = nickname
+        self.email = email
+        self.createdAt = createdAt
+    }
 }
