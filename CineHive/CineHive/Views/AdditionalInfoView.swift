@@ -51,10 +51,10 @@ struct AdditionalInfoView: View {
                     Button(action: {
                         isShowingView = true
                     }, label: {
-                        Text("선택 완료")
+                        Text("다음으로")
                             .frame(width: 180, height: 50)
                             .font(.system(size: 17, weight: .semibold))
-                            .background(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
+                            .background(viewModel.isSelectionValid() ? CHColors.Button.primary : Color.gray)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     })
                     .foregroundStyle(.white)
@@ -179,7 +179,6 @@ struct ServiceSelectedView: View {
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .frame(width: 105, height: 95)
-<<<<<<< HEAD
                         VStack(spacing: 5) {
                             Image(systemName: viewModel.serviceIcons[services] ?? "questionmark")
                                 .font(.system(size: 20))
@@ -190,11 +189,6 @@ struct ServiceSelectedView: View {
                         }
                         .padding()
                         
-=======
-                        Text(services)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(viewModel.selectedServices.contains(services) ? Color("LoginBtnColor") : Color.gray)
->>>>>>> origin/feature/additional-info-ui
                     }
                     .onTapGesture {
                         if viewModel.selectedServices.contains(services) {
