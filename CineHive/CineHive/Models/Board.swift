@@ -7,15 +7,22 @@
 
 import Foundation
 
-struct Board: Identifiable {
+struct Board: Identifiable, Codable {
     let id: Int
-    var empty: Bool = false
-    var title: String = ""
-    var content: String = ""
-    var author: String = ""
-    var category: String = ""
-    var createdAt: String = ""
-    var viewCount: Int = 0
-    var likeCount: Int = 0
-    var commentCount: Int = 0
+    let title: String
+    let content: String
+    let author: String
+    let createdAt: String
+    let likeCount: Int
+    let views: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title = "brdTitle"
+        case content = "brdContent"
+        case author = "memNickname"
+        case createdAt = "brgRegDate"
+        case likeCount
+        case views
+    }
 }
