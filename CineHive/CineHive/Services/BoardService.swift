@@ -64,4 +64,10 @@ final class BoardService {
         let endpoint = "\(likeBaseEndpoint)/\(boardId)/users/\(userEmail)"
         try await NetworkManager.shared.post(endpoint: endpoint, body: EmptyRequest())
     }
+    
+    // MARK: - 좋아요 취소
+    func removeLike(boardId: Int, userEmail: String) async throws {
+        let endpoint = "\(likeBaseEndpoint)/\(boardId)/users/\(userEmail)"
+        try await NetworkManager.shared.delete(endpoint: endpoint)
+    }
 }
