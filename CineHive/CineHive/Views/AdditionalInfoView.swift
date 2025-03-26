@@ -51,17 +51,10 @@ struct AdditionalInfoView: View {
                     Button(action: {
                         isShowingView = true
                     }, label: {
-<<<<<<< HEAD
-                        Text("다음으로")
-                            .frame(width: 180, height: 50)
-                            .font(.system(size: 17, weight: .semibold))
-                            .background(viewModel.isSelectionValid() ? CHColors.Button.primary : Color.gray)
-=======
                         Text("선택 완료")
                             .frame(width: 180, height: 50)
                             .font(.system(size: 17, weight: .semibold))
                             .background(viewModel.isSelectionValid() ? Color("LoginBtnColor") : Color.gray)
->>>>>>> origin/feature/additional-info-ui
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     })
                     .foregroundStyle(.white)
