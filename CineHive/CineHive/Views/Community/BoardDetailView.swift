@@ -16,7 +16,7 @@ struct BoardDetailView: View {
     @State private var selectedCommentId: Int? = nil
     @State private var editingCommentId: Int? = nil
     @State private var editingCommentText: String = ""
-    @State private var userEmail = "user@example.com" // 추후에 UserDefaults나 AuthManager에서 가져옴
+    @State private var userEmail = "unib335@naver.com" // 추후에 UserDefaults나 AuthManager에서 가져옴
     
     // 테마 색상
     private let backgroundColor = CHColors.backgroundColor
@@ -169,13 +169,13 @@ struct BoardDetailView: View {
             
             // 작성자 정보
             HStack {
-                Text(board.category)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(primaryColor.opacity(0.2))
-                    .foregroundColor(primaryColor)
-                    .cornerRadius(4)
+//                Text(board.category)
+//                    .font(.caption)
+//                    .padding(.horizontal, 8)
+//                    .padding(.vertical, 4)
+//                    .background(primaryColor.opacity(0.2))
+//                    .foregroundColor(primaryColor)
+//                    .cornerRadius(4)
                 
                 Spacer()
                 
