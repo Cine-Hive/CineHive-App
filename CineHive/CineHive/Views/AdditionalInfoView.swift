@@ -14,59 +14,62 @@ struct AdditionalInfoView: View {
     @State private var isShowingView = false
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false, content: {
-            VStack {
-                Text("프로필을 완성해보세요!")
-                    .frame(width: 330, height: 70, alignment: .leading)
-                    .font(.system(size: 23, weight: .semibold))
-                Spacer()
-                // 프로필 이미지 추가
-                ProfileSelectedView(viewModel: viewModel)
-                Spacer()
-                // 장르 선택
-                GenreSelectedView(viewModel: viewModel)
-                // 구독 중인 서비스 선택
-                ServiceSelectedView(viewModel: viewModel)
-                // 서비스 지역 선택
-                RegionSelectedView(viewModel: viewModel)
-                
-                HStack {
+        ZStack {
+            CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
+            ScrollView(.vertical, showsIndicators: false, content: {
+                VStack {
+                    Text("프로필을 완성해보세요!")
+                        .frame(width: 330, height: 70, alignment: .leading)
+                        .font(.system(size: 23, weight: .semibold))
+                        .foregroundStyle(.white)
                     Spacer()
-                    Button(action: {
-                        isShowingView = true
-                    }, label: {
-                        Text("건너 뛰기")
-                            .frame(width: 140, height: 50)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Color.gray)
-                            .background(Color(UIColor.systemBackground))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                    })
-                    .fullScreenCover(isPresented: $isShowingView) {
-                        MainTabView()
-                    }
-                    Button(action: {
-                        isShowingView = true
-                    }, label: {
-                        Text("다음으로")
-                            .frame(width: 180, height: 50)
-                            .font(.system(size: 17, weight: .semibold))
-                            .background(viewModel.isSelectionValid() ? CHColors.Button.primary : Color.gray)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    })
-                    .foregroundStyle(.white)
-                    .disabled(!viewModel.isSelectionValid())
-                    .fullScreenCover(isPresented: $isShowingView) {
-                        MainTabView()
-                    }
+                    // 프로필 이미지 추가
+                    ProfileSelectedView(viewModel: viewModel)
                     Spacer()
+                    // 장르 선택
+                    GenreSelectedView(viewModel: viewModel)
+                    // 구독 중인 서비스 선택
+                    ServiceSelectedView(viewModel: viewModel)
+                    // 서비스 지역 선택
+                    RegionSelectedView(viewModel: viewModel)
+                    // 하단 버튼
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            isShowingView = true
+                        }, label: {
+                            Text("건너 뛰기")
+                                .frame(width: 140, height: 50)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white, lineWidth: 1)
+                                )
+                        })
+                        .fullScreenCover(isPresented: $isShowingView) {
+                            MainTabView()
+                        }
+                        Button(action: {
+                            isShowingView = true
+                        }, label: {
+                            Text("다음으로")
+                                .frame(width: 180, height: 50)
+                                .font(.system(size: 17, weight: .semibold))
+                                .background(viewModel.isSelectionValid() ? CHColors.Button.primary : Color.gray)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        })
+                        .foregroundStyle(.white)
+                        .disabled(!viewModel.isSelectionValid())
+                        .fullScreenCover(isPresented: $isShowingView) {
+                            MainTabView()
+                        }
+                        Spacer()
+                    }
+                    
                 }
-                
-            }
-        })
+            })
+        }
     }
 }
 
@@ -111,6 +114,7 @@ struct ProfileSelectedView: View {
             Text("터치해서 프로필을 등록해보세요")
                 .frame(width: 330, height: 50, alignment: .center)
                 .font(.system(size: 14, weight: .light))
+                .foregroundStyle(.white)
         }
     }
 }
@@ -123,22 +127,24 @@ struct GenreSelectedView: View {
             Text("장르 선택")
                 .frame(width: 330, height: 30, alignment: .leading)
                 .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white)
             Text("선호하는 장르를 선택해보세요")
                 .frame(width: 330, height: 20, alignment: .leading)
                 .font(.system(size: 14, weight: .light))
+                .foregroundStyle(.white)
             LazyVGrid(columns: viewModel.columns) {
                 ForEach(viewModel.genres, id: \.self) { genres in
                     ZStack {
                         RoundedRectangle(cornerRadius: 15)
-                            .stroke(viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary : Color.gray, lineWidth: 1)
+                            .stroke(viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary : Color.white, lineWidth: 1)
                             .background(
-                                viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary.opacity(0.1) : Color.white
+                                viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary.opacity(0.1) : Color.background
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .frame(width: 105, height: 95)
                         Text(genres)
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary : Color.gray)
+                            .foregroundColor(viewModel.selectedGenres.contains(genres) ? CHColors.Button.primary : Color.white)
                     }
                     
                     .onTapGesture {
@@ -150,7 +156,6 @@ struct GenreSelectedView: View {
                     }
                 }
             }
-            
         }
         .frame(width: 350, height: 180)
     }
@@ -165,9 +170,11 @@ struct ServiceSelectedView: View {
             Text("구독 중인 서비스")
                 .frame(width: 330, height: 30, alignment: .leading)
                 .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white)
             Text("구독 중인 서비스를 선택해보세요")
                 .frame(width: 330, height: 20, alignment: .leading)
                 .font(.system(size: 14, weight: .light))
+                .foregroundStyle(.white)
             
             LazyVGrid(columns: viewModel.columns) {
                 ForEach(viewModel.services, id: \.self) { services in
@@ -175,17 +182,17 @@ struct ServiceSelectedView: View {
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(viewModel.selectedServices.contains(services) ? CHColors.Button.primary : Color.gray, lineWidth: 1)
                             .background(
-                                viewModel.selectedServices.contains(services) ? CHColors.Button.primary.opacity(0.1) : Color.white
+                                viewModel.selectedServices.contains(services) ? CHColors.Button.primary.opacity(0.1) : Color.background
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .frame(width: 105, height: 95)
-                        VStack(spacing: 5) {
+                        VStack(spacing: 7) {
                             Image(systemName: viewModel.serviceIcons[services] ?? "questionmark")
                                 .font(.system(size: 20))
-                                .foregroundColor(viewModel.selectedServices.contains(services) ? CHColors.Button.primary : Color.gray)
+                                .foregroundColor(viewModel.selectedServices.contains(services) ? CHColors.Button.primary : Color.white)
                             Text(services)
                                 .font(.system(size: 15, weight: .medium))
-                                .foregroundColor(viewModel.selectedServices.contains(services) ? CHColors.Button.primary : Color.gray)
+                                .foregroundColor(viewModel.selectedServices.contains(services) ? CHColors.Button.primary : Color.white)
                         }
                         .padding()
                         
@@ -212,26 +219,27 @@ struct RegionSelectedView: View {
             Text("서비스 지역")
                 .frame(width: 330, height: 30, alignment: .leading)
                 .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white)
             Text("현지 추천을 위해 선택해보세요")
                 .frame(width: 330, height: 20, alignment: .leading)
                 .font(.system(size: 14, weight: .light))
+                .foregroundStyle(.white)
             Menu(viewModel.selectedCountry ?? "클릭하여 지역 선택") {
                 ForEach(viewModel.countries, id: \.self) { region in
                     Button(action: {
                         viewModel.selectedCountry = region
                     }, label: {
                         Text(region)
-                            .background(RoundedRectangle(cornerRadius: 16).fill(Color.black))
+                            .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
                     })
                 }
             }
             .frame(width: 330, height: 50)
-            .background(Color(UIColor.systemBackground))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray, lineWidth: 1)
+                    .stroke(Color.white, lineWidth: 1)
             )
-            .tint(Color.black)
+            .tint(Color.white)
         }
         .frame(width: 350, height: 180)
     }
