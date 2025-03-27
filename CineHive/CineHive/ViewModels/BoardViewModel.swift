@@ -34,7 +34,15 @@ class BoardViewModel {
     @MainActor
     func fetchBoards() {
         performNetworkRequest {
-            self.boards = try await self.boardService.fetchBoards()
+            var boards = try await self.boardService.fetchBoards()
+            
+            // 더미 카테고리 랜덤 할당
+            let allCategories: [BoardCategory] = [.free, .review, .question, .info]
+            for i in boards.indices {
+                boards[i].localCategory = allCategories.randomElement()!.rawValue
+            }
+            
+            self.boards = boards
         }
     }
     
@@ -81,6 +89,7 @@ class BoardViewModel {
             return true
         } catch let networkError as NetworkError {
             error = networkError.errorDescription
+            print("[Board] 네트워크 오류: \(networkError)")
             isLoading = false
             return false
         } catch {
@@ -213,7 +222,7 @@ class BoardViewModel {
     
     // MARK: - 카테고리 변경 메소드
     @MainActor
-    func changeCategory(to category: BoardCategory) {
+    func changeCategory(to category: BoardCategory) async {
         selectedCategory = category
         // 카테고리에 맞는 게시글을 가져오는 로직은 추후 API 구현 시 업데이트 필요
         fetchBoards()
