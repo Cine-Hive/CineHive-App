@@ -14,9 +14,11 @@ struct WritePostView: View {
     @State private var selectedCategory: String = "자유"
     @State private var showDiscardAlert = false
     @State private var isSubmitting = false
+    @State private var errorMessage: String? = nil
+    @State private var showErrorAlert = false
     
     // 콜백 함수
-    var onSubmit: (String, String) -> Void
+    var onSubmit: @Sendable (String, String) async -> Void
     
     // 카테고리 옵션
     private let categories = ["자유", "리뷰", "질문", "정보"]
@@ -25,7 +27,7 @@ struct WritePostView: View {
     private let primaryColor = CHColors.primaryColor
     private let backgroundColor = CHColors.backgroundColor
     private let textColor = CHColors.textColor
-    private let secondaryColor = CHColors.secondaryColor
+    private let secondaryColor = CHColors.gray
     
     var body: some View {
         NavigationView {
@@ -131,6 +133,11 @@ struct WritePostView: View {
             } message: {
                 Text("작성 중인 내용이 사라집니다. 정말 취소하시겠습니까?")
             }
+            .alert("오류", isPresented: $showErrorAlert) {
+                Button("확인", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "알 수 없는 오류가 발생했습니다.")
+            }
         }
     }
     
@@ -142,16 +149,12 @@ struct WritePostView: View {
     // 게시글 등록
     private func submitPost() {
         guard isFormValid else { return }
-        
+
         isSubmitting = true
-        
-        // 게시글 등록 콜백 호출
-        onSubmit(title, content)
-        
-        // 실제 네트워크 요청이 있다면 성공 후 dismiss 처리
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+
+        Task {
+            await onSubmit(title, content)
             isSubmitting = false
-            dismiss()
         }
     }
 }
