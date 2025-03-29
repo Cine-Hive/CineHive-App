@@ -29,11 +29,11 @@ struct WritePostView: View {
     private let textColor = CHColors.textColor
     private let secondaryColor = CHColors.gray
     
+
     var body: some View {
         NavigationView {
             ZStack {
                 backgroundColor.edgesIgnoringSafeArea(.all)
-                
                 VStack(spacing: 0) {
                     // 게시글 작성 폼
                     Form {
