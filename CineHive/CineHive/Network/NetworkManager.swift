@@ -78,6 +78,8 @@ final class NetworkManager {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .useDefaultKeys
             decoder.dateDecodingStrategy = .iso8601
+            
+            Logger.log(.info, category: Logger.networking, message: "서버 응답 바디: \(String(data: data, encoding: .utf8) ?? "응답 없음")")
 
             return try decoder.decode(T.self, from: data)
         } catch let decodingError as DecodingError {
@@ -204,5 +206,11 @@ final class NetworkManager {
             }
             throw NetworkError.networkError(error)
         }
+    }
+}
+
+extension NetworkManager {
+    func post(endpoint: String, body: some Encodable) async throws {
+        let _: String = try await post(endpoint: endpoint, body: body)
     }
 }

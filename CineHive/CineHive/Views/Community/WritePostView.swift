@@ -8,132 +8,153 @@
 import SwiftUI
 
 struct WritePostView: View {
-    @State private var title = ""
-    @State private var content = ""
-    @State private var selectedCategory: String = "자유"
     @Environment(\.dismiss) private var dismiss
-    @State private var showAlert = false
+    @State private var title: String = ""
+    @State private var content: String = ""
+    @State private var selectedCategory: String = "자유"
+    @State private var showDiscardAlert = false
     @State private var isSubmitting = false
+    @State private var errorMessage: String? = nil
+    @State private var showErrorAlert = false
     
-    // 테마 색상
-    private let backgroundColor = Color.black
-    private let primaryColor = Color(hex: "#FF2F6E")
-    private let textColor = Color.white
-    private let secondaryColor = Color.gray
+    // 콜백 함수
+    var onSubmit: @Sendable (String, String) async -> Void
     
+    // 카테고리 옵션
     private let categories = ["자유", "리뷰", "질문", "정보"]
     
+    // 테마 색상
+    private let primaryColor = CHColors.primaryColor
+    private let backgroundColor = CHColors.backgroundColor
+    private let textColor = CHColors.textColor
+    private let secondaryColor = CHColors.gray
+    
+
     var body: some View {
         NavigationView {
             ZStack {
                 backgroundColor.edgesIgnoringSafeArea(.all)
-                
-                VStack(spacing: 16) {
-                    // 카테고리 선택
-                    HStack {
-                        Text("카테고리")
-                            .font(.headline)
-                            .foregroundColor(textColor)
-                        
-                        Spacer()
-                        
-                        Picker("카테고리", selection: $selectedCategory) {
-                            ForEach(categories, id: \.self) { category in
-                                Text(category).tag(category)
+                VStack(spacing: 0) {
+                    // 게시글 작성 폼
+                    Form {
+                        Section {
+                            Picker("카테고리", selection: $selectedCategory) {
+                                ForEach(categories, id: \.self) { category in
+                                    Text(category).tag(category)
+                                }
                             }
+                            .pickerStyle(MenuPickerStyle())
+                        } header: {
+                            Text("카테고리")
                         }
-                        .pickerStyle(MenuPickerStyle())
-                        .accentColor(primaryColor)
-                    }
-                    .padding(.horizontal, 16)
-                    
-                    // 제목 입력
-                    TextField("제목을 입력하세요", text: $title)
-                        .font(.headline)
-                        .foregroundColor(textColor)
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
-                        .padding(.horizontal, 16)
-                    
-                    // 내용 입력
-                    ZStack(alignment: .topLeading) {
-                        TextEditor(text: $content)
-                            .scrollContentBackground(.hidden)
-                            .background(Color.gray.opacity(0.1))
-                            .foregroundColor(textColor)
-                            .cornerRadius(8)
-                            .frame(minHeight: 200)
+                        .listRowBackground(CHColors.cardBackground)
                         
-                        if content.isEmpty {
-                            Text("내용을 입력하세요")
-                                .foregroundColor(secondaryColor)
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 8)
+                        Section {
+                            TextField("제목을 입력하세요", text: $title)
+                                .foregroundColor(textColor)
+                        } header: {
+                            Text("제목")
                         }
+                        .listRowBackground(CHColors.cardBackground)
+                        
+                        Section {
+                            ZStack(alignment: .topLeading) {
+                                if content.isEmpty {
+                                    Text("내용을 입력하세요")
+                                        .foregroundColor(secondaryColor)
+                                        .padding(.top, 8)
+                                        .padding(.leading, 5)
+                                }
+                                
+                                TextEditor(text: $content)
+                                    .foregroundColor(textColor)
+                                    .frame(minHeight: 200)
+                                    .background(CHColors.cardBackground)
+                            }
+                        } header: {
+                            Text("내용")
+                        }
+                        .listRowBackground(CHColors.cardBackground)
                     }
-                    .padding(.horizontal, 16)
-                    
-                    Spacer()
+                    .scrollContentBackground(.hidden)
                 }
                 
                 if isSubmitting {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .tint(primaryColor)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.black.opacity(0.5))
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                    
+                    VStack {
+                        ProgressView()
+                            .tint(primaryColor)
+                            .scaleEffect(1.5)
+                            .padding()
+                        
+                        Text("게시글 등록 중...")
+                            .foregroundColor(.white)
+                    }
+                    .frame(width: 200, height: 100)
+                    .background(Color(white: 0.1))
+                    .cornerRadius(12)
                 }
             }
             .foregroundColor(textColor)
+            .navigationTitle("게시글 작성")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("취소") {
-                        dismiss()
+                    Button {
+                        if !title.isEmpty || !content.isEmpty {
+                            showDiscardAlert = true
+                        } else {
+                            dismiss()
+                        }
+                    } label: {
+                        Text("취소")
+                            .foregroundColor(primaryColor)
                     }
-                    .foregroundColor(primaryColor)
-                }
-                
-                ToolbarItem(placement: .principal) {
-                    Text("글 작성")
-                        .font(.headline)
-                        .foregroundColor(textColor)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("등록") {
+                    Button {
                         submitPost()
+                    } label: {
+                        Text("등록")
+                            .fontWeight(.semibold)
+                            .foregroundColor(isFormValid ? primaryColor : secondaryColor)
                     }
-                    .disabled(title.isEmpty || content.isEmpty)
-                    .foregroundColor(title.isEmpty || content.isEmpty ? secondaryColor : primaryColor)
+                    .disabled(!isFormValid)
                 }
             }
-            .alert("게시글 등록", isPresented: $showAlert) {
-                Button("확인", role: .cancel) {
+            .alert("작성 취소", isPresented: $showDiscardAlert) {
+                Button("계속 작성", role: .cancel) { }
+                Button("취소", role: .destructive) {
                     dismiss()
                 }
             } message: {
-                Text("게시글이 등록되었습니다.")
+                Text("작성 중인 내용이 사라집니다. 정말 취소하시겠습니까?")
+            }
+            .alert("오류", isPresented: $showErrorAlert) {
+                Button("확인", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "알 수 없는 오류가 발생했습니다.")
             }
         }
     }
     
-    // 게시글 등록 함수
+    // 폼 유효성 검사
+    private var isFormValid: Bool {
+        return !title.isEmpty && !content.isEmpty
+    }
+    
+    // 게시글 등록
     private func submitPost() {
-        guard !title.isEmpty && !content.isEmpty else { return }
-        
+        guard isFormValid else { return }
+
         isSubmitting = true
-        
-        // 실제로는 API 호출하여 서버에 게시글 저장
-        // 현재는 임시로 딜레이 후 성공 처리
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+
+        Task {
+            await onSubmit(title, content)
             isSubmitting = false
-            showAlert = true
         }
     }
-}
-
-#Preview {
-    WritePostView()
 }
