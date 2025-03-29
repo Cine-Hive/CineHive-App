@@ -26,7 +26,7 @@ struct MainTabView: View {
                             .transition(.opacity)
                     case 2:
                         CommunityTabView()
-                        .transition(.opacity)
+                            .transition(.opacity)
                     case 3:
                         //ProfileTabView()
                         PreparingView(
