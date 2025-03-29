@@ -17,17 +17,16 @@ struct PreparingView: View {
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
-
             Image(systemName: iconName)
                 .font(.system(size: 60))
                 .foregroundColor(CHColors.primaryColor)
                 .padding()
-
+          
             Text("\(type) 콘텐츠 준비 중...")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(CHColors.textColor)
-
+          
             Text("곧 다양한 \(type) 콘텐츠를 제공해 드릴 예정입니다.\n조금만 기다려주세요!")
                 .font(.body)
                 .multilineTextAlignment(.center)
@@ -47,7 +46,6 @@ struct PreparingView: View {
                     .cornerRadius(8)
                     .padding(.top, 20)
             }
-
             Spacer()
         }
         .frame(maxWidth: .infinity)
