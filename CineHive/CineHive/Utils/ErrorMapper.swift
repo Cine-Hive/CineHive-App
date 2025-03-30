@@ -12,8 +12,9 @@ enum UIError: LocalizedError {
     case serverError
     case decodingFailed
     case requestFailed
+    case unauthorized
     case unknown
-
+    
     var errorDescription: String? {
         switch self {
         case .noInternet:
@@ -24,6 +25,8 @@ enum UIError: LocalizedError {
             return "데이터를 불러오는데 실패했어요."
         case .requestFailed:
             return "요청을 처리하지 못했어요."
+        case .unauthorized:
+            return "로그인이 필요하거나 인증 정보가 만료되었어요."
         case .unknown:
             return "알 수 없는 오류가 발생했어요."
         }
@@ -52,13 +55,12 @@ struct ErrorMapper {
                     }
                 }
                 return .requestFailed
+            case .unauthorized:
+                return .unauthorized
             case .unknown:
                 return .unknown
             }
         }
-
         return .unknown
     }
 }
-
-
