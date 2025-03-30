@@ -1,5 +1,5 @@
 //
-//  KakaoLoginBtnView.swift
+//  NaverLoginBtnView.swift
 //  CineHive
 //
 //  Created by 존진 on 2/18/25.
@@ -7,21 +7,19 @@
 
 import SwiftUI
 
-struct KakaoLoginBtnView: View {
+struct NaverLoginBtnView: View {
     var body: some View {
-        Button(action: {
-            
-        }, label: {
+        Button(action: {}, label: {
             HStack {
-                Image("KakaoLogo")
+                Image("NaverLogo")
                     .resizable()
-                    .frame(width: 18, height: 18)
-                Text("Kakao로 계속하기")
+                    .frame(width: 15, height: 15)
+                Text("네이버로 계속하기")
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
             }
             .frame(width: 330, height: 44)
-            .background(Color("KakaoColor"))
+            .background(Color("NaverColor"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         })
     }
