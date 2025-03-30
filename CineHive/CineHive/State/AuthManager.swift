@@ -11,6 +11,7 @@ import OSLog
 
 final class AuthManager {
     static let shared = AuthManager()
+    
     private let userDefaultsUserKey = "cinehive_current_user"
     
     // 키체인 액세스 상수
@@ -42,7 +43,10 @@ final class AuthManager {
     // MARK: - 키체인 관련 메서드
     
     private func saveTokenToKeychain(_ token: String) {
-        guard let tokenData = token.data(using: .utf8) else { return }
+        guard let tokenData = token.data(using: .utf8) else {
+            Logger.log(.error, category: Logger.auth, message: "토큰을 데이터로 변환 실패")
+            return
+        }
         
         // 기존 항목 삭제
         deleteTokenFromKeychain()
@@ -100,18 +104,46 @@ final class AuthManager {
     
     /// 사용자 정보 로컬 저장
     func saveUser(_ userData: UserData) {
-        if let encoded = try? JSONEncoder().encode(userData) {
+        do {
+            // 빈 닉네임이나 이메일이 있는지 확인
+            guard !userData.email.isEmpty, !userData.nickname.isEmpty else {
+                Logger.log(.error, category: Logger.auth, message: "유효하지 않은 사용자 정보 저장 시도: 이메일 또는 닉네임이 비어 있음")
+                return
+            }
+            
+            let encoder = JSONEncoder()
+            let encoded = try encoder.encode(userData)
             UserDefaults.standard.set(encoded, forKey: userDefaultsUserKey)
             Logger.log(.info, category: Logger.auth, message: "사용자 정보 저장됨: \(userData.nickname)")
+        } catch {
+            Logger.log(.error, category: Logger.auth, message: "사용자 정보 인코딩 실패: \(error.localizedDescription)")
         }
     }
     
     /// 로컬에 저장된 사용자 정보 가져오기
     func getUser() -> UserData? {
         guard let userData = UserDefaults.standard.data(forKey: userDefaultsUserKey) else {
+            Logger.log(.info, category: Logger.auth, message: "저장된 사용자 정보 없음")
             return nil
         }
-        return try? JSONDecoder().decode(UserData.self, from: userData)
+        
+        do {
+            let decoder = JSONDecoder()
+            let user = try decoder.decode(UserData.self, from: userData)
+            
+            // 필수 필드 검증
+            guard !user.email.isEmpty, !user.nickname.isEmpty else {
+                Logger.log(.info, category: Logger.auth, message: "복원된 사용자 정보에 필수 필드 누락")
+                return nil
+            }
+            
+            return user
+        } catch {
+            Logger.log(.error, category: Logger.auth, message: "사용자 정보 디코딩 실패: \(error.localizedDescription)")
+            // 손상된 데이터는 제거
+            clearUser()
+            return nil
+        }
     }
     
     /// 사용자 정보 제거
@@ -121,11 +153,14 @@ final class AuthManager {
     }
     
     // MARK: - 로그인 상태 확인
+    
+    /// 사용자 로그인 상태 확인
     var isLoggedIn: Bool {
         return getToken() != nil
     }
     
-    // MARK: - 로그아웃 메소드
+    // MARK: - 통합 로그아웃 메소드
+    
     func logout() {
         clearToken()
         clearUser()
