@@ -22,6 +22,9 @@ final class UserState {
     var isLoading: Bool = false
     var errorMessage: String?
     
+    // 게스트 모드 상태
+    var isGuestMode: Bool = false
+    
     private init() {
         // 앱 실행 시 저장된 토큰과 사용자 정보 확인
         self.isLoggedIn = AuthManager.shared.isLoggedIn
@@ -39,6 +42,22 @@ final class UserState {
             }
         }
     }
+    
+    // MARK: - 게스트모드 관련 메소드
+    
+    // 게스트 로그인 처리
+    @MainActor
+    func loginAsGuest() {
+        // 기존 로그인 정보 초기화
+        self.currentUser = nil
+        self.isLoggedIn = false
+        
+        // 게스트 모드 활성화
+        self.isGuestMode = true
+        
+        Logger.log(.info, category: Logger.auth, message: "게스트 모드로 로그인")
+    }
+    
     
     // MARK: - 로그인 관련 메소드
     
@@ -140,7 +159,7 @@ final class UserState {
         }
     }
     
-    /// 로그아웃 처리
+    // 로그아웃 처리 (게스트 모드도 종료)
     @MainActor
     func logout() {
         let userEmail = currentUser?.email ?? "Unknown"
@@ -148,6 +167,7 @@ final class UserState {
         AuthManager.shared.logout()
         self.currentUser = nil
         self.isLoggedIn = false
+        self.isGuestMode = false
     }
     
     /// 회원가입 처리
