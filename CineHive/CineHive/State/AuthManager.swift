@@ -11,8 +11,6 @@ import OSLog
 
 final class AuthManager {
     static let shared = AuthManager()
-    
-    private let tokenKey = "cinehive_auth_token"
     private let userDefaultsUserKey = "cinehive_current_user"
     
     // 키체인 액세스 상수
