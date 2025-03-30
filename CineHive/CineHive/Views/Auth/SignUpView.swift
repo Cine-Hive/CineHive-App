@@ -15,7 +15,7 @@ struct SignUpView: View {
         NavigationStack {
             VStack {
                 Spacer()
-                Text("Create Account")
+                Text("회원가입")
                     .frame(width: 320, height: 70)
                     .font(.system(size: 22, weight: .bold))
                 

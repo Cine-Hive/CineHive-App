@@ -8,37 +8,71 @@
 import SwiftUI
 
 struct LoginView: View {
-    
     @State private var viewModel = LoginViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
-                Text("LOGIN")
+                Text("로그인")
                     .font(.system(size: 25, weight: .bold))
+                
+                // 소셜 로그인 버튼 섹션
                 VStack {
                     KakaoLoginBtnView()
-                    GoogleLoginBtnView()
+                        .onTapGesture {
+                            Task {
+                                await viewModel.socialLogin(provider: .kakao)
+                            }
+                        }
                     NaverLoginBtnView()
+                        .onTapGesture {
+                            Task {
+                                await viewModel.socialLogin(provider: .naver)
+                            }
+                        }
+                    GoogleLoginBtnView()
+                        .onTapGesture {
+                            Task {
+                                await viewModel.socialLogin(provider: .google)
+                            }
+                        }
                     AppleLoginBtnView()
+                        .onTapGesture {
+                            Task {
+                                await viewModel.socialLogin(provider: .apple)
+                            }
+                        }
                 }
                 .frame(width: 330, height: 250)
                 
-                Text("or use your account")
+                Text("이메일로 로그인")
                     .font(.system(size: 16, weight: .semibold))
                     .frame(width: 320, height: 30, alignment: .leading)
                 
-                Section {
-                    TextField("Email", text: $viewModel.email)
-                        .frame(width: 300, height: 50)
-                        .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
+                // 로그인 입력 필드
+                VStack(spacing: 16) {
+                    // 이메일 필드
+                    TextField("이메일", text: $viewModel.email)
+                        .padding()
+                        .frame(height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color("FontColor"), lineWidth: 0.6)
+                        )
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.emailAddress)
+                        .autocorrectionDisabled()
+                    
+                    // 비밀번호 필드
                     HStack {
                         if viewModel.showPassword {
-                            TextField("Password", text: $viewModel.password)
+                            TextField("비밀번호", text: $viewModel.password)
                         } else {
-                            SecureField("Password", text: $viewModel.password)
+                            SecureField("비밀번호", text: $viewModel.password)
                         }
+                        
                         Button(action: {
                             viewModel.showPassword.toggle()
                         }, label: {
@@ -46,54 +80,81 @@ struct LoginView: View {
                                 .foregroundStyle(.gray)
                         })
                     }
-                    .frame(width: 300, height: 50)
+                    .padding(.horizontal)
+                    .frame(height: 50)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                    )
                 }
-                .frame(width: 330, height: 50)
-                .overlay() {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color("FontColor"), lineWidth: 0.6)
-                }
+                .frame(width: 330)
                 
                 // 오류 메시지
-                if let emailError = viewModel.errorMessage {
-                    Text(emailError)
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
                         .font(.system(size: 14))
                         .foregroundColor(.red)
                         .frame(width: 320, height: 20, alignment: .leading)
+                        .padding(.top, 4)
                 }
                 
-                Button(action: {
+                // 로그인 버튼
+                Button {
                     Task {
                         await viewModel.login()
                     }
-                }, label: {
-                    Text("로그인")
-                })
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 330, height: 50)
-                .background(Color("LoginBtnColor"))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                } label: {
+                    HStack {
+                        if viewModel.isLoggingIn {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.trailing, 8)
+                        }
+                        Text("로그인")
+                    }
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 330, height: 50)
+                    .background(Color("LoginBtnColor"))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .padding(.top, 16)
+                .disabled(viewModel.isLoggingIn)
                 
                 HStack {
                     NavigationLink(destination: SignUpView()) {
                         Text("회원이 아니신가요?")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Color("FontColor"))
                     }
-                    .frame(width: 160, height: 50, alignment: .leading)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color("FontColor"))
                     
-                    // View 변경 필요
-                    NavigationLink(destination: SignUpView()) {
+                    Spacer()
+                    
+                    NavigationLink(destination: Text("비밀번호 찾기 화면")) {
                         Text("비밀번호 찾기")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Color("FontColor"))
                     }
-                    .frame(width: 160, height: 50, alignment: .trailing)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color("FontColor"))
                 }
-                .frame(width: 330, height: 50)
+                .frame(width: 330)
+                .padding(.top, 16)
                 
                 Spacer()
+            }
+            .padding(.horizontal)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(Color("FontColor"))
+                    }
+                }
+            }
+            .navigationDestination(isPresented: $viewModel.navigateToHome) {
+                MainTabView()
             }
         }
     }
