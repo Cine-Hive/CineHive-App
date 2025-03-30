@@ -63,12 +63,20 @@ struct AuthView: View {
                 
                 // 게스트 로그인
                 Button {
+                    // 게스트로 계속하기 로직
                     UserState.shared.loginAsGuest()
+                    
+                    // 간단한 햅틱 피드백
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
-                    Text("게스트로 둘러보기")
-                        .font(.subheadline)
-                        .foregroundColor(Color.gray)
-                        .padding(.vertical, 8)
+                    HStack {
+                        Image(systemName: "person")
+                            .font(.system(size: 12))
+                        Text("게스트로 둘러보기")
+                            .font(.subheadline)
+                    }
+                    .foregroundColor(Color.gray)
+                    .padding(.vertical, 8)
                 }
             }
             .padding(.horizontal, 24)
