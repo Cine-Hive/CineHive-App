@@ -38,9 +38,9 @@ struct AuthView: View {
                     showLogin = true
                 } label: {
                     Text("로그인하기")
-                        .font(.headline)
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
-                        .frame(height: 55)
+                        .frame(height: 50)
                         .frame(maxWidth: .infinity)
                         .background(Color("LoginBtnColor"))
                         .cornerRadius(12)
@@ -49,9 +49,9 @@ struct AuthView: View {
                 // 회원가입 링크
                 NavigationLink(destination: SignUpView()) {
                     Text("새로운 계정 만들기")
-                        .font(.headline)
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(Color("LoginBtnColor"))
-                        .frame(height: 55)
+                        .frame(height: 50)
                         .frame(maxWidth: .infinity)
                         .background(Color.white)
                         .cornerRadius(12)
