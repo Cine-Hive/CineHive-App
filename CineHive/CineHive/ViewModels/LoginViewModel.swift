@@ -9,32 +9,60 @@ import Foundation
 
 @Observable
 class LoginViewModel {
+    // 입력 필드
     var email: String = ""
     var password: String = ""
     var showPassword: Bool = false
-    var sinupViewModel: SignUpViewModel = SignUpViewModel()
-    var showAlert: Bool = false
-    var alertMessage: String = ""   // alert에 표시할 메세지
+    
+    // 상태
+    var isLoggingIn: Bool = false
+    var navigateToHome: Bool = false
     var errorMessage: String? = nil
+    
+    // 이메일 유효성 검사기
+    private let emailValidator: (String) -> Bool = { email in
+        let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
+    }
     
     // 로그인
     @MainActor
     func login() async {
-        let result: Bool = sinupViewModel.isValidEmail(email)     // 이메일 정규식 검사
+        // 입력 유효성 검사
+        guard !email.isEmpty else {
+            errorMessage = "이메일을 입력해주세요."
+            return
+        }
         
-        guard result else {
+        guard !password.isEmpty else {
+            errorMessage = "비밀번호를 입력해주세요."
+            return
+        }
+        
+        if !emailValidator(email) {
             errorMessage = "올바른 이메일 형식이 아닙니다."
             return
         }
         
-        let loginData = LoginUser(email: email, password: password)
+        isLoggingIn = true
+        errorMessage = nil
         
-        do {
-            let response: LoginResponse = try await UserService.shared.loginUser(user: loginData)
-            print("로그인 성공: \(response.message)")
-        } catch {
-            print("로그인 실패: \(error.localizedDescription)")
-            self.errorMessage = "일치하는 사용자 정보가 없습니다."
+        // UserState를 통한 로그인 처리
+        let success = await UserState.shared.login(email: email, password: password)
+        
+        isLoggingIn = false
+        
+        if success {
+            navigateToHome = true
+        } else {
+            errorMessage = UserState.shared.errorMessage ?? "로그인에 실패했습니다."
         }
+    }
+    
+    // 소셜 로그인
+    @MainActor
+    func socialLogin(provider: SocialLoginProvider) async {
+        // 소셜 로그인 구현 (향후 확장)
+        print("\(provider.rawValue) 로그인 시도")
     }
 }
