@@ -11,45 +11,45 @@ struct MainTabView: View {
     @State private var selectedTab = 0
     @State private var previousTab = 0
     @State private var tabBarManager = TabBarManager.shared
-    
+
+    @State private var viewModel = MainTabViewModel()
+
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             ZStack(alignment: .bottom) {
                 CHColors.backgroundColor.edgesIgnoringSafeArea(.all)
+
                 ZStack {
                     switch selectedTab {
-                    case 0:
-                        HomeTabView()
-                            .transition(.opacity)
-                    case 1:
-                        ExploreTabView()
-                            .transition(.opacity)
-                    case 2:
-                        CommunityTabView()
-                            .transition(.opacity)
+                    case 0: HomeTabView()
+                    case 1: ExploreTabView()
+                    case 2: CommunityTabView()
                     case 3:
-                        //ProfileTabView()
-                        PreparingView(
-                            type: "프로필",
-                            actionTitle: "확인"
-                        ) {
+                        PreparingView(type: "프로필", actionTitle: "확인") {
                             selectedTab = previousTab
                         }
-                        .transition(.opacity)
-                    default:
-                        EmptyView()
+                    default: EmptyView()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .animation(.easeInOut(duration: 0.2), value: selectedTab)
-                .background(CHColors.backgroundColor)
-                
+
                 CustomTabBar(selectedTab: $selectedTab, items: TabItem.items)
                     .offset(y: tabBarManager.isVisible ? 0 : 100)
                     .animation(.spring(response: 0.3), value: tabBarManager.isVisible)
                     .ignoresSafeArea(.all, edges: .bottom)
                     .padding(.bottom, -30)
             }
+            .errorToast(
+                message: "인터넷 연결이 끊겼습니다",
+                isPresented: $viewModel.showNetworkToast,
+                accentColor: .red,
+                iconName: "wifi.slash",
+                actionTitle: "재시도",
+                action: {
+                    viewModel.retryNetworkCheck()
+                }
+            )
         }
     }
 }
@@ -57,3 +57,4 @@ struct MainTabView: View {
 #Preview {
     MainTabView()
 }
+

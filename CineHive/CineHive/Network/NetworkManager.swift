@@ -78,7 +78,7 @@ final class NetworkManager {
             decoder.keyDecodingStrategy = .useDefaultKeys
             decoder.dateDecodingStrategy = .iso8601
             
-            Logger.log(.info, category: Logger.networking, message: "서버 응답 바디: \(String(data: data, encoding: .utf8) ?? "응답 없음")")
+            //Logger.log(.info, category: Logger.networking, message: "서버 응답 바디: \(String(data: data, encoding: .utf8) ?? "응답 없음")")
             
             return try decoder.decode(T.self, from: data)
         } catch let decodingError as DecodingError {
