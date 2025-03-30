@@ -14,7 +14,7 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if userState.isLoggedIn {
+            if userState.isLoggedIn || userState.isGuestMode {
                 MainTabView()
             } else {
                 AuthView()

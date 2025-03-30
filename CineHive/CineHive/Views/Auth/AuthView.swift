@@ -63,7 +63,7 @@ struct AuthView: View {
                 
                 // 게스트 로그인
                 Button {
-                    // 게스트로 계속하기 로직
+                    UserState.shared.loginAsGuest()
                 } label: {
                     Text("게스트로 둘러보기")
                         .font(.subheadline)
