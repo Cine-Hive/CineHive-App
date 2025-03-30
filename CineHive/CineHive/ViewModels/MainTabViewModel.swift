@@ -29,4 +29,13 @@ final class MainTabViewModel {
             }
         }
     }
+    
+    func retryNetworkCheck() {
+            Task { @MainActor in
+                self.isNetworkConnected = monitor.isConnected
+                if monitor.isConnected {
+                    self.showNetworkToast = false
+                }
+            }
+        }
 }

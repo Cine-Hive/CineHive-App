@@ -47,7 +47,7 @@ struct MainTabView: View {
                 iconName: "wifi.slash",
                 actionTitle: "재시도",
                 action: {
-                    print("재시도")
+                    viewModel.retryNetworkCheck()
                 }
             )
         }
