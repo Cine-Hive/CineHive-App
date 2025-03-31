@@ -10,6 +10,7 @@ import SwiftUI
 // 로그인 전 초기화면
 struct AuthView: View {
     @State private var showLogin = false
+    @State private var showSignUp = false
     
     var body: some View {
         NavigationStack {
@@ -46,8 +47,10 @@ struct AuthView: View {
                         .cornerRadius(12)
                 }
                 
-                // 회원가입 링크
-                NavigationLink(destination: SignUpView()) {
+                // 회원가입 버튼
+                Button {
+                    showSignUp = true
+                } label: {
                     Text("새로운 계정 만들기")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(Color("LoginBtnColor"))
@@ -83,6 +86,9 @@ struct AuthView: View {
             .padding(.bottom, 48)
             .fullScreenCover(isPresented: $showLogin) {
                 LoginView()
+            }
+            .fullScreenCover(isPresented: $showSignUp) {
+                SignUpView()
             }
         }
     }

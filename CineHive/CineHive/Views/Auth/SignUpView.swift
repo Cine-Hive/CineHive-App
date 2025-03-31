@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct SignUpView: View {
-    
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .topLeading) {
+            VStack {
                 ScrollView {
                     VStack {
                         Text("회원가입")
@@ -69,12 +68,19 @@ struct SignUpView: View {
                     }
                     .padding(.bottom, 20)
                 }
-
-                BackButtonView(action: { dismiss() }, color: CHColors.textColor)
-                .padding(.top, 10)
-                .padding(.leading, -10)
+                .padding(.horizontal)
             }
-            .navigationBarHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(Color("FontColor"))
+                    }
+                }
+            }
             .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
                 LoginView()
             }
