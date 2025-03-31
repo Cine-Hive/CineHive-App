@@ -26,11 +26,10 @@ struct ContentView: View {
                 showNetworkToast = true
             }
         }
-        .errorToast(
+        .toast(
             message: "인터넷 연결이 끊겼습니다",
             isPresented: $showNetworkToast,
-            accentColor: .red,
-            iconName: "wifi.slash",
+            toastType: .error,
             actionTitle: "재시도",
             action: {
                 // 네트워크 재연결 시도
