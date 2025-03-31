@@ -19,7 +19,7 @@ struct ContentView: View {
                 if userState.isLoggedIn || userState.isGuestMode {
                     MainTabView()
                 } else {
-                    AuthView()
+                    WelcomeView()
                 }
             }
             .onChange(of: networkMonitor.isConnected) { _, isConnected in
