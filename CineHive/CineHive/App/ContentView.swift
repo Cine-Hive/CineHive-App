@@ -12,16 +12,39 @@ struct ContentView: View {
     @State private var networkMonitor = NetworkMonitor.shared
     @State private var showNetworkToast = false
     
+    // 라우팅 상태 관리
+    @State private var router = AppRouter()
+    
     var body: some View {
-        Group {
-            if userState.isLoggedIn || userState.isGuestMode {
+        ZStack {
+            switch router.currentFlow {
+            case .auth:
+                AuthView(router: router)
+                    .transition(.opacity)
+            case .login:
+                LoginView(router: router)
+                    .transition(.move(edge: .bottom))
+            case .signUp:
+                SignUpView(router: router)
+                    .transition(.move(edge: .bottom))
+            case .main:
                 MainTabView()
+                    .transition(.move(edge: .trailing))
+            case .onboarding:
+                //온보딩 준비중
+                Text("온보딩 준비중")
+            }
+        }
+        .animation(.easeInOut, value: router.currentFlow)
+        .onAppear {
+            // 자동 로그인 or 게스트 로그인 시 바로 main으로
+            if userState.isLoggedIn || userState.isGuestMode {
+                router.goToMain()
             } else {
-                AuthView()
+                router.goToAuth()
             }
         }
         .onChange(of: networkMonitor.isConnected) { _, isConnected in
-            // 네트워크 연결이 끊겼을 때 토스트 표시
             if !isConnected {
                 showNetworkToast = true
             }
@@ -32,7 +55,6 @@ struct ContentView: View {
             toastType: .error,
             actionTitle: "재시도",
             action: {
-                // 네트워크 재연결 시도
                 Task {
                     let success = await networkMonitor.testConnection()
                     if success {
@@ -43,6 +65,8 @@ struct ContentView: View {
         )
     }
 }
+
+
 #Preview {
     ContentView()
 }
