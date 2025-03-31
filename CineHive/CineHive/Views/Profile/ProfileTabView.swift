@@ -36,7 +36,7 @@ struct ProfileTabView: View {
             }
         }
         .sheet(isPresented: $showLoginView) {
-            LoginView()
+            //LoginView()
         }
         .onAppear {
             // 테스트용 임시 데이터

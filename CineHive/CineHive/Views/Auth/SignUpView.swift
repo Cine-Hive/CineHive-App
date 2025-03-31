@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
-    @Environment(\.dismiss) private var dismiss
     var onSignUpSuccess: (() -> Void)? = nil
+    
+    @Bindable var router: AppRouter
     
     var body: some View {
         NavigationStack {
@@ -81,7 +82,7 @@ struct SignUpView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        dismiss()
+                        router.goToAuth()
                     } label: {
                         Image(systemName: "xmark")
                             .foregroundStyle(Color("FontColor"))
@@ -90,10 +91,12 @@ struct SignUpView: View {
             }
             // 회원가입 성공 시 NavigationDestination로 SignUpCompleteView로 이동
             .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
-                // onSignUpSuccess를 전달하여 SignUpCompleteView가 완료 시 이를 호출하도록 함
-                SignUpCompleteView(nickname: viewModel.nickname, onComplete: {
-                    onSignUpSuccess?()
-                })
+                SignUpCompleteView(
+                    nickname: viewModel.nickname,
+                    onComplete: {
+                        router.goToLogin()
+                    }
+                )
                 .navigationBarBackButtonHidden(true)
             }
             .errorToast(
@@ -105,10 +108,6 @@ struct SignUpView: View {
             )
         }
     }
-}
-
-#Preview {
-    SignUpView(onSignUpSuccess: nil)
 }
 
 struct InputFieldView: View {
