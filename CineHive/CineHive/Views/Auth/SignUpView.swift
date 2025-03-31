@@ -10,6 +10,7 @@ import SwiftUI
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
+    var onSignUpSuccess: (() -> Void)? = nil
     
     var body: some View {
         NavigationStack {
@@ -20,9 +21,9 @@ struct SignUpView: View {
                             .frame(width: 320, height: 70)
                             .font(.system(size: 22, weight: .bold))
                             .padding(.horizontal, 16)
-
+                        
                         InputFieldView(title: "이메일", text: $viewModel.email)
-
+                        
                         if let emailError = viewModel.emailErrorMessage {
                             Text(emailError)
                                 .font(.system(size: 14))
@@ -34,10 +35,10 @@ struct SignUpView: View {
                                 .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
                                 .frame(width: 330, alignment: .leading)
                         }
-
+                        
                         PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
                         InputFieldView(title: "닉네임", text: $viewModel.nickname)
-
+                        
                         if let nicknameError = viewModel.nicknameErrorMessage {
                             Text(nicknameError)
                                 .font(.system(size: 14))
@@ -45,25 +46,31 @@ struct SignUpView: View {
                                 .frame(width: 330, alignment: .leading)
                                 .padding(.top, 1)
                         }
-
+                        
                         InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
                         GenderSelectedView(selectedGender: $viewModel.gender)
-
+                        
                         Button(action: {
                             Task {
                                 await viewModel.signUp()
                             }
                         }, label: {
-                            Text("회원가입")
-                                .frame(width: 330, height: 50)
-                                .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            HStack {
+                                if viewModel.isSigningUp {
+                                    ProgressView()
+                                        .tint(.white)
+                                        .padding(.trailing, 8)
+                                }
+                                Text("회원가입")
+                            }
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 330, height: 50)
+                            .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         })
-                        .frame(height: 90)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
-                        .disabled(!viewModel.isValid())
-
+                        .padding(.top, 16)
+                        .disabled(!viewModel.isValid() || viewModel.isSigningUp)
                         Spacer()
                     }
                     .padding(.bottom, 20)
@@ -81,15 +88,27 @@ struct SignUpView: View {
                     }
                 }
             }
+            // 회원가입 성공 시 NavigationDestination로 SignUpCompleteView로 이동
             .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
-                LoginView()
+                // onSignUpSuccess를 전달하여 SignUpCompleteView가 완료 시 이를 호출하도록 함
+                SignUpCompleteView(nickname: viewModel.nickname, onComplete: {
+                    onSignUpSuccess?()
+                })
+                .navigationBarBackButtonHidden(true)
             }
+            .errorToast(
+                message: viewModel.generalErrorMessage,
+                isPresented: .init(
+                    get: { viewModel.generalErrorMessage != nil },
+                    set: { if !$0 { viewModel.generalErrorMessage = nil } }
+                )
+            )
         }
     }
 }
 
 #Preview {
-    SignUpView()
+    SignUpView(onSignUpSuccess: nil)
 }
 
 struct InputFieldView: View {
