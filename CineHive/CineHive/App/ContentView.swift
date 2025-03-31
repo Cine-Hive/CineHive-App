@@ -33,6 +33,8 @@ struct ContentView: View {
             case .onboarding:
                 //온보딩 준비중
                 Text("온보딩 준비중")
+            case .passwordReset:
+                <#code#>
             }
         }
         .animation(.easeInOut, value: router.currentFlow)

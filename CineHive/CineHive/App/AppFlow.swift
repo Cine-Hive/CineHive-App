@@ -13,6 +13,7 @@ enum AppFlow: Equatable {
     case login
     case signUp
     case onboarding
+    case passwordReset
     
     // 메인
     case main

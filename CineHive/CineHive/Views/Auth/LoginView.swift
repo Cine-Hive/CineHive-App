@@ -11,14 +11,14 @@ struct LoginView: View {
     @State private var viewModel = LoginViewModel()
     @Bindable var router: AppRouter
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
                 Text("로그인")
                     .font(.system(size: 25, weight: .bold))
-
+                
                 // 소셜 로그인
                 VStack {
                     KakaoLoginBtnView()
@@ -47,11 +47,11 @@ struct LoginView: View {
                         }
                 }
                 .frame(width: 330, height: 250)
-
+                
                 Text("이메일로 로그인")
                     .font(.system(size: 16, weight: .semibold))
                     .frame(width: 320, height: 30, alignment: .leading)
-
+                
                 // 이메일/비밀번호 입력
                 VStack(spacing: 16) {
                     TextField("이메일", text: $viewModel.email)
@@ -61,14 +61,14 @@ struct LoginView: View {
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-
+                    
                     HStack {
                         if viewModel.showPassword {
                             TextField("비밀번호", text: $viewModel.password)
                         } else {
                             SecureField("비밀번호", text: $viewModel.password)
                         }
-
+                        
                         Button(action: { viewModel.showPassword.toggle() }) {
                             Image(systemName: viewModel.showPassword ? "eye" : "eye.slash")
                                 .foregroundStyle(.gray)
@@ -79,7 +79,7 @@ struct LoginView: View {
                     .background(RoundedRectangle(cornerRadius: 12).stroke(Color("FontColor"), lineWidth: 0.6))
                 }
                 .frame(width: 330)
-
+                
                 // 오류 메시지
                 if let error = viewModel.errorMessage {
                     Text(error)
@@ -88,7 +88,7 @@ struct LoginView: View {
                         .frame(width: 320, alignment: .leading)
                         .padding(.top, 4)
                 }
-
+                
                 // 로그인 버튼
                 Button {
                     Task {
@@ -109,17 +109,21 @@ struct LoginView: View {
                 }
                 .padding(.top, 16)
                 .disabled(viewModel.isLoggingIn)
-
+                
                 HStack {
-                    NavigationLink(destination: SignUpView(router: router)) {
+                    Button(action: {
+                        router.goToSignUp()
+                    }) {
                         Text("회원이 아니신가요?")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color("FontColor"))
                     }
-
+                    
                     Spacer()
-
-                    NavigationLink(destination: Text("비밀번호 찾기 화면")) {
+                    
+                    Button(action: {
+                        router.goToPasswordReset()
+                    }) {
                         Text("비밀번호 찾기")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color("FontColor"))
@@ -127,7 +131,7 @@ struct LoginView: View {
                 }
                 .frame(width: 330)
                 .padding(.top, 16)
-
+                
                 Spacer()
             }
             .padding(.horizontal)

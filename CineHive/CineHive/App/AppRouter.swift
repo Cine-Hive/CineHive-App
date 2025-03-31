@@ -17,6 +17,7 @@ class AppRouter {
     func goToLogin() { currentFlow = .login }
     func goToSignUp() { currentFlow = .signUp }
     func goToOnboarding() { currentFlow = .onboarding }
+    func goToPasswordReset() { currentFlow = .passwordReset }
     
     // 메인
     func goToMain() { currentFlow = .main }
