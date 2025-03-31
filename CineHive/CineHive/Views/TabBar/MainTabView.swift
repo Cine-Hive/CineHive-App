@@ -40,16 +40,6 @@ struct MainTabView: View {
                     .ignoresSafeArea(.all, edges: .bottom)
                     .padding(.bottom, -30)
             }
-            .errorToast(
-                message: "인터넷 연결이 끊겼습니다",
-                isPresented: $viewModel.showNetworkToast,
-                accentColor: .red,
-                iconName: "wifi.slash",
-                actionTitle: "재시도",
-                action: {
-                    viewModel.retryNetworkCheck()
-                }
-            )
         }
     }
 }

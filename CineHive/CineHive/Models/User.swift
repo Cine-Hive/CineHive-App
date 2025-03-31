@@ -56,6 +56,7 @@ struct LoginUser: Codable {
 struct LoginResponse: Codable {
     let message: String
     let user: UserData
+    let token: String
 }
 
 struct UserData: Codable {
@@ -63,6 +64,7 @@ struct UserData: Codable {
     let name: String?
     let nickname: String
     let email: String
+    let gender: String?
 }
 
 struct SignUpResponse: Codable {

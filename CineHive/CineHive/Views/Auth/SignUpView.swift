@@ -10,66 +10,75 @@ import SwiftUI
 struct SignUpView: View {
     
     @State private var viewModel = SignUpViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Spacer()
-                Text("Create Account")
-                    .frame(width: 320, height: 70)
-                    .font(.system(size: 22, weight: .bold))
-                
-                InputFieldView(title: "이메일", text: $viewModel.email)
-                // 오류 메시지
-                if let emailError = viewModel.emailErrorMessage {
-                    Text(emailError)
-                        .font(.system(size: 14))
-                        .foregroundColor(.red)
-                        .frame(width: 320, height: 20, alignment: .leading)
-                }
-                
-                // 이메일 중복 검사 결과 표시 (형식 오류가 없을 때만 표시)
-                else if let emailCheck = viewModel.emailCheckMessage {
-                    Text(emailCheck)
-                        .font(.system(size: 14))
-                        .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
-                        .frame(width: 330, alignment: .leading)
-                }
-                    
-                PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
-                InputFieldView(title: "닉네임", text: $viewModel.nickname)
-                // 닉네임 중복 검사 결과 메시지 표시
-                if let nicknameError = viewModel.nicknameErrorMessage {
-                    Text(nicknameError)
-                        .font(.system(size: 14))
-                        .foregroundColor(nicknameError == "사용 가능한 닉네임입니다." ? .green : .red)
-                        .frame(width: 330, alignment: .leading)
-                        .padding(.top, 1)
-                }
-                InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
-                
-                GenderSelectedView(selectedGender: $viewModel.gender)
-                
-                Button(action: {
-                    Task {
-                        await viewModel.signUp()
+            ZStack(alignment: .topLeading) {
+                ScrollView {
+                    VStack {
+                        Text("회원가입")
+                            .frame(width: 320, height: 70)
+                            .font(.system(size: 22, weight: .bold))
+                            .padding(.horizontal, 16)
+
+                        InputFieldView(title: "이메일", text: $viewModel.email)
+
+                        if let emailError = viewModel.emailErrorMessage {
+                            Text(emailError)
+                                .font(.system(size: 14))
+                                .foregroundColor(.red)
+                                .frame(width: 320, height: 20, alignment: .leading)
+                        } else if let emailCheck = viewModel.emailCheckMessage {
+                            Text(emailCheck)
+                                .font(.system(size: 14))
+                                .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
+                                .frame(width: 330, alignment: .leading)
+                        }
+
+                        PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
+                        InputFieldView(title: "닉네임", text: $viewModel.nickname)
+
+                        if let nicknameError = viewModel.nicknameErrorMessage {
+                            Text(nicknameError)
+                                .font(.system(size: 14))
+                                .foregroundColor(nicknameError == "사용 가능한 닉네임입니다." ? .green : .red)
+                                .frame(width: 330, alignment: .leading)
+                                .padding(.top, 1)
+                        }
+
+                        InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
+                        GenderSelectedView(selectedGender: $viewModel.gender)
+
+                        Button(action: {
+                            Task {
+                                await viewModel.signUp()
+                            }
+                        }, label: {
+                            Text("회원가입")
+                                .frame(width: 330, height: 50)
+                                .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        })
+                        .frame(height: 90)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(.white)
+                        .disabled(!viewModel.isValid())
+
+                        Spacer()
                     }
-                }, label: {
-                    Text("회원가입")
-                        .frame(width: 330, height: 50)
-                        .background(viewModel.isValid() ? Color("LoginBtnColor"): Color.gray).clipShape(RoundedRectangle(cornerRadius: 12))
-                })
-                .frame(height: 90)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(.white)
-                .disabled(!viewModel.isValid())
-                Spacer()
+                    .padding(.bottom, 20)
+                }
+
+                BackButtonView(action: { dismiss() }, color: CHColors.textColor)
+                .padding(.top, 10)
+                .padding(.leading, -10)
             }
+            .navigationBarHidden(true)
             .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
                 LoginView()
             }
         }
-        
     }
 }
 

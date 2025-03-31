@@ -17,6 +17,8 @@ extension Logger {
     
     static let networking = Logger(subsystem: "kr.co.Cine-Hive.CineHive", category: "Networking")
     static let ui = Logger(subsystem: "kr.co.Cine-Hive.CineHive", category: "UI")
+    static let auth = Logger(subsystem: "kr.co.Cine-Hive.CineHive", category: "Authentication")
+    static let state = Logger(subsystem: "kr.co.Cine-Hive.CineHive", category: "StateManagement")
     
     // 타임스탬프 함께 출력하는 로그
     // 카테고리 : error, warning, failure, info, debug, fault
