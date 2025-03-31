@@ -88,7 +88,10 @@ struct AuthView: View {
                 LoginView()
             }
             .fullScreenCover(isPresented: $showSignUp) {
-                SignUpView()
+                SignUpView(onSignUpSuccess: {
+                    showSignUp = false
+                    showLogin = true
+                })
             }
         }
     }

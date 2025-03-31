@@ -11,9 +11,11 @@ struct PreparingView: View {
     let type: String
     let actionTitle: String
     let action: () -> Void
-
+    
+    @State private var fadeOut = false
+    
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -21,21 +23,29 @@ struct PreparingView: View {
                 .font(.system(size: 60))
                 .foregroundColor(CHColors.primaryColor)
                 .padding()
-          
+            
             Text("\(type) 콘텐츠 준비 중...")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(CHColors.textColor)
-          
+            
             Text("곧 다양한 \(type) 콘텐츠를 제공해 드릴 예정입니다.\n조금만 기다려주세요!")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
                 .foregroundColor(CHColors.secondaryColor)
-
+            
             Button {
-                dismiss()
-                action()
+                withAnimation(.easeOut(duration: 0.3)) {
+                    fadeOut = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        action()
+                    }
+                }
             } label: {
                 Text(actionTitle)
                     .font(.headline)
@@ -46,6 +56,7 @@ struct PreparingView: View {
                     .cornerRadius(8)
                     .padding(.top, 20)
             }
+            .opacity(fadeOut ? 0 : 1)
             Spacer()
         }
         .frame(maxWidth: .infinity)
@@ -53,7 +64,7 @@ struct PreparingView: View {
         .background(CHColors.backgroundColor)
         .navigationBarBackButtonHidden(true)
     }
-
+    
     private var iconName: String {
         switch type {
         case "드라마": return "tv"

@@ -55,8 +55,11 @@ struct SharingOptionsListView: View {
                     .presentationDragIndicator(.visible)
             }
         }
-        .overlay(
-            ToastView(message: viewModel.toastMessage, isShowing: $viewModel.showToast)
+        .toast(
+            message: viewModel.toastMessage,
+            isPresented: $viewModel.showToast,
+            toastType: .success,
+            duration: 2.0
         )
     }
 }
@@ -111,29 +114,6 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
-// 토스트 뷰 구현
-struct ToastView: View {
-    let message: String
-    @Binding var isShowing: Bool
-    
-    var body: some View {
-        VStack {
-            Spacer()
-            if isShowing {
-                Text(message)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.black.opacity(0.7))
-                    .foregroundColor(.white)
-                    .cornerRadius(20)
-                    .padding(.bottom, 60)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.easeInOut(duration: 0.3), value: isShowing)
-            }
-        }
-    }
 }
 
 #Preview {
