@@ -8,8 +8,8 @@
 import SwiftUI
 
 // 로그인 전 초기화면
-struct AuthView: View {
-    @Bindable var router: AppRouter
+struct WelcomeView: View {
+    @Environment(Router.self) private var router
 
     var body: some View {
         NavigationStack {
@@ -35,7 +35,7 @@ struct AuthView: View {
 
                 // 로그인 버튼
                 Button {
-                    router.goToLogin()
+                    router.push(.login)
                 } label: {
                     Text("로그인하기")
                         .font(.system(size: 18, weight: .bold))
@@ -48,7 +48,7 @@ struct AuthView: View {
 
                 // 회원가입 버튼
                 Button {
-                    router.goToSignUp()
+                    router.push(.signup)
                 } label: {
                     Text("새로운 계정 만들기")
                         .font(.system(size: 18, weight: .bold))
@@ -67,7 +67,7 @@ struct AuthView: View {
                 Button {
                     UserState.shared.loginAsGuest()
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    router.goToMain()
+                    router.switchRoot(.home)
                 } label: {
                     HStack {
                         Image(systemName: "person")
