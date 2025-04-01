@@ -10,7 +10,7 @@ import SwiftUI
 struct SplashView: View {
     var body: some View {
         ZStack {
-            CHColors.primaryColor.opacity(0.1)
+            CHColors.textColor
                 .edgesIgnoringSafeArea(.all)
             
             VStack {
