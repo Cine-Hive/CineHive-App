@@ -87,7 +87,7 @@ struct SignUpCompleteView: View {
                 Spacer()
                 
                 VStack(spacing: 16) {
-                    // 계속하기 버튼 - NavigationLink 사용
+                    // 계속하기 버튼
                     NavigationLink {
                         PreparingView(
                             type: "추가 정보",

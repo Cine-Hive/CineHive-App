@@ -8,7 +8,7 @@
 import SwiftUI
 
 // 로그인 전 초기화면
-struct AuthView: View {
+struct WelcomeView: View {
     @State private var showLogin = false
     @State private var showSignUp = false
     
@@ -98,5 +98,5 @@ struct AuthView: View {
 }
 
 #Preview {
-    AuthView()
+    WelcomeView()
 }
