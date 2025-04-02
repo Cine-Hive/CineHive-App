@@ -24,10 +24,7 @@ struct MainTabView: View {
                     case 0: HomeTabView()
                     case 1: ExploreTabView()
                     case 2: CommunityTabView()
-                    case 3:
-                        PreparingView(type: "프로필", actionTitle: "확인") {
-                            selectedTab = previousTab
-                        }
+                    case 3: ProfileTabView()
                     default: EmptyView()
                     }
                 }
