@@ -11,7 +11,7 @@ struct User: Codable, Identifiable {
     let id: Int?
     let email: String
     let password: String
-    let nickname: String
+    var nickname: String
     let name: String?
     let gender: String?
     let type: String
@@ -62,7 +62,7 @@ struct LoginResponse: Codable {
 struct UserData: Codable {
     let genres: [String]?
     let name: String?
-    let nickname: String
+    var nickname: String
     let email: String
     let gender: String?
 }
