@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct HomeTabView: View {
-    @State private var viewModel = MovieViewModel()
+    @State private var movieViewModel = MovieViewModel()
+    @State private var popularMoviesViewModel = PopularMoviesViewModel()
+    @State private var topRatedMoviesViewModel = TopRatedMoviesViewModel()
+    @State private var nowPlayingMoviesViewModel = NowPlayingMoviesViewModel()
+    //@State private var upcomingMoviesViewModel = UpcomingMoviesViewModel() // 필요하다면 추가
     @State private var showProfileOptions = false
     @State private var showNotification = false
     @State private var isRefreshing = false
@@ -39,16 +43,16 @@ struct HomeTabView: View {
                         HomeBannerView(banners: BannerItem.dummyBanners)
                         
                         // 인기 영화 섹션
-                        PopularMoviesView(movies: viewModel.popularMovies)
+                        PopularMoviesView()
                         
                         // 최고 평점 영화 섹션
-                        TopRatedMoviesView(movies: viewModel.topRatedMovies)
+                        TopRatedMoviesView()
                         
                         // 장르별 탐색 섹션
                         GenreExploreView()
                         
                         // 현재 상영 영화
-                        nowPlayingSection()
+                        NowPlayingMoviesView()
                         
                         // 커뮤니티 하이라이트 섹션
                         CommunityHighlightsView()
@@ -57,10 +61,10 @@ struct HomeTabView: View {
                         upcomingSection()
                         
                         // OTT별 인기 콘텐츠 섹션
-                        OTTPopularContentsView(
-                            movies: viewModel.popularMovies,
-                            selectedOTT: $selectedOTT
-                        )
+//                        OTTPopularContentsView(
+//                            movies: viewModel.popularMovies,
+//                            selectedOTT: $selectedOTT
+//                        )
                         
                         // 푸터 공간
                         Color.clear.frame(height: 50)
@@ -70,7 +74,7 @@ struct HomeTabView: View {
                     await refreshContent()
                 }
             }
-            .errorToast(message: viewModel.error, isPresented: $showErrorToast)
+            .errorToast(message: movieViewModel.error, isPresented: $showErrorToast)
             
         }
         .foregroundColor(CHColors.textColor)
@@ -82,13 +86,13 @@ struct HomeTabView: View {
                 isSearchActive: $isSearchActive
             ) : nil
         )
-        .onChange(of: viewModel.error) { _, newValue in
+        .onChange(of: movieViewModel.error) { _, newValue in
             if let newValue, !newValue.isEmpty {
                 showErrorToast = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                     withAnimation {
                         showErrorToast = false
-                        viewModel.clearError()
+                        movieViewModel.clearError()
                     }
                 }
             }
@@ -104,13 +108,13 @@ struct HomeTabView: View {
             icon: "bell.fill"
         )
         .onAppear {
-            if viewModel.movies.isEmpty {
+            if movieViewModel.movies.isEmpty {
                 Task {
-                    await viewModel.fetchMovies()
-                    await viewModel.fetchNowPlayingMovies()
-                    await viewModel.fetchPopularMovies()
-                    await viewModel.fetchTopRatedMovies()
-                    await viewModel.fetchUpcomingMovies()
+                    await movieViewModel.fetchMovies()
+                    await movieViewModel.fetchNowPlayingMovies()
+                    await movieViewModel.fetchPopularMovies()
+                    await movieViewModel.fetchTopRatedMovies()
+                    await movieViewModel.fetchUpcomingMovies()
                     
                     // 환영 메시지 표시
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -129,11 +133,11 @@ struct HomeTabView: View {
         isRefreshing = true
         
         Task {
-            await viewModel.fetchMovies()
-            await viewModel.fetchNowPlayingMovies()
-            await viewModel.fetchPopularMovies()
-            await viewModel.fetchTopRatedMovies()
-            await viewModel.fetchUpcomingMovies()
+            await movieViewModel.fetchMovies()
+            await movieViewModel.fetchNowPlayingMovies()
+            await movieViewModel.fetchPopularMovies()
+            await movieViewModel.fetchTopRatedMovies()
+            await movieViewModel.fetchUpcomingMovies()
         }
         
         // Show notification after refresh
@@ -149,34 +153,16 @@ struct HomeTabView: View {
         }
     }
     
-    private func nowPlayingSection() -> some View {
-        Group {
-            if !viewModel.nowPlayingMovies.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "현재 상영 영화", actionTitle: "더보기")
-                    
-                    MovieListView(
-                        movies: viewModel.nowPlayingMovies,
-                        movieType: .nowPlaying,
-                        viewModel: viewModel
-                    )
-                }
-                .padding(.horizontal, 15)
-                .padding(.top, 30)
-            }
-        }
-    }
-    
     private func upcomingSection() -> some View {
         Group {
-            if !viewModel.upcomingMovies.isEmpty {
+            if !movieViewModel.upcomingMovies.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "개봉 예정작", actionTitle: "더보기")
                     
                     MovieListView(
-                        movies: viewModel.upcomingMovies,
+                        movies: movieViewModel.upcomingMovies,
                         movieType: .upcoming,
-                        viewModel: viewModel
+                        viewModel: movieViewModel
                     )
                 }
                 .padding(.top, 30)
