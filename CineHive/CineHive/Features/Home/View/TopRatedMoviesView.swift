@@ -103,6 +103,6 @@ struct TopRatedMoviesView: View {
 }
 
 #Preview {
-    TopRatedMoviesView(movies: [Movie.dummy1, Movie.dummy2, Movie.dummy3, Movie.dummy4, Movie.dummy5])
-        .background(CHColors.backgroundColor)
+   TopRatedMoviesView()
+       .background(CHColors.backgroundColor)
 }
