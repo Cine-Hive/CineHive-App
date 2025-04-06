@@ -97,7 +97,7 @@ struct OTTPopularContentsView: View {
             // 콘텐츠 정보
             VStack(alignment: .leading, spacing: 6) {
                 // 제목
-                Text("영화 제목")
+                Text(movie.title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(CHColors.textColor)
                     .lineLimit(1)

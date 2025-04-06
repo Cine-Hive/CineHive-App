@@ -52,7 +52,7 @@ struct PopularMoviesView: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("영화 제목")
+                Text(movie.title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(CHColors.textColor)
                     .lineLimit(1)
