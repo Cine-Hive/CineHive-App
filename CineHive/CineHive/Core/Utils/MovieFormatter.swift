@@ -28,4 +28,35 @@ struct MovieFormatter {
         let rating = baseRating + variation
         return String(format: "%.1f", rating)
     }
+    
+    // 추가된 함수: 날짜 문자열을 Date 객체로 변환
+    static func parseReleaseDate(_ dateString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        if let date = formatter.date(from: dateString) {
+            return date
+        }
+        
+        formatter.dateFormat = "yyyy/MM/dd"
+        if let date = formatter.date(from: dateString) {
+            return date
+        }
+        
+        formatter.dateFormat = "yyyy.MM.dd"
+        if let date = formatter.date(from: dateString) {
+            return date
+        }
+        
+        // 연도만 있는 경우
+        if dateString.count == 4, let year = Int(dateString) {
+            var components = DateComponents()
+            components.year = year
+            components.month = 1
+            components.day = 1
+            return Calendar.current.date(from: components)
+        }
+        
+        return nil
+    }
 }
