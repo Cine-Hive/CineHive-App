@@ -27,7 +27,6 @@ struct NowPlayingMoviesView: View {
                         }
                     }
                 }
-                .frame(height: 380)
             } else {
                 Text("영화를 불러올 수 없습니다.")
                     .foregroundColor(CHColors.gray)

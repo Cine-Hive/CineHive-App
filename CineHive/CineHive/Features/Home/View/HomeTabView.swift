@@ -58,7 +58,7 @@ struct HomeTabView: View {
                         CommunityHighlightsView()
                         
                         // 개봉 예정작
-                        upcomingSection()
+                        UpcomingMoviesView()
                         
                         // OTT별 인기 콘텐츠 섹션
 //                        OTTPopularContentsView(
@@ -149,24 +149,6 @@ struct HomeTabView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             withAnimation {
                 showNotification = true
-            }
-        }
-    }
-    
-    private func upcomingSection() -> some View {
-        Group {
-            if !movieViewModel.upcomingMovies.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "개봉 예정작", actionTitle: "더보기")
-                    
-                    MovieListView(
-                        movies: movieViewModel.upcomingMovies,
-                        movieType: .upcoming,
-                        viewModel: movieViewModel
-                    )
-                }
-                .padding(.top, 30)
-                .padding(.horizontal, 15)
             }
         }
     }
