@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct PopularMoviesView: View {
-    let movies: [Movie]
+    @State private var viewModel = PopularMoviesViewModel()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "인기 영화", actionTitle: "더보기")
             
-            if !movies.isEmpty {
+            if viewModel.isLoading {
+                LoadingView()
+            } else if !viewModel.movies.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 15) {
-                        //랭크 정보가 없어서 그냥 받아온 순서대로 순위 매김
-                        ForEach(Array(movies.prefix(10).enumerated()), id: \.offset) { index, movie in
+                        ForEach(Array(viewModel.movies.prefix(10).enumerated()), id: \.offset) { index, movie in
                             NavigationLink(destination: DetailView(movieId: movie.id)) {
                                 popularMovieCard(movie: movie, rank: index + 1)
                             }
@@ -26,11 +27,14 @@ struct PopularMoviesView: View {
                     }
                 }
             } else {
-                LoadingView()
+                Text("영화를 불러올 수 없습니다.")
             }
         }
         .padding(.horizontal, 15)
         .padding(.top, 30)
+        .task {
+            await viewModel.fetchPopularMovies()
+        }
     }
     
     private func popularMovieCard(movie: Movie, rank: Int) -> some View {
@@ -52,7 +56,7 @@ struct PopularMoviesView: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(movie.title)
+                Text(viewModel.formatTitle(movie.title))
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(CHColors.textColor)
                     .lineLimit(1)
@@ -62,7 +66,7 @@ struct PopularMoviesView: View {
                         .foregroundColor(CHColors.starColor)
                         .font(.system(size: 12))
                     
-                    Text(String(format: "%.1f", Double.random(in: 7.0...9.5)))
+                    Text(viewModel.generateRating(for: movie))
                         .font(.system(size: 12))
                         .foregroundColor(Color.gray)
                 }
@@ -72,6 +76,6 @@ struct PopularMoviesView: View {
 }
 
 #Preview {
-    PopularMoviesView(movies: [Movie.dummy1, Movie.dummy2, Movie.dummy3, Movie.dummy4])
+    PopularMoviesView()
         .background(CHColors.backgroundColor)
 }
