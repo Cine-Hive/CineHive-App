@@ -9,12 +9,11 @@ import Foundation
 
 struct Movie: Codable, Identifiable {
     let id: Int
+    let posterPath: String?
+    let backDropPath: String?
     let title: String
     let releaseDate: String
     let genres: [String]
-    let posterPath: String?
-    let backDropPath: String?
-    
     
     var posterURL: URL? {
         guard let path = posterPath else { return nil }
