@@ -49,7 +49,7 @@ struct HomeTabView: View {
                         TopRatedMoviesView()
                         
                         // 장르별 탐색 섹션
-                        GenreExploreView()
+                        GenreBrowserView()
                         
                         // 현재 상영 영화
                         NowPlayingMoviesView()
