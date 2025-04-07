@@ -12,7 +12,7 @@ import SwiftUI
 final class GenreBrowserViewModel {
     private(set) var isLoading = false
     private(set) var error: String?
-    private(set) var selectedGenre: String? = nil
+    private(set) var selectedGenre: String? = "액션"
     
     // 장르 리스트
     let genres = ["액션", "모험", "코미디", "드라마", "SF", "판타지", "공포", "로맨스", "스릴러", "애니메이션"]
