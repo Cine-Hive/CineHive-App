@@ -33,7 +33,6 @@ struct GenreBrowserView: View {
                     }
                 }
                 .padding(.horizontal, 15)
-                .padding(.vertical, 5)
             }
             
             // 선택된 장르가 있을 경우 장르별 영화 표시
@@ -41,7 +40,6 @@ struct GenreBrowserView: View {
                 genreMoviesPreview(genre: genre, movies: viewModel.getMoviesForSelectedGenre())
             }
         }
-        .padding(.top, 30)
     }
     
     // 장르별 영화 미리보기 (선택된 장르가 있을 경우)
@@ -78,7 +76,6 @@ struct GenreBrowserView: View {
                     }
                 }
                 .padding(.horizontal, 15)
-                .padding(.vertical, 10)
             }
         }
         .transition(.opacity)
