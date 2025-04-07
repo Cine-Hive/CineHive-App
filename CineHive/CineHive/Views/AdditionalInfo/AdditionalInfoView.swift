@@ -30,13 +30,13 @@ struct AdditionalInfoView: View {
                 .padding(.top, 18)
                 Spacer()
                 TabView(selection: $currentPage) {
-                    ProfileSelectedView()
+                    ProfileSelectedView(viewModel: viewModel)
                         .tag(0)
-                    GenreSelectedView()
+                    GenreSelectedView(viewModel: viewModel)
                         .tag(1)
-                    ServiceSelectedView()
+                    ServiceSelectedView(viewModel: viewModel)
                         .tag(2)
-                    RegionSelectedView()
+                    RegionSelectedView(viewModel: viewModel)
                         .tag(3)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -74,11 +74,12 @@ struct AdditionalInfoView: View {
                         Text(currentPage < 3 ? "다음으로" : "완료")
                             .frame(width: 180, height: 50)
                             .font(.system(size: 17, weight: .semibold))
-                            .background(viewModel.isSelectionValid() ? CHColors.Button.primary : Color.gray)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
                     })
+                    .disabled(!viewModel.isSelectionValid(for: currentPage))
+                    .background(viewModel.isSelectionValid(for: currentPage) ? CHColors.Button.primary : Color.gray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                     .foregroundStyle(.white)
-                    .disabled(!viewModel.isSelectionValid())
+                    
                     .fullScreenCover(isPresented: $isShowingView) {
                         MainTabView()
                     }

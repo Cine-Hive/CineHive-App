@@ -5,7 +5,6 @@
 //  Created by 존진 on 3/11/25.
 //
 
-import Foundation
 import SwiftUI
 import PhotosUI
 
@@ -43,7 +42,18 @@ class AdditionalInfoViewModel {
     }
     
     // 선택 값에 따른 버튼 활성화
-    func isSelectionValid() -> Bool {
-        return selectedImage != nil || !selectedGenres.isEmpty || !selectedServices.isEmpty || selectedCountry != nil
+    func isSelectionValid(for page: Int) -> Bool {
+        switch page {
+        case 0:
+            return selectedImage != nil
+        case 1:
+            return !selectedGenres.isEmpty
+        case 2:
+            return !selectedServices.isEmpty
+        case 3:
+            return selectedCountry != nil
+        default:
+            return false
+        }
     }
 }
