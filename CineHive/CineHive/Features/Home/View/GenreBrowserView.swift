@@ -1,17 +1,15 @@
 //
-//  GenreExploreView.swift
+//  GenreBrowserView.swift
 //  CineHive
 //
-//  Created by 이종민 on 3/20/25.
+//  Created by 이종민 on 4/7/25.
 //
 
 import SwiftUI
 
 // 장르별 탐색 섹션 컴포넌트
-struct GenreExploreView: View {
-    @State private var selectedGenre: String? = nil
-    
-    private let genres = ["액션", "모험", "코미디", "드라마", "SF", "판타지", "공포", "로맨스", "스릴러", "애니메이션"]
+struct GenreBrowserView: View {
+    @State private var viewModel = GenreBrowserViewModel()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -25,49 +23,59 @@ struct GenreExploreView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     // 주요 장르 선택 버튼
-                    ForEach(genres, id: \.self) { genre in
-                        genreButton(genre: genre, isSelected: selectedGenre == genre) {
+                    ForEach(viewModel.genres, id: \.self) { genre in
+                        genreButton(genre: genre, isSelected: viewModel.selectedGenre == genre) {
                             // 장르 선택 시 액션
                             withAnimation {
-                                selectedGenre = selectedGenre == genre ? nil : genre
+                                viewModel.selectGenre(genre)
                             }
                         }
                     }
                 }
                 .padding(.horizontal, 15)
-                .padding(.vertical, 5)
             }
             
             // 선택된 장르가 있을 경우 장르별 영화 표시
-            if let genre = selectedGenre {
-                genreMoviesPreview(genre: genre)
+            if let genre = viewModel.selectedGenre {
+                genreMoviesPreview(genre: genre, movies: viewModel.getMoviesForSelectedGenre())
             }
         }
-        .padding(.top, 30)
     }
     
     // 장르별 영화 미리보기 (선택된 장르가 있을 경우)
-    private func genreMoviesPreview(genre: String) -> some View {
+    private func genreMoviesPreview(genre: String, movies: [Movie]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("\(genre) 영화")
-                .font(.headline)
-                .foregroundColor(CHColors.textColor)
-                .padding(.horizontal, 15)
-                .padding(.top, 10)
+            HStack {
+                Text("\(genre) 영화")
+                    .font(.headline)
+                    .foregroundColor(CHColors.textColor)
+                
+                Spacer()
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
+            .padding(.horizontal, 15)
+            .padding(.top, 10)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    // 장르에 맞는 더미 데이터 가져오기
-                    if let movies = Movie.genreMovies[genre] {
+                    if !movies.isEmpty {
                         ForEach(movies) { movie in
                             NavigationLink(destination: DetailView(movieId: movie.id)) {
                                 genreMovieCard(movie: movie)
                             }
                         }
+                    } else {
+                        Text("이 장르의 영화가 없습니다")
+                            .font(.subheadline)
+                            .foregroundColor(CHColors.gray)
+                            .padding(.horizontal, 15)
                     }
                 }
                 .padding(.horizontal, 15)
-                .padding(.vertical, 10)
             }
         }
         .transition(.opacity)
@@ -80,7 +88,7 @@ struct GenreExploreView: View {
             PosterView(posterURL: movie.posterURL, width: 120, height: 180)
                 .cornerRadius(8)
             
-            Text("영화 \(movie.id)")
+            Text(movie.title)
                 .font(.system(size: 14))
                 .foregroundColor(CHColors.textColor)
                 .lineLimit(1)
@@ -91,8 +99,8 @@ struct GenreExploreView: View {
                     .foregroundColor(CHColors.starColor)
                     .font(.system(size: 12))
                 
-                // 평점은 ID를 기반으로 가상으로 생성
-                Text(String(format: "%.1f", 7.0 + Double(movie.id % 30) / 10.0))
+                // 평점
+                Text(viewModel.generateRating(for: movie))
                     .font(.system(size: 12))
                     .foregroundColor(CHColors.secondaryColor)
             }
@@ -120,6 +128,6 @@ struct GenreExploreView: View {
 }
 
 #Preview {
-    GenreExploreView()
+    GenreBrowserView()
         .background(CHColors.backgroundColor)
 }
