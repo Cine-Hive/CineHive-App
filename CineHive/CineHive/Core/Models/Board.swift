@@ -30,7 +30,7 @@ struct Board: Identifiable, Codable {
         case title = "brdTitle"
         case content = "brdContent"
         case user
-        case createdAt = "brgRegDate"
+        case createdAt = "brdRegDate"
         case viewCount = "views"
         case likeCount
         case commentCount
