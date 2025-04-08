@@ -1,0 +1,59 @@
+//
+//  AdditionalInfoViewModel.swift
+//  CineHive
+//
+//  Created by 존진 on 3/11/25.
+//
+
+import SwiftUI
+import PhotosUI
+
+@Observable
+class AdditionalInfoViewModel {
+    var selectedImage: UIImage? = nil
+    var pickerItem: PhotosPickerItem?
+    
+    // 장르 및 서비스 선택 상태
+    var selectedGenres: Set<String> = []
+    var selectedServices: Set<String> = []
+    var selectedCountry: String? = nil
+    
+    // 선택 가능한 데이터
+    let genres = ["영화", "드라마", "애니메이션"]
+    let services = ["Netflix", "Disney+", "TVING", "Apple TV+", "Wavve", "Watcha", "coupang\nplay", "kakao TV", "prime\nvideo"]
+    let serviceIcons: [String: String] = [
+        "Netflix": "play.tv",
+        "Disney+": "sparkles.tv",
+        "TVING": "play.tv",
+        "Apple TV+": "applelogo",
+        "Wavve": "waveform",
+        "Watcha": "eye",
+        "coupang\nplay": "cart",
+        "kakao TV": "message.fill",
+        "prime\nvideo": "shippingbox"
+    ]
+    let countries: [String] = ["대한민국", "미국", "일본", "중국", "영국", "프랑스", "이탈리아", "스페인", "호주", "독일"]
+    
+    let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 3)
+    
+    @MainActor
+    func updateSelectedImage(_ image: UIImage?) {
+        self.selectedImage = image
+    }
+    
+    // 선택 값에 따른 버튼 활성화
+    func isSelectionValid(for page: Int) -> Bool {
+        switch page {
+        case 0:
+            return selectedImage != nil
+        case 1:
+            return !selectedGenres.isEmpty
+        case 2:
+            return !selectedServices.isEmpty
+        case 3:
+            return selectedCountry != nil
+        default:
+            return false
+        }
+    }
+}
