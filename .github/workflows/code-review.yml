@@ -60,5 +60,4 @@ jobs:
          REVIEW_TYPE: ${{ vars.REVIEW_TYPE }}
          MAX_FILES: ${{ vars.MAX_FILES }}
          EXCLUDE_PATTERNS: ${{ vars.EXCLUDE_PATTERNS }}
-         MODEL: ${{ vars.MODEL }}
   	 PROJECT_GUIDELINES_FILE: .github/review-guidelines.md
