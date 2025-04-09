@@ -55,6 +55,8 @@ jobs:
         uses: Cine-Hive/MyCodeMentor@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          discord-webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          discord-username: 'AI CodeMentor'
         env:
           LANGUAGE: ${{ vars.LANGUAGE }}
           REVIEW_TYPE: ${{ vars.REVIEW_TYPE }}
