@@ -35,7 +35,7 @@ struct CustomRefreshTestView: View {
             .padding()
             .background(isRefreshing ? Color.red : Color.green)
             .foregroundColor(.white)
-            .cornerRadius(10)
+            .cornerRadius(15)
         }
         .padding()
         .background(Color.black.edgesIgnoringSafeArea(.all))
