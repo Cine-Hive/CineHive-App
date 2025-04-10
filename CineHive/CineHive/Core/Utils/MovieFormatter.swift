@@ -8,7 +8,7 @@
 import Foundation
 
 struct MovieFormatter {
-    static func formatMovieTitle(_ title: String, maxLength: Int = 25) -> String {
+    static func formatMovieTitle(_ title: String, maxLength: Int = 15) -> String {
         guard title.count > maxLength else { return title }
         return String(title.prefix(maxLength - 3)) + "..."
     }
