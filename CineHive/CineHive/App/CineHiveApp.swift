@@ -17,7 +17,6 @@ struct CineHiveApp: App {
         // Kakao SDK 초기화
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String {
             KakaoSDK.initSDK(appKey: kakaoAppKey)
-            print("Kakao App Key: \(kakaoAppKey)")
         }
     }
     

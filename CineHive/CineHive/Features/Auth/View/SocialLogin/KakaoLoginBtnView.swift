@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import KakaoSDKUser
 
 struct KakaoLoginBtnView: View {
+    @State private var viewModel = KaKaoLoginViewModel()
+    
     var body: some View {
         Button(action: {
-            
+            viewModel.login()
         }, label: {
             HStack {
                 Image("KakaoLogo")
