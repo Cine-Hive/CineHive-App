@@ -121,3 +121,8 @@ Thumbs.db
 # Ignore all local history of files
 .history
 .ionide
+
+# cursor
+.cursor
+.vscode/settings.json
+.vscode/settings.json
