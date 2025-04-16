@@ -22,4 +22,20 @@ struct CloseButton: View {
         }
     }
 }
+
+#Preview {
+    VStack {
+        CloseButton(action: {
+            print("Close button tapped")
+        })
+        
+        CloseButton(
+            action: {
+                print("Custom close button tapped")
+            },
+            iconColor: .red,
+            iconScale: .medium
+        )
+    }
+    .padding()
 }
