@@ -8,4 +8,18 @@
 import SwiftUI
 
 struct CloseButton: View {
+    var action: () -> Void
+    var iconColor: Color = .gray
+    var iconScale: Image.Scale = .large
+    
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .foregroundStyle(iconColor)
+                .imageScale(iconScale)
+        }
+    }
+}
 }
