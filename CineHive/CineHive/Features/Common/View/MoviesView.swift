@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MovieListView: View {
+struct MoviesView: View {
     let movies: [Movie]
     let movieType: MovieListType
     @State var viewModel: MovieViewModel
@@ -48,6 +48,6 @@ struct MovieListView: View {
 }
 
 #Preview {
-    MovieListView(movies: Movie.dummyMovies, movieType: .popular, viewModel: MovieViewModel())
+    MoviesView(movies: Movie.dummyMovies, movieType: .popular, viewModel: MovieViewModel())
         .background(.black)
 }
