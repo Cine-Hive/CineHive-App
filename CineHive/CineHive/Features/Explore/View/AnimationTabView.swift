@@ -157,7 +157,7 @@ struct AnimationTabView: View {
                 SectionHeader(title: "인기 애니메이션", actionTitle: "더보기")
                 
                 // 임시로 영화 데이터 활용
-                MovieListView(
+                MoviesView(
                     movies: viewModel.movies.prefix(10).map { $0 },
                     movieType: .movies,
                     viewModel: viewModel
@@ -183,7 +183,7 @@ struct AnimationTabView: View {
                 SectionHeader(title: "일본 애니메이션", actionTitle: "더보기")
                 
                 // 임시로 영화 데이터 활용
-                MovieListView(
+                MoviesView(
                     movies: viewModel.movies.suffix(10).map { $0 },
                     movieType: .movies,
                     viewModel: viewModel
