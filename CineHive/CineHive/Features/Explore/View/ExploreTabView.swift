@@ -322,7 +322,7 @@ struct ExploreTabView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "인기 영화", actionTitle: "더보기")
                     
-                    MovieListView(
+                    MoviesView(
                         movies: movieViewModel.popularMovies,
                         movieType: .popular,
                         viewModel: movieViewModel
@@ -335,7 +335,7 @@ struct ExploreTabView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "평점 높은 영화", actionTitle: "더보기")
                     
-                    MovieListView(
+                    MoviesView(
                         movies: movieViewModel.topRatedMovies,
                         movieType: .topRated,
                         viewModel: movieViewModel
@@ -348,7 +348,7 @@ struct ExploreTabView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "개봉 예정작", actionTitle: "더보기")
                     
-                    MovieListView(
+                    MoviesView(
                         movies: movieViewModel.upcomingMovies,
                         movieType: .upcoming,
                         viewModel: movieViewModel
