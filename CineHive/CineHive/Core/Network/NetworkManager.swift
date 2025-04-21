@@ -7,6 +7,9 @@
 
 import Foundation
 import OSLog
+protocol ResponseWithStatusCode {
+    var statusCode: Int? { get set }
+}
 
 enum NetworkError: Error, LocalizedError {
     case invalidURL
@@ -133,12 +136,22 @@ final class NetworkManager {
             }
             
             do {
-                return try JSONDecoder().decode(T.self, from: data)
-            } catch {
+                var decoded = try JSONDecoder().decode(T.self, from: data)
+                
+                // statusCode 주입
+                if var responseWithStatusCode = decoded as? ResponseWithStatusCode {
+                    responseWithStatusCode.statusCode = httpResponse.statusCode
+                    return responseWithStatusCode as! T
+                }
+                
+                return decoded
+            } catch let decodingError as DecodingError {
+
                 if let responseString = String(data: data, encoding: .utf8) {
                     Logger.log(.error, category: Logger.networking, message: "서버 응답 원본 데이터: \(responseString)")
                 }
-                throw NetworkError.decodingError(error)
+
+                throw NetworkError.decodingError(decodingError)
             }
         } catch {
             if let networkError = error as? NetworkError {
@@ -340,7 +353,15 @@ final class NetworkManager {
             }
             
             do {
-                return try JSONDecoder().decode(T.self, from: data)
+                var decoded = try JSONDecoder().decode(T.self, from: data)
+                
+                // 상태 코드 주입
+                if var responseWithStatusCode = decoded as? ResponseWithStatusCode {
+                    responseWithStatusCode.statusCode = httpResponse.statusCode
+                    return responseWithStatusCode as! T
+                }
+                
+                return decoded
             } catch {
                 if let responseString = String(data: data, encoding: .utf8) {
                     Logger.log(.error, category: Logger.networking, message: "서버 응답 원본 데이터: \(responseString)")
