@@ -17,6 +17,9 @@ class KaKaoLoginViewModel {
     
     private let userService: UserService
     
+    var shouldNavigateToMain: Bool = false
+    var shouldNavigateToSignUp: Bool = false
+    
     init(userService: UserService = .shared) {
         self.userService = userService
     }
@@ -48,11 +51,24 @@ class KaKaoLoginViewModel {
                     Task {
                         do {
                             let response = try await self.userService.kakaoLogin(token: token.accessToken)
+                            // 로그인 성공 후 응답 상태코드에 따라 분기
+                            switch response.statusCode {
+                            case 200:
+                                if let token = response.token {
+                                    self.shouldNavigateToMain = true
+                                } else {
+                                    print("기존 회원인데 토큰 없음")
+                                }
+                            case 201:
+                                self.shouldNavigateToSignUp = true
+                            default:
+                                print("예상치 못한 상태 코드: \(String(describing: response.statusCode))")
+                            }
                         } catch {
                             Logger.log(.error, category: Logger.auth, message:"서버 로그인 실패: \(error.localizedDescription)")
                         }
                     }
-                    self.getUserInfo()
+                    //self.getUserInfo()
                 }
             }
         }

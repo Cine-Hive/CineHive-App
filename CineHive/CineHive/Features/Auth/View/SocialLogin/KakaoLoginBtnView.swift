@@ -12,20 +12,30 @@ struct KakaoLoginBtnView: View {
     @State private var viewModel = KaKaoLoginViewModel()
     
     var body: some View {
-        Button(action: {
-            viewModel.login()
-        }, label: {
-            HStack {
-                Image("KakaoLogo")
-                    .resizable()
-                    .frame(width: 18, height: 18)
-                Text("카카오로 계속하기")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.black)
+        NavigationStack {
+            Button(action: {
+                viewModel.login()
+            }, label: {
+                HStack {
+                    Image("KakaoLogo")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                    Text("카카오로 계속하기")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.black)
+                }
+                .frame(width: 330, height: 44)
+                .background(Color("KakaoColor"))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            })
+            
+            .navigationDestination(isPresented: $viewModel.shouldNavigateToMain) {
+                MainTabView()
             }
-            .frame(width: 330, height: 44)
-            .background(Color("KakaoColor"))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        })
+            .navigationDestination(isPresented: $viewModel.shouldNavigateToSignUp) {
+                SignUpView()
+            }
+        }
+        
     }
 }
