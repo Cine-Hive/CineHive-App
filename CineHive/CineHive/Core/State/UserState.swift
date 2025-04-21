@@ -30,16 +30,17 @@ final class UserState {
         self.isLoggedIn = AuthManager.shared.isLoggedIn
         if isLoggedIn {
             // 사용자 정보 복원 시도
-            if let savedUser = AuthManager.shared.getUser() {
-                self.currentUser = savedUser
-                let userInfo = "이메일: \(savedUser.email), 닉네임: \(savedUser.nickname)"
-                Logger.log(.info, category: Logger.auth, message: "기존 사용자 세션 복원 성공: \(userInfo)")
-            } else {
-                // 토큰은 있지만 사용자 정보가 없는 경우
-                Logger.log(.error, category: Logger.auth, message: "토큰은 있으나 사용자 정보 없음. 사용자 세션 초기화")
-                AuthManager.shared.clearToken() // 불완전한 상태이므로 토큰도 제거
-                self.isLoggedIn = false
-            }
+        if AuthManager.shared.getUser() != nil {
+            let savedUser = AuthManager.shared.getUser()!
+            self.currentUser = savedUser
+            let userInfo = "이메일: \(savedUser.email), 닉네임: \(savedUser.nickname)"
+            Logger.log(.info, category: Logger.auth, message: "기존 사용자 세션 복원 성공: \(userInfo)")
+        } else {
+            // 토큰은 있지만 사용자 정보가 없는 경우
+            Logger.log(.error, category: Logger.auth, message: "토큰은 있으나 사용자 정보 없음. 사용자 세션 초기화")
+            AuthManager.shared.clearToken() // 불완전한 상태이므로 토큰도 제거
+            self.isLoggedIn = false
+        }
         }
     }
     
@@ -128,7 +129,7 @@ final class UserState {
             }
             
             // 응답 정보 유효성 확인
-            guard !response.token.isEmpty, response.user.email.count > 0, response.user.nickname.count > 0 else {
+            guard ((response.token?.isEmpty) == nil), response.user.email.count > 0, response.user.nickname.count > 0 else {
                 self.errorMessage = "서버에서 올바른 사용자 정보를 받지 못했습니다"
                 self.isLoading = false
                 Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전: \(response)")
@@ -136,7 +137,7 @@ final class UserState {
             }
             
             // JWT 토큰과 사용자 정보 저장
-            AuthManager.shared.saveToken(response.token)
+            AuthManager.shared.saveToken(response.token ?? "nil")
             AuthManager.shared.saveUser(response.user)
             
             // 상태 업데이트
