@@ -54,9 +54,21 @@ struct LoginUser: Codable {
 }
 
 struct LoginResponse: Codable {
-    let message: String
+    let message: String?
     let user: UserData
     let token: String
+}
+
+struct SocialLoginResponse: Codable, ResponseWithStatusCode {
+    var statusCode: Int?
+    let user: UserData
+    let token: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case statusCode
+        case user
+        case token
+    }
 }
 
 struct UserData: Codable {
@@ -65,6 +77,14 @@ struct UserData: Codable {
     let nickname: String
     let email: String
     let gender: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case email = "memEmail"
+        case name = "memName"
+        case genres = "genres"
+        case nickname = "memNickname"
+        case gender = "memSex"
+    }
 }
 
 struct SignUpResponse: Codable {
