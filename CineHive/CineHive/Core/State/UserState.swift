@@ -110,7 +110,7 @@ final class UserState {
         errorMessage = nil
         
         do {
-            let response: LoginResponse
+            let response: SocialLoginResponse
             
             // 소셜 로그인 제공자에 따라 적절한 API 호출
             switch provider {

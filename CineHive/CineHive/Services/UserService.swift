@@ -54,7 +54,7 @@ final class UserService {
     // MARK: - 소셜 로그인 관련
     
     /// 구글 로그인
-    func googleLogin(token: String) async throws -> LoginResponse {
+    func googleLogin(token: String) async throws -> SocialLoginResponse {
         let endpoint = EndPoint.GoogleAuth.appLogin
         
         struct SocialLoginRequest: Codable {
@@ -66,7 +66,7 @@ final class UserService {
     }
     
     /// 네이버 로그인
-    func naverLogin(token: String) async throws -> LoginResponse {
+    func naverLogin(token: String) async throws -> SocialLoginResponse {
         let endpoint = EndPoint.NaverAuth.appLogin
         
         struct SocialLoginRequest: Codable {
@@ -78,7 +78,7 @@ final class UserService {
     }
     
     /// 카카오 로그인
-    func kakaoLogin(token: String) async throws -> LoginResponse {
+    func kakaoLogin(token: String) async throws -> SocialLoginResponse {
         let endpoint = EndPoint.KakaoAuth.appLogin
         
         struct SocialLoginRequest: Codable {
