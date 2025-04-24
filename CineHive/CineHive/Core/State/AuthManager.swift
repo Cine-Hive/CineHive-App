@@ -165,4 +165,14 @@ final class AuthManager {
         clearToken()
         clearUser()
     }
+    // MARK: - 디버깅
+
+    /// 키체인에 저장된 토큰 값을 로그로 출력 (디버깅용)
+    func debugPrintToken() {
+        if let token = getToken() {
+            Logger.log(.info, category: Logger.auth, message: "키체인에 저장된 토큰: \(token)")
+        } else {
+            Logger.log(.info, category: Logger.auth, message: "키체인에 저장된 토큰 없음")
+        }
+    }
 }
