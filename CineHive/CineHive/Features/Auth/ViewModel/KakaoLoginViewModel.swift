@@ -25,55 +25,49 @@ class KaKaoLoginViewModel {
     }
     
     func login() {
-        // 카카오톡 설치 여부 확인
-        if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡 앱을 통한 로그인
-            UserApi.shared.loginWithKakaoTalk { (oauthToken, error) in
-                if let error = error {
-                    Logger.log(.error, category: Logger.auth, message: "카카오톡 로그인 실패: \(error.localizedDescription)")
-                } else if let token = oauthToken {
-                    Task {
-                        do {
-                            let response = try await self.userService.kakaoLogin(token: token.accessToken)
-                        } catch {
-                            print("서버 로그인 실패: \(error.localizedDescription)")
-                        }
-                    }           
-                    self.getUserInfo()
-                }
+        let loginHandler: (OAuthToken?, Error?) -> Void = { (oauthToken, error) in
+            if let error = error {
+                Logger.log(.error, category: Logger.auth, message: "카카오 로그인 실패: \(error.localizedDescription)")
+                return
             }
-        } else {
-            // 카카오 계정으로 로그인 (웹뷰 방식)
-            UserApi.shared.loginWithKakaoAccount { (oauthToken, error) in
-                if let error = error {
-                    Logger.log(.error, category: Logger.auth, message: "카카오톡 로그인 실패: \(error.localizedDescription)")
-                } else if let token = oauthToken {
-                    Task {
-                        do {
-                            let response = try await self.userService.kakaoLogin(token: token.accessToken)
-                            // 로그인 성공 후 응답 상태코드에 따라 분기
-                            switch response.statusCode {
-                            case 200:
-                                if let token = response.token {
-                                    self.shouldNavigateToMain = true
-                                } else {
-                                    print("기존 회원인데 토큰 없음")
-                                }
-                            case 201:
-                                self.shouldNavigateToSignUp = true
-                            default:
-                                print("예상치 못한 상태 코드: \(String(describing: response.statusCode))")
-                            }
-                        } catch {
-                            Logger.log(.error, category: Logger.auth, message:"서버 로그인 실패: \(error.localizedDescription)")
-                        }
+            
+            guard let token = oauthToken else {
+                Logger.log(.error, category: Logger.auth, message: "OAuth 토큰 없음")
+                return
+            }
+            
+            Task {
+                do {
+                    let response = try await self.userService.kakaoLogin(token: token.accessToken)
+                    
+                    // 토큰 저장 및 디버깅
+                    if let token = response.token {
+                        AuthManager.shared.saveToken(token)
                     }
-                    //self.getUserInfo()
+                    AuthManager.shared.debugPrintToken()
+                    
+                    // 상태 코드에 따라 화면 전환 분기
+                    switch response.statusCode {
+                    case 200:
+                        self.shouldNavigateToMain = true
+                    case 201:
+                        self.shouldNavigateToSignUp = true
+                    default:
+                        print("예상치 못한 상태 코드: \(String(describing: response.statusCode))")
+                    }
+                } catch {
+                    Logger.log(.error, category: Logger.auth, message: "서버 로그인 실패: \(error.localizedDescription)")
                 }
             }
         }
+        
+        if UserApi.isKakaoTalkLoginAvailable() {
+            UserApi.shared.loginWithKakaoTalk(completion: loginHandler)
+        } else {
+            UserApi.shared.loginWithKakaoAccount(completion: loginHandler)
+        }
     }
-  
+    
     private func getUserInfo() {
         UserApi.shared.me() { (user, error) in
             if let error = error {
