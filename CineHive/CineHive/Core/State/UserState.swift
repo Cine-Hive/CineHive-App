@@ -25,6 +25,10 @@ final class UserState {
     // 게스트 모드 상태
     var isGuestMode: Bool = false
     
+    // 네비게이션 상태
+    var shouldNavigateToMain: Bool = false
+    var shouldNavigateToSignUp: Bool = false
+    
     private init() {
         // 앱 실행 시 저장된 토큰과 사용자 정보 확인
         self.isLoggedIn = AuthManager.shared.isLoggedIn
@@ -147,6 +151,15 @@ final class UserState {
             self.currentUser = response.user
             self.isLoggedIn = true
             self.isLoading = false
+            
+            switch response.statusCode {
+            case 200:
+                self.shouldNavigateToMain = true
+            case 201:
+                self.shouldNavigateToSignUp = true
+            default:
+                Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 응답 상태코드: \(String(describing: response.statusCode))")
+            }
             
             Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공: \(response.user.email)")
             return true
