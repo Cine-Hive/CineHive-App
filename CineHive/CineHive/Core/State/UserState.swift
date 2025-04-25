@@ -87,6 +87,8 @@ final class UserState {
             // JWT 토큰과 사용자 정보 저장
             AuthManager.shared.saveToken(response.token)
             AuthManager.shared.saveUser(response.user)
+            // 키체인에 저장된 토큰 값 확인
+            AuthManager.shared.debugPrintToken()
             
             // 상태 업데이트
             self.currentUser = response.user
