@@ -129,9 +129,12 @@ final class UserState {
             }
             
             // 응답 정보 유효성 확인
-            guard ((response.token?.isEmpty) == nil), response.user.email.count > 0, response.user.nickname.count > 0 else {
-                self.errorMessage = "서버에서 올바른 사용자 정보를 받지 못했습니다"
-                self.isLoading = false
+            guard
+                let token = response.token?.trimmingCharacters(in: .whitespacesAndNewlines),
+                !token.isEmpty,
+                response.user.email.count > 0,
+                response.user.nickname.count > 0
+            else {
                 Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전: \(response)")
                 return false
             }
