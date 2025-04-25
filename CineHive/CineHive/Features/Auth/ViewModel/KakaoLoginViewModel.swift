@@ -16,12 +16,15 @@ import KakaoSDKUser
 class KaKaoLoginViewModel {
     
     private let userService: UserService
+    private let userState: UserState
+
     
     var shouldNavigateToMain: Bool = false
     var shouldNavigateToSignUp: Bool = false
     
-    init(userService: UserService = .shared) {
+    init(userService: UserService = .shared, userState: UserState = .shared) {
         self.userService = userService
+        self.userState = userState
     }
     
     func login() {
@@ -37,27 +40,7 @@ class KaKaoLoginViewModel {
             }
             
             Task {
-                do {
-                    let response = try await self.userService.kakaoLogin(token: token.accessToken)
-                    
-                    // 토큰 저장 및 디버깅
-                    if let token = response.token {
-                        AuthManager.shared.saveToken(token)
-                    }
-                    AuthManager.shared.debugPrintToken()
-                    
-                    // 상태 코드에 따라 화면 전환 분기
-                    switch response.statusCode {
-                    case 200:
-                        self.shouldNavigateToMain = true
-                    case 201:
-                        self.shouldNavigateToSignUp = true
-                    default:
-                        print("예상치 못한 상태 코드: \(String(describing: response.statusCode))")
-                    }
-                } catch {
-                    Logger.log(.error, category: Logger.auth, message: "서버 로그인 실패: \(error.localizedDescription)")
-                }
+                await self.userState.socialLogin(provider: .kakao, token: token.accessToken)
             }
         }
         
