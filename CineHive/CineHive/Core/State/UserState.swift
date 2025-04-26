@@ -34,17 +34,17 @@ final class UserState {
         self.isLoggedIn = AuthManager.shared.isLoggedIn
         if isLoggedIn {
             // 사용자 정보 복원 시도
-        if AuthManager.shared.getUser() != nil {
-            let savedUser = AuthManager.shared.getUser()!
-            self.currentUser = savedUser
-            let userInfo = "이메일: \(savedUser.email), 닉네임: \(savedUser.nickname)"
-            Logger.log(.info, category: Logger.auth, message: "기존 사용자 세션 복원 성공: \(userInfo)")
-        } else {
-            // 토큰은 있지만 사용자 정보가 없는 경우
-            Logger.log(.error, category: Logger.auth, message: "토큰은 있으나 사용자 정보 없음. 사용자 세션 초기화")
-            AuthManager.shared.clearToken() // 불완전한 상태이므로 토큰도 제거
-            self.isLoggedIn = false
-        }
+            if AuthManager.shared.getUser() != nil {
+                let savedUser = AuthManager.shared.getUser()!
+                self.currentUser = savedUser
+                let userInfo = "이메일: \(savedUser.email), 닉네임: \(savedUser.nickname)"
+                Logger.log(.info, category: Logger.auth, message: "기존 사용자 세션 복원 성공: \(userInfo)")
+            } else {
+                // 토큰은 있지만 사용자 정보가 없는 경우
+                Logger.log(.error, category: Logger.auth, message: "토큰은 있으나 사용자 정보 없음. 사용자 세션 초기화")
+                AuthManager.shared.clearToken() // 불완전한 상태이므로 토큰도 제거
+                self.isLoggedIn = false
+            }
         }
     }
     
@@ -112,7 +112,7 @@ final class UserState {
     
     /// 소셜 로그인 처리
     @MainActor
-    func socialLogin(provider: SocialLoginProvider, token: String) async -> Bool {
+    func socialLogin(provider: SocialLoginProvider, token: String) async -> SocialLoginResult {
         isLoading = true
         errorMessage = nil
         
@@ -131,51 +131,74 @@ final class UserState {
                 // Apple 로그인은 아직 서버 API가 준비되지 않은 것으로 가정
                 self.errorMessage = "Apple 로그인은 아직 지원되지 않습니다"
                 self.isLoading = false
-                return false
+                return .failure("Apple 로그인은 아직 지원되지 않습니다")
             }
             
-            // 응답 정보 유효성 확인
-            guard
-                let token = response.token?.trimmingCharacters(in: .whitespacesAndNewlines),
-                !token.isEmpty,
-                response.user.email.count > 0,
-                response.user.nickname.count > 0
-            else {
-                Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전: \(response)")
-                return false
-            }
-            
-            // JWT 토큰과 사용자 정보 저장
-            AuthManager.shared.saveToken(response.token ?? "nil")
-            AuthManager.shared.saveUser(response.user)
-            
-            // 상태 업데이트
-            self.currentUser = response.user
-            self.isLoggedIn = true
-            self.isLoading = false
-            
+            // 상태코드에 따라 분기 처리
             switch response.statusCode {
             case 200:
+                // 200: 기존 회원 → 로그인 완료 → 토큰 필수
+                guard
+                    let token = response.token?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    !token.isEmpty,
+                    response.user.email.count > 0,
+                    response.user.nickname.count > 0
+                else {
+                    Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (200): \(response)")
+                    self.isLoading = false
+                    return .failure("응답 데이터가 불완전")
+                }
+                
+                saveLoginInfo(token: token, user: response.user)
+                self.isLoggedIn = true
                 self.shouldNavigateToMain = true
+                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (기존 회원): \(response.user.email)")
+                isLoading = false
+                return .successNavigateToMain
+                
             case 201:
+                // 201: 신규 회원 → 회원가입 페이지로 이동(토큰 없음)
+                guard
+                    response.user.email.count > 0,
+                    response.user.nickname.count > 0
+                else {
+                    Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (201): \(response)")
+                    self.isLoading = false
+                    return .failure("응답 데이터가 불완전")
+                }
+                
+                saveLoginInfo(token: nil, user: response.user)
+                self.isLoggedIn = false
                 self.shouldNavigateToSignUp = true
+                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (신규 회원): \(response.user.email)")
+                isLoading = false
+                return .successNavigateToSignUp
+                
             default:
-                Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 응답 상태코드: \(String(describing: response.statusCode))")
+                Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: 예상치 못한 상태 코드 \(String(describing: response.statusCode))")
+                self.isLoading = false
+                return .failure("예상치 못한 서버 응답")
             }
-            
-            Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공: \(response.user.email)")
-            return true
         } catch let error as NetworkError {
             self.errorMessage = error.localizedDescription
             self.isLoading = false
             Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: \(error.localizedDescription)")
-            return false
+            return .failure("로그인 실패: \(error.localizedDescription)")
         } catch {
             self.errorMessage = "로그인 중 오류가 발생했습니다"
             self.isLoading = false
             Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: \(error.localizedDescription)")
-            return false
+            return .failure("로그인 실패: \(error.localizedDescription)")
         }
+    }
+    
+    private func saveLoginInfo(token: String?, user: UserData) {
+        if let token = token {
+            AuthManager.shared.saveToken(token)
+        }
+        AuthManager.shared.saveUser(user)
+        AuthManager.shared.debugPrintToken()
+        self.currentUser = user
     }
     
     // 로그아웃 처리 (게스트 모드도 종료)
@@ -289,4 +312,10 @@ enum SocialLoginProvider: String {
     case apple = "Apple"
     case kakao = "Kakao"
     case naver = "Naver"
+}
+
+enum SocialLoginResult {
+    case successNavigateToMain
+    case successNavigateToSignUp
+    case failure(String)
 }
