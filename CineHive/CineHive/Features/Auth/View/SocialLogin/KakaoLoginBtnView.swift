@@ -29,10 +29,10 @@ struct KakaoLoginBtnView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             })
             
-            .navigationDestination(isPresented: $viewModel.shouldNavigateToMain) {
+            .fullScreenCover(isPresented: $viewModel.shouldNavigateToMain) {
                 MainTabView()
             }
-            .navigationDestination(isPresented: $viewModel.shouldNavigateToSignUp) {
+            .fullScreenCover(isPresented: $viewModel.shouldNavigateToSignUp) {
                 SignUpView()
             }
         }
