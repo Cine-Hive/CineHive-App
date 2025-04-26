@@ -17,8 +17,8 @@ class KaKaoLoginViewModel {
     
     private let userService: UserService
     private let userState: UserState
-
     
+    // 네비게이션 상태
     var shouldNavigateToMain: Bool = false
     var shouldNavigateToSignUp: Bool = false
     
@@ -40,28 +40,28 @@ class KaKaoLoginViewModel {
             }
             
             Task {
-                await self.userState.socialLogin(provider: .kakao, token: token.accessToken)
+                let result = await self.userState.socialLogin(provider: .kakao, token: token.accessToken)
+                switch result {
+                case .successNavigateToMain:
+                    // MainTabView로 이동 준비
+                    print("메인으로 이동 준비 완료")
+                    self.shouldNavigateToMain = true
+                case .successNavigateToSignUp:
+                    // 회원가입 뷰로 이동 준비
+                    print("회원가입 화면 이동 준비 완료")
+                    self.shouldNavigateToSignUp = true
+                case .failure(let message):
+                    print("로그인 실패:", message)
+                }
             }
         }
         
         if UserApi.isKakaoTalkLoginAvailable() {
+            // 카카오톡 앱 로그인
             UserApi.shared.loginWithKakaoTalk(completion: loginHandler)
         } else {
+            // 카카오톡 웹 로그인
             UserApi.shared.loginWithKakaoAccount(completion: loginHandler)
-        }
-    }
-    
-    private func getUserInfo() {
-        UserApi.shared.me() { (user, error) in
-            if let error = error {
-                Logger.log(.info, category: Logger.state, message: "사용자 정보 가져오기 실패: \(error.localizedDescription)")
-            } else {
-                if let user = user {
-                    print("id: \(user.id ?? 0)")
-                    print("nickname: \(user.kakaoAccount?.profile?.nickname ?? "")")
-                    print("email: \(user.kakaoAccount?.email ?? "")")
-                }
-            }
         }
     }
 }
