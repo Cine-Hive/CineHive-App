@@ -59,7 +59,7 @@ struct LoginResponse: Codable {
     let token: String
 }
 
-struct SocialLoginResponse: Codable, ResponseWithStatusCode {
+struct SocialLoginResponse: Codable {
     var statusCode: Int?
     let user: UserData
     let token: String?
