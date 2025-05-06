@@ -21,6 +21,7 @@ class KaKaoLoginViewModel {
     // 네비게이션 상태
     var shouldNavigateToMain: Bool = false
     var shouldNavigateToSignUp: Bool = false
+    var toast: ToastState = ToastState()
     
     init(userService: UserService = .shared, userState: UserState = .shared) {
         self.userService = userService
@@ -44,14 +45,12 @@ class KaKaoLoginViewModel {
                 switch result {
                 case .successNavigateToMain:
                     // MainTabView로 이동 준비
-                    print("메인으로 이동 준비 완료")
                     self.shouldNavigateToMain = true
                 case .successNavigateToSignUp:
                     // 회원가입 뷰로 이동 준비
-                    print("회원가입 화면 이동 준비 완료")
                     self.shouldNavigateToSignUp = true
                 case .failure(let message):
-                    print("로그인 실패:", message)
+                    self.toast = ToastState(isShowing: true, message: message.message, type: .error)
                 }
             }
         }
