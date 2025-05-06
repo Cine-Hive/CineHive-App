@@ -7,8 +7,29 @@
 
 import Foundation
 
+// 서버 환경별 baseURL 설정 구조
+enum ServerEnvironment {
+    // 개발자
+    case development
+    // 내부 테스트
+    case staging
+    // 일반 사용자
+    case production
+
+    var baseURL: String {
+        switch self {
+        case .development:
+            return "http://localhost:8081"
+        case .staging:
+            return "https://staging.api.cinehive.com"
+        case .production:
+            return "https://api.cinehive.com"
+        }
+    }
+}
+
 enum EndPoint {
-    static let baseURL = "http://localhost:8081"
+    static let baseURL = ServerEnvironment.development.baseURL
 
     enum NowPlaying {
         static let get = "/now_playing"
