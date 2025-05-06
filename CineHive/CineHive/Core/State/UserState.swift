@@ -131,7 +131,7 @@ final class UserState {
                 // Apple 로그인은 아직 서버 API가 준비되지 않은 것으로 가정
                 self.errorMessage = "Apple 로그인은 아직 지원되지 않습니다"
                 self.isLoading = false
-                return .failure("Apple 로그인은 아직 지원되지 않습니다")
+                return .failure(.environmentMisconfigured(description: "Apple 로그인은 아직 지원되지 않습니다"))
             }
             
             // 상태코드에 따라 분기 처리
@@ -146,7 +146,7 @@ final class UserState {
                 else {
                     Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (200): \(response)")
                     self.isLoading = false
-                    return .failure("응답 데이터가 불완전")
+                    return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
                 }
                 
                 saveLoginInfo(token: token, user: response.user)
@@ -164,7 +164,7 @@ final class UserState {
                 else {
                     Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (201): \(response)")
                     self.isLoading = false
-                    return .failure("응답 데이터가 불완전")
+                    return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
                 }
                 
                 saveLoginInfo(token: nil, user: response.user)
@@ -177,18 +177,18 @@ final class UserState {
             default:
                 Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: 예상치 못한 상태 코드 \(String(describing: response.statusCode))")
                 self.isLoading = false
-                return .failure("예상치 못한 서버 응답")
+                return .failure(.serverResponse(statusCode: response.statusCode ?? -1, endpoint: "UserService.socialLogin", message: "예상치 못한 상태코드 응답"))
             }
         } catch let error as NetworkError {
             self.errorMessage = error.localizedDescription
             self.isLoading = false
             Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: \(error.localizedDescription)")
-            return .failure("로그인 실패: \(error.localizedDescription)")
+            return .failure(.networkUnavailable(description: error.localizedDescription.isEmpty ? "알 수 없는 네트워크 오류" : error.localizedDescription))
         } catch {
             self.errorMessage = "로그인 중 오류가 발생했습니다"
             self.isLoading = false
             Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: \(error.localizedDescription)")
-            return .failure("로그인 실패: \(error.localizedDescription)")
+            return .failure(.internalError(description: error.localizedDescription.isEmpty ? "예기치 못한 내부 오류" : error.localizedDescription))
         }
     }
     
@@ -317,5 +317,44 @@ enum SocialLoginProvider: String {
 enum SocialLoginResult {
     case successNavigateToMain
     case successNavigateToSignUp
-    case failure(String)
+    case failure(SocialLoginError)
+}
+
+enum SocialLoginError: Error {
+    case networkUnavailable(description: String)
+    case serverResponse(statusCode: Int, endpoint: String, message: String)
+    case decodingFailed(field: String, description: String)
+    case unknown(description: String)
+    
+    // 네트워크 관련
+    case timeout(description: String) // 요청 시간 초과
+    case noInternetConnection // 인터넷 연결 없음
+    case serverUnavailable(description: String) // 서버 응답 없음
+
+    // 시스템 또는 클라이언트 관련
+    case internalError(description: String) // 내부 처리 중 오류
+    case environmentMisconfigured(description: String) // 잘못된 환경 설정
+
+    var message: String {
+        switch self {
+        case .networkUnavailable(let description):
+            return "네트워크에 연결 오류: \(description)"
+        case .serverResponse(let code, let endpoint, let message):
+            return "서버 오류 (상태 코드 \(code), 요청 경로 \(endpoint)): \(message)"
+        case .decodingFailed(let field, let description):
+            return "응답 데이터 처리 실패 (\(field)): \(description)"
+        case .unknown(let description):
+            return "알 수 없는 오류 발생: \(description)"
+        case .timeout(let description):
+            return "요청 시간이 초과: \(description)"
+        case .noInternetConnection:
+            return "인터넷 연결되어 있지 않음"
+        case .serverUnavailable(let description):
+            return "서버 응답하지 않음: \(description)"
+        case .internalError(let description):
+            return "내부 오류 발생: \(description)"
+        case .environmentMisconfigured(let description):
+            return "환경 설정 오류: \(description)"
+        }
+    }
 }
