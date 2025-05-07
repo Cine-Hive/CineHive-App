@@ -133,12 +133,12 @@ final class NetworkManager {
             }
             
             do {
-                return try JSONDecoder().decode(T.self, from: data)
-            } catch {
+                return try decodeResponse(data: data, response: httpResponse)
+            } catch let decodingError as DecodingError {
                 if let responseString = String(data: data, encoding: .utf8) {
                     Logger.log(.error, category: Logger.networking, message: "서버 응답 원본 데이터: \(responseString)")
                 }
-                throw NetworkError.decodingError(error)
+                throw NetworkError.decodingError(decodingError)
             }
         } catch {
             if let networkError = error as? NetworkError {
@@ -340,12 +340,12 @@ final class NetworkManager {
             }
             
             do {
-                return try JSONDecoder().decode(T.self, from: data)
-            } catch {
+                return try decodeResponse(data: data, response: httpResponse)
+            } catch let decodingError as DecodingError {
                 if let responseString = String(data: data, encoding: .utf8) {
                     Logger.log(.error, category: Logger.networking, message: "서버 응답 원본 데이터: \(responseString)")
                 }
-                throw NetworkError.decodingError(error)
+                throw NetworkError.decodingError(decodingError)
             }
         } catch {
             if let networkError = error as? NetworkError {

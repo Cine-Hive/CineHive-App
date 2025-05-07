@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import KakaoSDKUser
 
 struct KakaoLoginBtnView: View {
+    @State private var viewModel = KaKaoLoginViewModel()
+    
     var body: some View {
         Button(action: {
-            
+            viewModel.login()
         }, label: {
             HStack {
                 Image("KakaoLogo")
@@ -24,5 +27,12 @@ struct KakaoLoginBtnView: View {
             .background(Color("KakaoColor"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         })
+        
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToMain) {
+            MainTabView()
+        }
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToSignUp) {
+            SignUpView()
+        }
     }
 }
