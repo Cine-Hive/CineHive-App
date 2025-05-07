@@ -16,6 +16,7 @@ PODS:
     - KakaoSDKCommon/Common (= 2.22.7)
   - KakaoSDKUser (2.22.7):
     - KakaoSDKAuth (= 2.22.7)
+  - NidThirdPartyLogin (5.0.1)
   - youtube-ios-player-helper (1.0.4)
 
 DEPENDENCIES:
@@ -23,6 +24,7 @@ DEPENDENCIES:
   - KakaoSDKCommon
   - KakaoSDKShare
   - KakaoSDKUser
+  - NidThirdPartyLogin
   - youtube-ios-player-helper
 
 SPEC REPOS:
@@ -33,6 +35,7 @@ SPEC REPOS:
     - KakaoSDKShare
     - KakaoSDKTemplate
     - KakaoSDKUser
+    - NidThirdPartyLogin
     - youtube-ios-player-helper
 
 SPEC CHECKSUMS:
@@ -42,8 +45,9 @@ SPEC CHECKSUMS:
   KakaoSDKShare: 01c60c3d5394479429a51ef14ea78d3e72f48af0
   KakaoSDKTemplate: b11ecf08777198ffafd184201baf93de476ddb84
   KakaoSDKUser: 4c9cf1da78710d19d0b2c2dd32d1a44c544cdfa4
+  NidThirdPartyLogin: ed291a543cc60a433bcad522b6bf7d3126ad4fdc
   youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: 94fbd058bf1203282e7f956b26f9867ad5c4aa7c
+PODFILE CHECKSUM: 4c83b5848ff230c374b310b3d15ffad51a802ebf
 
 COCOAPODS: 1.16.2
