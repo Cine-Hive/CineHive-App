@@ -4,6 +4,7 @@
 target 'CineHive' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
+  pod 'naveridlogin-sdk-ios'
 
   # Pods for CineHive
 
@@ -14,6 +15,5 @@ target 'CineHive' do
   pod 'KakaoSDKAuth'
   pod 'KakaoSDKUser'
   pod 'KakaoSDKShare'
-  pod 'NidThirdPartyLogin'
 
 end
