@@ -7,6 +7,7 @@
 
 import Foundation
 import NaverThirdPartyLogin
+import OSLog
 
 @Observable
 class NaverLoginViewModel: NSObject, UIApplicationDelegate, NaverThirdPartyLoginConnectionDelegate {
@@ -46,12 +47,12 @@ class NaverLoginViewModel: NSObject, UIApplicationDelegate, NaverThirdPartyLogin
     
     //MARK: - 로그아웃(토큰 삭제)시
     func oauth20ConnectionDidFinishDeleteToken() {
-        userState.logout()
+        // 이미 userState에서 로그아웃 처리
     }
     
     //MARK: - Error발생시
     func oauth20Connection(_ oauthConnection: NaverThirdPartyLoginConnection!, didFailWithError error: Error!) {
-        print(#fileID, #function, #line, "- naver login error: \(error.localizedDescription)")
+        Logger.log(.error, category: Logger.auth, message: "- naver login error: \(error.localizedDescription)")
     }
 }
 
