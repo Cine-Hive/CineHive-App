@@ -8,9 +8,16 @@
 import SwiftUI
 
 struct GoogleLoginBtnView: View {
+    @State private var viewModel = GoogleLoginViewModel()
+    
     var body: some View {
         Button(action: {
-            
+            if let rootVC = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first?.windows
+                .first?.rootViewController {
+                viewModel.login(presentingViewController: rootVC)
+            }
         }, label: {
             HStack {
                 Image("GoogleLogo")
@@ -25,5 +32,11 @@ struct GoogleLoginBtnView: View {
             .background(Color("GoogleColor"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         })
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToMain) {
+            MainTabView()
+        }
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToSignUp) {
+            SignUpView()
+        }
     }
 }
