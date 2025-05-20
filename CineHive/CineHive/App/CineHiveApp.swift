@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
 import NaverThirdPartyLogin
+import GoogleSignIn
 
 @main
 struct CineHiveApp: App {
@@ -45,6 +46,7 @@ struct CineHiveApp: App {
                     AuthController.handleOpenUrl(url: url)
                 }
                 NaverThirdPartyLoginConnection.getSharedInstance()?.receiveAccessToken(url)
+                GIDSignIn.sharedInstance.handle(url)
             })
             .environment(userState)
         }
