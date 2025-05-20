@@ -133,7 +133,8 @@ final class NetworkManager {
             }
             
             do {
-                return try decodeResponse(data: data, response: httpResponse)
+                let decoded: T = try decodeResponse(data: data, response: httpResponse)
+                return decoded
             } catch let decodingError as DecodingError {
                 if let responseString = String(data: data, encoding: .utf8) {
                     Logger.log(.error, category: Logger.networking, message: "서버 응답 원본 데이터: \(responseString)")

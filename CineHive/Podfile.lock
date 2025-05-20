@@ -16,6 +16,7 @@ PODS:
     - KakaoSDKCommon/Common (= 2.22.7)
   - KakaoSDKUser (2.22.7):
     - KakaoSDKAuth (= 2.22.7)
+  - naveridlogin-sdk-ios (4.2.3)
   - youtube-ios-player-helper (1.0.4)
 
 DEPENDENCIES:
@@ -23,6 +24,7 @@ DEPENDENCIES:
   - KakaoSDKCommon
   - KakaoSDKShare
   - KakaoSDKUser
+  - naveridlogin-sdk-ios
   - youtube-ios-player-helper
 
 SPEC REPOS:
@@ -33,6 +35,7 @@ SPEC REPOS:
     - KakaoSDKShare
     - KakaoSDKTemplate
     - KakaoSDKUser
+    - naveridlogin-sdk-ios
     - youtube-ios-player-helper
 
 SPEC CHECKSUMS:
@@ -42,8 +45,9 @@ SPEC CHECKSUMS:
   KakaoSDKShare: 01c60c3d5394479429a51ef14ea78d3e72f48af0
   KakaoSDKTemplate: b11ecf08777198ffafd184201baf93de476ddb84
   KakaoSDKUser: 4c9cf1da78710d19d0b2c2dd32d1a44c544cdfa4
+  naveridlogin-sdk-ios: d9d46d02119d303023d7000cd5963864d5bb89e5
   youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: 94fbd058bf1203282e7f956b26f9867ad5c4aa7c
+PODFILE CHECKSUM: fe14a63ab54bfa5133be1b969275da52a0a7f90a
 
 COCOAPODS: 1.16.2

@@ -8,6 +8,7 @@
 import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
+import NaverThirdPartyLogin
 
 @main
 struct CineHiveApp: App {
@@ -18,6 +19,22 @@ struct CineHiveApp: App {
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String {
             KakaoSDK.initSDK(appKey: kakaoAppKey)
         }
+        
+        // 네이버 앱으로 로그인 허용
+        NaverThirdPartyLoginConnection.getSharedInstance()?.isNaverAppOauthEnable = true
+        // 브라우저 로그인 허용
+        NaverThirdPartyLoginConnection.getSharedInstance()?.isInAppOauthEnable = true
+        
+        // 네이버 로그인 세로모드 고정
+        NaverThirdPartyLoginConnection.getSharedInstance().setOnlyPortraitSupportInIphone(true)
+        
+        let naverInstance = NaverThirdPartyLoginConnection.getSharedInstance()
+        let info = Bundle.main.infoDictionary
+
+        naverInstance?.serviceUrlScheme = info?["NAVER_URL_SCHEME"] as? String
+        naverInstance?.consumerKey = info?["NAVER_CLIENT_ID"] as? String
+        naverInstance?.consumerSecret = info?["NAVER_CLIENT_SECRET"] as? String
+        naverInstance?.appName = info?["NAVER_APP_NAME"] as? String
     }
     
     var body: some Scene {
@@ -27,6 +44,7 @@ struct CineHiveApp: App {
                 if (AuthApi.isKakaoTalkLoginUrl(url)) {
                     AuthController.handleOpenUrl(url: url)
                 }
+                NaverThirdPartyLoginConnection.getSharedInstance()?.receiveAccessToken(url)
             })
             .environment(userState)
         }

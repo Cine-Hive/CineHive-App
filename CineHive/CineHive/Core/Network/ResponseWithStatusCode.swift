@@ -8,7 +8,8 @@
 import Foundation
 
 protocol ResponseWithStatusCode {
-    var statusCode: Int { get set }
+    var statusCode: Int? { get set }
+    mutating func injectStatusCode(_ code: Int)
 }
 
 extension ResponseWithStatusCode {
@@ -18,9 +19,9 @@ extension ResponseWithStatusCode {
 }
 
 func decodeResponse<T: Decodable>(data: Data, response: HTTPURLResponse) throws -> T {
-    let decoded = try JSONDecoder().decode(T.self, from: data)
+    var decoded = try JSONDecoder().decode(T.self, from: data)
 
-    if var responseWithCode = decoded as? any ResponseWithStatusCode {
+    if var responseWithCode = decoded as? ResponseWithStatusCode {
         responseWithCode.injectStatusCode(response.statusCode)
 
         if let typedResponse = responseWithCode as? T {

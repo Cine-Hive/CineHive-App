@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct NaverLoginBtnView: View {
+    @State private var viewModel = NaverLoginViewModel()
+    
     var body: some View {
-        Button(action: {}, label: {
+        Button(action: {
+            viewModel.login()
+        }, label: {
             HStack {
                 Image("NaverLogo")
                     .resizable()
@@ -22,5 +26,12 @@ struct NaverLoginBtnView: View {
             .background(Color("NaverColor"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         })
+        
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToMain) {
+            MainTabView()
+        }
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToSignUp) {
+            SignUpView()
+        }
     }
 }
