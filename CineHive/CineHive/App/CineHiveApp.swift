@@ -10,6 +10,7 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import NaverThirdPartyLogin
 import GoogleSignIn
+import OSLog
 
 @main
 struct CineHiveApp: App {
@@ -42,11 +43,19 @@ struct CineHiveApp: App {
         WindowGroup {
             // onOpenURL()을 사용해 커스텀 URL 스킴 처리
             ContentView().onOpenURL(perform: { url in
-                if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                if AuthApi.isKakaoTalkLoginUrl(url) {
+                    // Kakao 로그인 URL
                     AuthController.handleOpenUrl(url: url)
+                } else if url.scheme == Bundle.main.object(forInfoDictionaryKey: "NAVER_URL_SCHEME") as? String,
+                          url.host == "oauth" {
+                    // Naver 로그인 URL
+                    NaverThirdPartyLoginConnection.getSharedInstance()?.receiveAccessToken(url)
+                } else if url.scheme?.hasPrefix("com.googleusercontent.apps") == true {
+                    // Google 로그인 URL
+                    _ = GIDSignIn.sharedInstance.handle(url)
+                } else {
+                    Logger.log(.info, category: Logger.auth, message: "처리되지 않은 URL: \(url)")
                 }
-                NaverThirdPartyLoginConnection.getSharedInstance()?.receiveAccessToken(url)
-                GIDSignIn.sharedInstance.handle(url)
             })
             .environment(userState)
         }
