@@ -27,12 +27,24 @@ class GoogleLoginViewModel {
     
     func login(presentingViewController: UIViewController) {
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
-            guard error == nil else { return }
-            guard let signInResult = signInResult else { return }
+            if let error = error {
+                self.toast = ToastState(isShowing: true, message: "Google 로그인 중 오류 발생: \(error.localizedDescription)", type: .error)
+                return
+            }
+            guard let signInResult = signInResult else {
+                self.toast = ToastState(isShowing: true, message: "Google 로그인 결과가 없습니다.", type: .error)
+                return
+            }
 
             signInResult.user.refreshTokensIfNeeded { user, error in
-                guard error == nil else { return }
-                guard let user = user else { return }
+                if let error = error {
+                    self.toast = ToastState(isShowing: true, message: "Google 토큰 갱신 실패: \(error.localizedDescription)", type: .error)
+                    return
+                }
+                guard let user = user else {
+                    self.toast = ToastState(isShowing: true, message: "Google 사용자 정보를 가져올 수 없습니다.", type: .error)
+                    return
+                }
 
                 guard let idToken = user.idToken?.tokenString else {
                     // 토큰이 없으면 로그인 실패 처리
