@@ -25,6 +25,7 @@ class GoogleLoginViewModel {
         self.userState = userState
     }
     
+    // Google 로그인 플로우를 시작하고 로그인 처리
     func login(presentingViewController: UIViewController) {
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
             if let error = error {
@@ -35,36 +36,62 @@ class GoogleLoginViewModel {
                 self.toast = ToastState(isShowing: true, message: "Google 로그인 결과가 없습니다.", type: .error)
                 return
             }
+            self.refreshGoogleTokenAndLogin(signInResult: signInResult)
+        }
+    }
 
-            signInResult.user.refreshTokensIfNeeded { user, error in
-                if let error = error {
-                    self.toast = ToastState(isShowing: true, message: "Google 토큰 갱신 실패: \(error.localizedDescription)", type: .error)
-                    return
+    // 사용자 토큰 새로고침하고 로그인 처리
+    private func refreshGoogleTokenAndLogin(signInResult: GIDSignInResult) {
+        Task {
+            var retryCount = 0
+            let maxRetries = 3
+
+            while retryCount < maxRetries {
+                let (fetchedUser, fetchError) = await refreshGoogleUser(signInResult.user)
+
+                if let error = fetchError {
+                    retryCount += 1
+                    if retryCount >= maxRetries {
+                        self.toast = ToastState(isShowing: true, message: "Google 토큰 갱신 실패: \(error.localizedDescription)", type: .error)
+                        return
+                    }
+                    continue
                 }
-                guard let user = user else {
-                    self.toast = ToastState(isShowing: true, message: "Google 사용자 정보를 가져올 수 없습니다.", type: .error)
-                    return
+
+                guard let user = fetchedUser else {
+                    retryCount += 1
+                    if retryCount >= maxRetries {
+                        self.toast = ToastState(isShowing: true, message: "Google 사용자 정보를 가져올 수 없습니다.", type: .error)
+                        return
+                    }
+                    continue
                 }
 
                 guard let idToken = user.idToken?.tokenString else {
-                    // 토큰이 없으면 로그인 실패 처리
                     self.toast = ToastState(isShowing: true, message: "Google 로그인 토큰이 유효하지 않습니다.", type: .error)
                     return
                 }
-                
-                Task {
-                    let result = await self.userState.socialLogin(provider: .google, token: idToken)
-                    switch result {
-                    case .successNavigateToMain:
-                        // MainTabView로 이동 준비
-                        self.shouldNavigateToMain = true
-                    case .successNavigateToSignUp:
-                        // 회원가입 뷰로 이동 준비
-                        self.shouldNavigateToSignUp = true
-                    case .failure(let message):
-                        self.toast = ToastState(isShowing: true, message: message.message, type: .error)
-                    }
+
+                let result = await self.userState.socialLogin(provider: .google, token: idToken)
+                switch result {
+                case .successNavigateToMain:
+                    self.shouldNavigateToMain = true
+                case .successNavigateToSignUp:
+                    self.shouldNavigateToSignUp = true
+                case .failure(let message):
+                    self.toast = ToastState(isShowing: true, message: message.message, type: .error)
                 }
+                return
+            }
+
+            self.toast = ToastState(isShowing: true, message: "Google 토큰 갱신이 반복 실패했습니다.", type: .error)
+        }
+    }
+    
+    private func refreshGoogleUser(_ user: GIDGoogleUser) async -> (GIDGoogleUser?, Error?) {
+        await withCheckedContinuation { continuation in
+            user.refreshTokensIfNeeded { refreshedUser, error in
+                continuation.resume(returning: (refreshedUser, error))
             }
         }
     }
