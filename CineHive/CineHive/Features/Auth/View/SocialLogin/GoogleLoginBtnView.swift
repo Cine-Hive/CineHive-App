@@ -12,10 +12,7 @@ struct GoogleLoginBtnView: View {
     
     var body: some View {
         Button(action: {
-            if let rootVC = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first?.windows
-                .first?.rootViewController {
+            if let rootVC = UIApplication.shared.rootViewController() {
                 viewModel.login(presentingViewController: rootVC)
             }
         }, label: {
