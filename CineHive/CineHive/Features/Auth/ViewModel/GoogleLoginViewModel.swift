@@ -42,12 +42,14 @@ class GoogleLoginViewModel {
 
     // 사용자 토큰 새로고침하고 로그인 처리
     private func refreshGoogleTokenAndLogin(signInResult: GIDSignInResult) {
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
+            
             var retryCount = 0
             let maxRetries = 3
 
             while retryCount < maxRetries {
-                let (fetchedUser, fetchError) = await refreshGoogleUser(signInResult.user)
+                let (fetchedUser, fetchError) = await self.refreshGoogleUser(signInResult.user)
 
                 if let error = fetchError {
                     retryCount += 1
