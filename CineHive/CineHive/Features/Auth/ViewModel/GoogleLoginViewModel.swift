@@ -27,15 +27,36 @@ class GoogleLoginViewModel {
     
     // Google 로그인 플로우를 시작하고 로그인 처리
     func login(presentingViewController: UIViewController) {
-        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String else {
+            self.toast = ToastState(isShowing: true, message: "Google Client ID를 불러올 수 없습니다.", type: .error)
+            return
+        }
+
+        let scopes = [
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email"
+        ]
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        GIDSignIn.sharedInstance.signIn(
+            withPresenting: presentingViewController,
+            hint: nil,
+            additionalScopes: scopes
+        ) { [weak self] result, error in
+            guard let self else { return }
+
             if let error = error {
                 self.toast = ToastState(isShowing: true, message: "Google 로그인 중 오류 발생: \(error.localizedDescription)", type: .error)
                 return
             }
-            guard let signInResult = signInResult else {
+
+            guard let signInResult = result else {
                 self.toast = ToastState(isShowing: true, message: "Google 로그인 결과가 없습니다.", type: .error)
                 return
             }
+
             self.refreshGoogleTokenAndLogin(signInResult: signInResult)
         }
     }
