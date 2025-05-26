@@ -15,5 +15,6 @@ target 'CineHive' do
   pod 'KakaoSDKAuth'
   pod 'KakaoSDKUser'
   pod 'KakaoSDKShare'
+  pod 'GoogleSignInSwiftSupport'
 
 end
