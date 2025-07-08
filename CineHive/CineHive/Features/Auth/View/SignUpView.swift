@@ -92,6 +92,7 @@ struct SignUpView: View {
             .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
                 // onSignUpSuccess를 전달하여 SignUpCompleteView가 완료 시 이를 호출하도록 함
                 SignUpCompleteView(nickname: viewModel.nickname, onComplete: {
+                    dismiss()
                     onSignUpSuccess?()
                 })
                 .navigationBarBackButtonHidden(true)
