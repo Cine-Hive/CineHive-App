@@ -170,7 +170,7 @@ enum EndPoint {
         static let loginSuccess = "/api/auth/kakao/login/success"
         static let callback = "/api/auth/kakao/callback"
         static let register = "/api/auth/kakao/register"
-        static let appLogin = "/api/auth/kakao/app-login"
+        static let appLogin = "/api/v1/oauth2/app/login/kakao"
     }
 }
 
