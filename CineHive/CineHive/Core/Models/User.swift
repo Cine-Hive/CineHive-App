@@ -83,11 +83,11 @@ struct UserData: Codable {
     let gender: String?
     
     enum CodingKeys: String, CodingKey {
-        case email = "memEmail"
-        case name = "memName"
-        case genres = "genres"
-        case nickname = "memNickname"
-        case gender = "memSex"
+        case genres
+        case name
+        case nickname
+        case email
+        case gender
     }
 }
 
@@ -95,4 +95,3 @@ struct SignUpResponse: Codable {
     let message: String
     let status: String
 }
-
