@@ -32,8 +32,5 @@ struct GoogleLoginBtnView: View {
         .fullScreenCover(isPresented: $viewModel.shouldNavigateToMain) {
             MainTabView()
         }
-        .fullScreenCover(isPresented: $viewModel.shouldNavigateToSignUp) {
-            SignUpView()
-        }
     }
 }

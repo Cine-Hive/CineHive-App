@@ -27,7 +27,6 @@ final class UserState {
     
     // 네비게이션 상태
     var shouldNavigateToMain: Bool = false
-    var shouldNavigateToSignUp: Bool = false
     
     private init() {
         // 앱 실행 시 저장된 토큰과 사용자 정보 확인
@@ -134,51 +133,24 @@ final class UserState {
                 return .failure(.environmentMisconfigured(description: "Apple 로그인은 아직 지원되지 않습니다"))
             }
             
-            // 상태코드에 따라 분기 처리
-            switch response.statusCode {
-            case 200:
-                // 200: 기존 회원 → 로그인 완료 → 토큰 필수
-                guard
-                    let token = response.data.token?.trimmingCharacters(in: .whitespacesAndNewlines),
-                    !token.isEmpty,
-                    response.data.member.email.count > 0,
-                    response.data.member.nickname.count > 0
-                else {
-                    Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (200): \(response)")
-                    self.isLoading = false
-                    return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
-                }
-                
-                saveLoginInfo(token: token, user: response.data.member)
-                self.isLoggedIn = true
-                self.shouldNavigateToMain = true
-                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (기존 회원): \(response.data.member.email)")
-                isLoading = false
-                return .successNavigateToMain
-                
-            case 201:
-                // 201: 신규 회원 → 회원가입 페이지로 이동(토큰 없음)
-                guard
-                    response.data.member.email.count > 0,
-                    response.data.member.nickname.count > 0
-                else {
-                    Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (201): \(response)")
-                    self.isLoading = false
-                    return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
-                }
-                
-                saveLoginInfo(token: nil, user: response.data.member)
-                self.isLoggedIn = false
-                self.shouldNavigateToSignUp = true
-                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (신규 회원): \(response.data.member.email)")
-                isLoading = false
-                return .successNavigateToSignUp
-                
-            default:
-                Logger.log(.error, category: Logger.auth, message: "\(provider.rawValue) 로그인 실패: 예상치 못한 상태 코드 \(String(describing: response.statusCode))")
+            guard
+                let token = response.data.token?.trimmingCharacters(in: .whitespacesAndNewlines),
+                !token.isEmpty,
+                response.data.member.email.count > 0,
+                response.data.member.nickname.count > 0
+            else {
+                Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전: \(response)")
                 self.isLoading = false
-                return .failure(.serverResponse(statusCode: response.statusCode ?? -1, endpoint: "UserService.socialLogin", message: "예상치 못한 상태코드 응답"))
+                return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
             }
+
+            saveLoginInfo(token: token, user: response.data.member)
+            self.isLoggedIn = true
+            self.shouldNavigateToMain = true
+            Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공: \(response.data.member.email)")
+            isLoading = false
+            return .successNavigateToMain
+            
         } catch let error as NetworkError {
             self.errorMessage = error.localizedDescription
             self.isLoading = false
@@ -316,7 +288,6 @@ enum SocialLoginProvider: String {
 
 enum SocialLoginResult {
     case successNavigateToMain
-    case successNavigateToSignUp
     case failure(SocialLoginError)
 }
 

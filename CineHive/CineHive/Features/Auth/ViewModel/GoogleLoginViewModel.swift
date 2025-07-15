@@ -17,7 +17,6 @@ class GoogleLoginViewModel {
     
     // 네비게이션 상태
     var shouldNavigateToMain: Bool = false
-    var shouldNavigateToSignUp: Bool = false
     var toast: ToastState = ToastState()
     
     init(userService: UserService = .shared, userState: UserState = .shared) {
@@ -99,8 +98,6 @@ class GoogleLoginViewModel {
                 switch result {
                 case .successNavigateToMain:
                     self.shouldNavigateToMain = true
-                case .successNavigateToSignUp:
-                    self.shouldNavigateToSignUp = true
                 case .failure(let message):
                     self.toast = ToastState(isShowing: true, message: message.message, type: .error)
                 }
