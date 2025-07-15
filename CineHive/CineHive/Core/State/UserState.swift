@@ -139,38 +139,38 @@ final class UserState {
             case 200:
                 // 200: 기존 회원 → 로그인 완료 → 토큰 필수
                 guard
-                    let token = response.token?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    let token = response.data.token?.trimmingCharacters(in: .whitespacesAndNewlines),
                     !token.isEmpty,
-                    response.user.email.count > 0,
-                    response.user.nickname.count > 0
+                    response.data.member.email.count > 0,
+                    response.data.member.nickname.count > 0
                 else {
                     Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (200): \(response)")
                     self.isLoading = false
                     return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
                 }
                 
-                saveLoginInfo(token: token, user: response.user)
+                saveLoginInfo(token: token, user: response.data.member)
                 self.isLoggedIn = true
                 self.shouldNavigateToMain = true
-                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (기존 회원): \(response.user.email)")
+                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (기존 회원): \(response.data.member.email)")
                 isLoading = false
                 return .successNavigateToMain
                 
             case 201:
                 // 201: 신규 회원 → 회원가입 페이지로 이동(토큰 없음)
                 guard
-                    response.user.email.count > 0,
-                    response.user.nickname.count > 0
+                    response.data.member.email.count > 0,
+                    response.data.member.nickname.count > 0
                 else {
                     Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전 (201): \(response)")
                     self.isLoading = false
                     return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
                 }
                 
-                saveLoginInfo(token: nil, user: response.user)
+                saveLoginInfo(token: nil, user: response.data.member)
                 self.isLoggedIn = false
                 self.shouldNavigateToSignUp = true
-                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (신규 회원): \(response.user.email)")
+                Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공 (신규 회원): \(response.data.member.email)")
                 isLoading = false
                 return .successNavigateToSignUp
                 
