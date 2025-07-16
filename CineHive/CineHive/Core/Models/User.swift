@@ -59,21 +59,13 @@ struct LoginResponse: Codable {
     let token: String
 }
 
-struct SocialLoginResponse: Codable, ResponseWithStatusCode {
-    var statusCode: Int?
+struct SocialLoginResponse: Codable {
     let success: Bool
-    let message: String
     let data: SocialLoginData
 
     enum CodingKeys: String, CodingKey {
-        case statusCode
         case success
-        case message
         case data
-    }
-
-    mutating func injectStatusCode(_ code: Int) {
-        self.statusCode = code
     }
 }
 
@@ -84,7 +76,6 @@ struct SocialLoginData: Codable {
 }
 
 struct UserData: Codable {
-    var statusCode: Int?
     let id: Int
     let email: String
     let name: String?
