@@ -161,7 +161,7 @@ enum EndPoint {
         static let loginSuccess = "/api/auth/naver/login/success"
         static let callback = "/api/auth/naver/callback"
         static let register = "/api/auth/naver/register"
-        static let appLogin = "/api/auth/naver/app-login"
+        static let appLogin = "/api/v1/oauth2/app/login/naver"
     }
 
     enum KakaoAuth {
