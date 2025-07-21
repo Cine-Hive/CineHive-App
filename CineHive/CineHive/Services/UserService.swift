@@ -70,10 +70,10 @@ final class UserService {
         let endpoint = EndPoint.NaverAuth.appLogin
         
         struct SocialLoginRequest: Codable {
-            let token: String
+            let accessToken: String
         }
         
-        let request = SocialLoginRequest(token: token)
+        let request = SocialLoginRequest(accessToken: token)
         return try await NetworkManager.shared.post(endpoint: endpoint, body: request)
     }
     

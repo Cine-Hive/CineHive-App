@@ -136,18 +136,18 @@ final class UserState {
             guard
                 let token = response.data.token?.trimmingCharacters(in: .whitespacesAndNewlines),
                 !token.isEmpty,
-                response.data.member.email.count > 0,
-                response.data.member.nickname.count > 0
+                response.data.memberInfo.email.count > 0,
+                response.data.memberInfo.nickname.count > 0
             else {
                 Logger.log(.error, category: Logger.auth, message: "소셜 로그인 응답 데이터 불완전: \(response)")
                 self.isLoading = false
                 return .failure(.decodingFailed(field: "user.email / user.nickname / token", description: "소셜 로그인 응답 필드 누락"))
             }
 
-            saveLoginInfo(token: token, user: response.data.member)
+            saveLoginInfo(token: token, user: response.data.memberInfo)
             self.isLoggedIn = true
             self.shouldNavigateToMain = true
-            Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공: \(response.data.member.email)")
+            Logger.log(.info, category: Logger.auth, message: "\(provider.rawValue) 로그인 성공: \(response.data.memberInfo.email)")
             isLoading = false
             return .successNavigateToMain
             

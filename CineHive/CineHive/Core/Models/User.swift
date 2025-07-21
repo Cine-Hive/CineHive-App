@@ -72,7 +72,7 @@ struct SocialLoginResponse: Codable {
 struct SocialLoginData: Codable {
     let token: String?
     let isNewMember: Bool
-    let member: UserData
+    let memberInfo: UserData
 }
 
 struct UserData: Codable {
