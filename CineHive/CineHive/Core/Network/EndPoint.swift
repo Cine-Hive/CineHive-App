@@ -152,7 +152,7 @@ enum EndPoint {
         static let loginSuccess = "/api/auth/google/login/success"
         static let callback = "/api/auth/google/callback"
         static let register = "/api/auth/google/register"
-        static let appLogin = "/api/auth/google/app-login"
+        static let appLogin = "/api/v1/oauth2/app/login/google"
     }
 
     enum NaverAuth {
