@@ -89,12 +89,9 @@ class GoogleLoginViewModel {
                     continue
                 }
 
-                guard let idToken = user.idToken?.tokenString else {
-                    self.toast = ToastState(isShowing: true, message: "Google 로그인 토큰이 유효하지 않습니다.", type: .error)
-                    return
-                }
-
-                let result = await self.userState.socialLogin(provider: .google, token: idToken)
+                let accessToken = user.accessToken.tokenString
+                
+                let result = await self.userState.socialLogin(provider: .google, token: accessToken)
                 switch result {
                 case .successNavigateToMain:
                     self.shouldNavigateToMain = true
