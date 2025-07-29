@@ -12,11 +12,6 @@ class SignUpViewModel {
     // 사용자 입력 데이터
     var email: String = "" {
         didSet {
-            if isValidEmail(email) {
-                Task {
-                    await checkValidateEmail()
-                }
-            }
             validateEmail()
         }
     }

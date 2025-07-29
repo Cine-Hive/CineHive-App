@@ -7,11 +7,16 @@
 
 import SwiftUI
 
+enum SignUpField: Hashable {
+    case email, nickname
+}
+
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: SignUpField?
     var onSignUpSuccess: (() -> Void)? = nil
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -22,7 +27,18 @@ struct SignUpView: View {
                             .font(.system(size: 22, weight: .bold))
                             .padding(.horizontal, 16)
                         
-                        InputFieldView(title: "이메일", text: $viewModel.email)
+                        ValidatedInputField(
+                            title: "이메일",
+                            text: $viewModel.email,
+                            focusTag: .email,
+                            focusedField: $focusedField,
+                            submitLabel: .next,
+                            onSubmit: {
+                                Task {
+                                    
+                                }
+                            }
+                        )
                         
                         if let emailError = viewModel.emailErrorMessage {
                             Text(emailError)
@@ -37,7 +53,19 @@ struct SignUpView: View {
                         }
                         
                         PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
-                        InputFieldView(title: "닉네임", text: $viewModel.nickname)
+                        
+                        ValidatedInputField(
+                            title: "닉네임",
+                            text: $viewModel.nickname,
+                            focusTag: .nickname,
+                            focusedField: $focusedField,
+                            submitLabel: .next,
+                            onSubmit: {
+                                Task {
+                                    //
+                                }
+                            }
+                        )
                         
                         if let nicknameError = viewModel.nicknameErrorMessage {
                             Text(nicknameError)
@@ -47,7 +75,7 @@ struct SignUpView: View {
                                 .padding(.top, 1)
                         }
                         
-                        InputFieldView(title: "이름", text: $viewModel.name, isRequired: false)
+                        InputFieldView(title: "이름", text: $viewModel.name)
                         GenderSelectedView(selectedGender: $viewModel.gender)
                         
                         Button(action: {
@@ -115,20 +143,12 @@ struct SignUpView: View {
 struct InputFieldView: View {
     let title: String
     @Binding var text: String
-    var isRequired: Bool = true
     
     var body: some View {
         VStack {
             HStack {
                 Text(title)
                     .font(.system(size: 17))
-                // isRequired가 true일 때만 * 표시
-                if isRequired {
-                    Text("*")
-                        .font(.system(size: 20))
-                        .foregroundStyle(.red)
-                        .offset(x: -7)
-                }
             }
             .frame(width: 320, height: 25, alignment: .leading)
             
@@ -215,6 +235,44 @@ struct GenderSelectedView: View {
                     )
                 }
             }
+        }
+        .frame(width: 330, height: 90)
+    }
+}
+
+struct ValidatedInputField<Field: Hashable>: View {
+    let title: String
+    @Binding var text: String
+    let focusTag: Field
+    @FocusState.Binding var focusedField: Field?
+    let submitLabel: SubmitLabel
+    let onSubmit: (() -> Void)?
+
+    var body: some View {
+        VStack {
+            HStack {
+                Text(title)
+                    .font(.system(size: 17))
+                Text("*")
+                    .font(.system(size: 20))
+                    .foregroundStyle(.red)
+                    .offset(x: -7)
+            }
+            .frame(width: 320, height: 25, alignment: .leading)
+
+            TextField("", text: $text)
+                .focused($focusedField, equals: focusTag)
+                .submitLabel(submitLabel)
+                .onSubmit {
+                    onSubmit?()
+                }
+                .frame(width: 300, height: 50)
+                .textInputAutocapitalization(.never)
+                .frame(width: 330, height: 50)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color("FontColor"), lineWidth: 0.6)
+                }
         }
         .frame(width: 330, height: 90)
     }
