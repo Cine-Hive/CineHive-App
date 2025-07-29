@@ -97,3 +97,12 @@ struct SignUpResponse: Codable {
     let message: String
     let status: String
 }
+
+struct AvailabilityResponse: Decodable {
+    let success: Bool
+    let data: AvailabilityData
+}
+
+struct AvailabilityData: Decodable {
+    let isAvailable: Bool
+}

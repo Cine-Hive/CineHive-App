@@ -20,13 +20,13 @@ final class UserService {
     }
     
     /// 닉네임 중복 확인
-    func fetchUserNickname(nickname: String) async throws -> Bool {
+    func fetchUserNickname(nickname: String) async throws -> AvailabilityResponse {
         let endpoint = EndPoint.Auth.checkNickname(nickname)
         return try await NetworkManager.shared.fetch(endpoint: endpoint)
     }
     
     /// 이메일 중복 확인
-    func fetchUserEmail(email: String) async throws -> Bool {
+    func fetchUserEmail(email: String) async throws -> AvailabilityResponse {
         let endpoint = EndPoint.Auth.checkEmail(email)
         return try await NetworkManager.shared.fetch(endpoint: endpoint)
     }
