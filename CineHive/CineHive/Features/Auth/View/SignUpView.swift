@@ -7,14 +7,9 @@
 
 import SwiftUI
 
-enum SignUpField: Hashable {
-    case email, nickname
-}
-
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
-    @FocusState private var focusedField: SignUpField?
     var onSignUpSuccess: (() -> Void)? = nil
 
     var body: some View {
@@ -30,22 +25,17 @@ struct SignUpView: View {
                         ValidatedInputField(
                             title: "이메일",
                             text: $viewModel.email,
-                            focusTag: .email,
-                            focusedField: $focusedField,
-                            submitLabel: .next,
-                            onSubmit: {
-                                Task {
-                                    
-                                }
-                            }
+                            onCheckDuplicate: { await viewModel.checkValidateEmail() }
                         )
                         
                         if let emailError = viewModel.emailErrorMessage {
                             Text(emailError)
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
-                                .frame(width: 320, height: 20, alignment: .leading)
-                        } else if let emailCheck = viewModel.emailCheckMessage {
+                                .frame(width: 330, alignment: .leading)
+                        }
+                        
+                        if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
                             Text(emailCheck)
                                 .font(.system(size: 14))
                                 .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
@@ -57,14 +47,7 @@ struct SignUpView: View {
                         ValidatedInputField(
                             title: "닉네임",
                             text: $viewModel.nickname,
-                            focusTag: .nickname,
-                            focusedField: $focusedField,
-                            submitLabel: .next,
-                            onSubmit: {
-                                Task {
-                                    //
-                                }
-                            }
+                            onCheckDuplicate: { await viewModel.checkValidateNickname() }
                         )
                         
                         if let nicknameError = viewModel.nicknameErrorMessage {
@@ -191,6 +174,7 @@ struct PasswordFieldView: View {
                     }
                 }
                 .frame(width: 260, height: 40)
+                .textInputAutocapitalization(.never)
                 
                 Button(action: {
                     self.showPassword.toggle()
@@ -240,13 +224,10 @@ struct GenderSelectedView: View {
     }
 }
 
-struct ValidatedInputField<Field: Hashable>: View {
+struct ValidatedInputField: View {
     let title: String
     @Binding var text: String
-    let focusTag: Field
-    @FocusState.Binding var focusedField: Field?
-    let submitLabel: SubmitLabel
-    let onSubmit: (() -> Void)?
+    let onCheckDuplicate: () async -> Void
 
     var body: some View {
         VStack {
@@ -260,19 +241,29 @@ struct ValidatedInputField<Field: Hashable>: View {
             }
             .frame(width: 320, height: 25, alignment: .leading)
 
-            TextField("", text: $text)
-                .focused($focusedField, equals: focusTag)
-                .submitLabel(submitLabel)
-                .onSubmit {
-                    onSubmit?()
+            HStack {
+                TextField("", text: $text)
+                    .frame(width: 210, height: 50)
+                    .textInputAutocapitalization(.never)
+                    .frame(width: 240, height: 50)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                    }
+
+                Button("중복 확인") {
+                    Task {
+                        await onCheckDuplicate()
+                    }
                 }
-                .frame(width: 300, height: 50)
-                .textInputAutocapitalization(.never)
-                .frame(width: 330, height: 50)
-                .overlay {
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(CHColors.Button.primary)
+                .frame(width: 80, height: 50)
+                .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color("FontColor"), lineWidth: 0.6)
-                }
+                        .stroke(CHColors.Button.primary, lineWidth: 1)
+                )
+            }
         }
         .frame(width: 330, height: 90)
     }

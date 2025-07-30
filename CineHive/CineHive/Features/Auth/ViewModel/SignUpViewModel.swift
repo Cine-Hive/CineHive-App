@@ -20,7 +20,7 @@ class SignUpViewModel {
         didSet {
             if nickname.count >= 1 {
                 Task {
-                    await validateNickname()
+                    await checkValidateNickname()
                 }
             } else {
                 nicknameErrorMessage = nil
@@ -67,39 +67,34 @@ class SignUpViewModel {
     // 이메일 중복 검사
     @MainActor
     func checkValidateEmail() async {
-        let (isAvailable, error) = await UserState.shared.checkEmail(email)
+        let (_, isAvailable) = await UserState.shared.checkEmail(email)
         
-        if let error = error {
-            self.emailErrorMessage = error
+        if isAvailable {
+            self.emailCheckMessage = "사용 가능한 이메일입니다."
+            self.emailAvailable = true
+        }else {
+            self.emailCheckMessage = "이미 사용 중인 이메일입니다."
             self.emailAvailable = false
-        } else {
-            if isAvailable {
-                self.emailCheckMessage = "사용 가능한 이메일입니다."
-                self.emailAvailable = true
-            } else {
-                self.emailCheckMessage = "이미 사용 중인 이메일입니다."
-                self.emailAvailable = false
-            }
         }
     }
     
     // 닉네임 중복 검사
     @MainActor
-    func validateNickname() async {
-        let (isAvailable, error) = await UserState.shared.checkNickname(nickname)
-        
-        if let error = error {
-            self.nicknameErrorMessage = error
-            self.nicknameAvailable = false
-        } else {
-            if isAvailable {
-                self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
-                self.nicknameAvailable = true
-            } else {
-                self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
-                self.nicknameAvailable = false
-            }
-        }
+    func checkValidateNickname() async {
+//        let (isAvailable, error) = await UserState.shared.checkNickname(nickname)
+//        
+//        if let error = error {
+//            self.nicknameErrorMessage = error
+//            self.nicknameAvailable = false
+//        } else {
+//            if isAvailable {
+//                self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
+//                self.nicknameAvailable = true
+//            } else {
+//                self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
+//                self.nicknameAvailable = false
+//            }
+//        }
     }
     
     // 회원가입
