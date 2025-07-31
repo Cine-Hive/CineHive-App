@@ -93,9 +93,39 @@ struct UserData: Codable {
     }
 }
 
+struct SignUpRequest: Codable {
+    let email: String
+    let password: String
+    let name: String?
+    let nickname: String
+    let gender: String?
+    let genres: [String]
+}
+
 struct SignUpResponse: Codable {
+    let success: Bool
+    let data: SignUpResponseData
+    let error: ErrorResponse?
+}
+
+struct SignUpResponseData: Codable {
     let message: String
-    let status: String
+}
+
+struct ErrorResponse: Codable {
+    let timestamp: String
+    let status: Int
+    let code: String
+    let error: String
+    let message: String
+    let path: String
+    let details: [ErrorDetail]?
+}
+
+struct ErrorDetail: Codable {
+    let field: String
+    let rejectedValue: String
+    let reason: String
 }
 
 struct AvailabilityResponse: Decodable {

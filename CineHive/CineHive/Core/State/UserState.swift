@@ -186,7 +186,7 @@ final class UserState {
     
     /// 회원가입 처리
     @MainActor
-    func signUp(user: User) async -> Bool {
+    func signUp(user: SignUpRequest) async -> Bool {
         isLoading = true
         errorMessage = nil
         
@@ -194,12 +194,12 @@ final class UserState {
             let response = try await UserService.shared.registerUser(user: user)
             isLoading = false
             
-            if response.status == "success" {
-                Logger.log(.info, category: Logger.auth, message: "회원가입 성공: \(user.email)")
+            if response.success == true {
+                Logger.log(.info, category: Logger.auth, message: "회원가입 성공: \(response.data.message)")
                 return true
             } else {
-                self.errorMessage = response.message
-                Logger.log(.error, category: Logger.auth, message: "회원가입 실패: \(response.message)")
+                self.errorMessage = response.error?.message
+                Logger.log(.error, category: Logger.auth, message: "회원가입 실패: \(String(describing: errorMessage))")
                 return false
             }
         } catch let error as NetworkError {
