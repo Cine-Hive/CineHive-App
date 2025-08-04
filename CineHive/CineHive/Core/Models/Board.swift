@@ -55,13 +55,12 @@ struct Board: Identifiable, Codable {
         } else {
             let nickname = try container.decodeIfPresent(String.self, forKey: .nickname) ?? "알 수 없음"
             self.user = User(
-                id: nil,
                 email: "unknown@email.com",
                 password: "",
-                nickname: nickname,
                 name: nil,
+                nickname: nickname,
                 gender: nil,
-                type: "일반"
+                genres: nil
             )
         }
     }
