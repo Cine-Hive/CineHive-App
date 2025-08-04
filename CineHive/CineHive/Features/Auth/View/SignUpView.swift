@@ -25,16 +25,16 @@ struct SignUpView: View {
                         ValidatedInputField(
                             title: "이메일",
                             text: $viewModel.email,
-                            onCheckDuplicate: { await viewModel.checkValidateEmail() }
+                            onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() }
                         )
-                        
-                        if let emailError = viewModel.emailErrorMessage {
-                            Text(emailError)
+
+                        if let formatMessage = viewModel.emailFormatInvalidMessage {
+                            Text(formatMessage)
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
                                 .frame(width: 330, alignment: .leading)
                         }
-                        
+
                         if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
                             Text(emailCheck)
                                 .font(.system(size: 14))
@@ -50,10 +50,10 @@ struct SignUpView: View {
                             onCheckDuplicate: { await viewModel.checkValidateNickname() }
                         )
                         
-                        if let nicknameError = viewModel.nicknameErrorMessage {
-                            Text(nicknameError)
+                        if let nicknameCheck = viewModel.nicknameCheckMessage {
+                            Text(nicknameCheck)
                                 .font(.system(size: 14))
-                                .foregroundColor(nicknameError == "사용 가능한 닉네임입니다." ? .green : .red)
+                                .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
                                 .frame(width: 330, alignment: .leading)
                                 .padding(.top, 1)
                         }

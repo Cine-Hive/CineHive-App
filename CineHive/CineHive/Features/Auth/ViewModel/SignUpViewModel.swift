@@ -10,31 +10,18 @@ import Foundation
 @Observable
 class SignUpViewModel {
     // 사용자 입력 데이터
-    var email: String = "" {
-        didSet {
-            validateEmail()
-        }
-    }
+    var email: String = ""
     var password: String = ""
-    var nickname: String = "" {
-        didSet {
-            if nickname.count >= 1 {
-                Task {
-                    await checkValidateNickname()
-                }
-            } else {
-                nicknameErrorMessage = nil
-            }
-        }
-    }
     var name: String = ""
+    var nickname: String = ""
     var gender: String = ""
+    var genres: [String] = []
     var showPassword: Bool = false
     
     // 상태 및 오류 메시지
-    var emailErrorMessage: String? = nil
-    var nicknameErrorMessage: String? = nil
+    var emailFormatInvalidMessage: String? = nil
     var nicknameAvailable: Bool = false
+    var nicknameCheckMessage: String? = nil
     var emailAvailable: Bool = false
     var emailCheckMessage: String? = nil
     var isSignUpSuccess: Bool = false
@@ -50,18 +37,8 @@ class SignUpViewModel {
     // 이메일 정규식 검사 함수
     func isValidEmail(_ email: String) -> Bool {
         let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
-        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
-    }
-    
-    // 이메일 검사 후 오류 메시지 업데이트
-    func validateEmail() {
-        if email.isEmpty {
-            emailErrorMessage = nil
-        } else if !isValidEmail(email) {
-            emailErrorMessage = "이메일의 형식이 맞지 않습니다."
-        } else {
-            emailErrorMessage = nil
-        }
+        let isValid = NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
+        return isValid
     }
     
     // 이메일 중복 검사
@@ -72,29 +49,36 @@ class SignUpViewModel {
         if isAvailable {
             self.emailCheckMessage = "사용 가능한 이메일입니다."
             self.emailAvailable = true
-        }else {
+        } else {
             self.emailCheckMessage = "이미 사용 중인 이메일입니다."
             self.emailAvailable = false
+        }
+    }
+
+    // 이메일 형식 검사 후 중복 검사
+    @MainActor
+    func checkEmailWithFormatValidation() async {
+        if isValidEmail(email) {
+            emailFormatInvalidMessage = nil
+            await checkValidateEmail()
+        } else {
+            emailCheckMessage = nil
+            emailFormatInvalidMessage = "이메일의 형식이 맞지 않습니다."
         }
     }
     
     // 닉네임 중복 검사
     @MainActor
     func checkValidateNickname() async {
-//        let (isAvailable, error) = await UserState.shared.checkNickname(nickname)
-//        
-//        if let error = error {
-//            self.nicknameErrorMessage = error
-//            self.nicknameAvailable = false
-//        } else {
-//            if isAvailable {
-//                self.nicknameErrorMessage = "사용 가능한 닉네임입니다."
-//                self.nicknameAvailable = true
-//            } else {
-//                self.nicknameErrorMessage = "이미 사용 중인 닉네임입니다."
-//                self.nicknameAvailable = false
-//            }
-//        }
+        let (_, isAvailable) = await UserState.shared.checkNickname(nickname)
+        
+        if isAvailable {
+            self.nicknameCheckMessage = "사용 가능한 닉네임입니다."
+            self.nicknameAvailable = true
+        }else {
+            self.emailCheckMessage = "이미 사용 중인 닉네임입니다."
+            self.nicknameAvailable = false
+        }
     }
     
     // 회원가입
