@@ -102,14 +102,15 @@ class SignUpViewModel {
     func signUp() async {
         isSigningUp = true
         generalErrorMessage = nil
+        let convertedGender = (gender == "남자") ? "MALE" : "FEMALE"
         
-        let newUser = User(
+        let newUser = SignUpRequest(
             email: email,
             password: password,
+            name: name,
             nickname: nickname,
-            name: name.isEmpty ? nil : name,
-            gender: gender.isEmpty ? nil : gender,
-            type: "일반"
+            gender: convertedGender,
+            genres: genres
         )
         
         let success = await UserState.shared.signUp(user: newUser)
