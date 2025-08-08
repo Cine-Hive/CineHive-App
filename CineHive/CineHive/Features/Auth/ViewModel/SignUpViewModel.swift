@@ -7,6 +7,16 @@
 
 import Foundation
 
+enum PasswordValidationError: String {
+    case space = "공백 문자는 사용할 수 없습니다."
+    case length = "비밀번호는 8~20자여야 합니다."
+    case upper = "대문자를 최소 1개 포함해야 합니다."
+    case lower = "소문자를 최소 1개 포함해야 합니다."
+    case digit = "숫자를 최소 1개 포함해야 합니다."
+    case special = "특수문자를 최소 1개 포함해야 합니다."
+}
+
+
 @Observable
 class SignUpViewModel {
     // 사용자 입력 데이터
@@ -32,7 +42,35 @@ class SignUpViewModel {
     // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
         return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-               isValidEmail(email) && nicknameAvailable && emailAvailable
+        isValidEmail(email) && isValidPassword(password).0 &&
+               nicknameAvailable && emailAvailable
+    }
+    
+    // 비밀번호 유효성 검사: 영문 대소문자, 숫자, 특수문자 포함 8~20자, 공백 불가
+    func isValidPassword(_ password: String) -> (Bool, PasswordValidationError?) {
+        if password.contains(where: { $0.isWhitespace }) {
+            return (false, .space)
+        }
+        if password.count < 8 || password.count > 20 {
+            return (false, .length)
+        }
+        if password.range(of: "[A-Z]", options: .regularExpression) == nil {
+            return (false, .upper)
+        }
+        if password.range(of: "[a-z]", options: .regularExpression) == nil {
+            return (false, .lower)
+        }
+        if password.range(of: "[0-9]", options: .regularExpression) == nil {
+            return (false, .digit)
+        }
+        if password.range(of: "[!@#$%^&*(),.?\":{}|<>]", options: .regularExpression) == nil {
+            return (false, .special)
+        }
+        return (true, nil)
+    }
+    
+    var passwordErrorMessage: String? {
+        return isValidPassword(password).1?.rawValue
     }
     
     // 이메일 정규식 검사 함수
