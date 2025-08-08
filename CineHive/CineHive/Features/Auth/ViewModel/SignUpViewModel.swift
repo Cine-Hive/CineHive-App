@@ -12,6 +12,7 @@ class SignUpViewModel {
     // 사용자 입력 데이터
     var email: String = ""
     var password: String = ""
+    var confirmPassword: String = ""
     var name: String = ""
     var nickname: String = ""
     var gender: String = ""
@@ -30,7 +31,7 @@ class SignUpViewModel {
     
     // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
-        return !email.isEmpty && !password.isEmpty && !nickname.isEmpty &&
+        return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
                isValidEmail(email) && nicknameAvailable && emailAvailable
     }
     
@@ -91,6 +92,7 @@ class SignUpViewModel {
         let newUser = SignUpRequest(
             email: email,
             password: password,
+            confirmPassword: confirmPassword,
             name: name,
             nickname: nickname,
             gender: convertedGender,

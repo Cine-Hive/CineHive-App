@@ -93,6 +93,7 @@ struct UserData: Codable {
 struct SignUpRequest: Codable {
     let email: String
     let password: String
+    let confirmPassword: String
     let name: String?
     let nickname: String
     let gender: String?
