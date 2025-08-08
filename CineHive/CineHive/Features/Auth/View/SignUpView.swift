@@ -32,7 +32,7 @@ struct SignUpView: View {
                             Text(formatMessage)
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
-                                .frame(width: 330, alignment: .leading)
+                                .frame(width: 325, alignment: .leading)
                         }
 
                         if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
@@ -44,6 +44,15 @@ struct SignUpView: View {
                         
                         PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
                         
+                        PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword)
+                        
+                        if !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
+                            Text("비밀번호가 일치하지 않습니다.")
+                                .font(.system(size: 14))
+                                .foregroundColor(.red)
+                                .frame(width: 325, alignment: .leading)
+                        }
+                        
                         ValidatedInputField(
                             title: "닉네임",
                             text: $viewModel.nickname,
@@ -54,7 +63,7 @@ struct SignUpView: View {
                             Text(nicknameCheck)
                                 .font(.system(size: 14))
                                 .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
-                                .frame(width: 330, alignment: .leading)
+                                .frame(width: 325, alignment: .leading)
                                 .padding(.top, 1)
                         }
                         
@@ -81,7 +90,7 @@ struct SignUpView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         })
                         .padding(.top, 16)
-                        .disabled(!viewModel.isValid() || viewModel.isSigningUp)
+                        .disabled(!viewModel.isValid() || viewModel.isSigningUp || viewModel.password != viewModel.confirmPassword)
                         Spacer()
                     }
                     .padding(.bottom, 20)
