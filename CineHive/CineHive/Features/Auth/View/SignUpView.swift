@@ -44,6 +44,13 @@ struct SignUpView: View {
                         
                         PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
                         
+                        if let errorMessage = viewModel.passwordErrorMessage {
+                            Text(errorMessage)
+                                .font(.system(size: 14))
+                                .foregroundColor(.red)
+                                .frame(width: 325, alignment: .leading)
+                        }
+                        
                         PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword)
                         
                         if !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
