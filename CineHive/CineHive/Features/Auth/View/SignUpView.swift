@@ -7,9 +7,18 @@
 
 import SwiftUI
 
+enum SignUpFocusField: Hashable {
+    case email
+    case password
+    case confirmPassword
+    case nickname
+    case name
+}
+
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: SignUpFocusField?
     var onSignUpSuccess: (() -> Void)? = nil
 
     var body: some View {
@@ -25,7 +34,9 @@ struct SignUpView: View {
                         ValidatedInputField(
                             title: "이메일",
                             text: $viewModel.email,
-                            onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() }
+                            onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() },
+                            focus: $focusedField,
+                            field: .email
                         )
 
                         if let formatMessage = viewModel.emailFormatInvalidMessage {
@@ -42,18 +53,18 @@ struct SignUpView: View {
                                 .frame(width: 330, alignment: .leading)
                         }
                         
-                        PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword)
+                        PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
                         
-                        if let errorMessage = viewModel.passwordErrorMessage {
+                        if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
                             Text(errorMessage)
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
                                 .frame(width: 325, alignment: .leading)
                         }
                         
-                        PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword)
+                        PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
                         
-                        if !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
+                        if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
                             Text("비밀번호가 일치하지 않습니다.")
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
@@ -63,7 +74,9 @@ struct SignUpView: View {
                         ValidatedInputField(
                             title: "닉네임",
                             text: $viewModel.nickname,
-                            onCheckDuplicate: { await viewModel.checkValidateNickname() }
+                            onCheckDuplicate: { await viewModel.checkValidateNickname() },
+                            focus: $focusedField,
+                            field: .nickname
                         )
                         
                         if let nicknameCheck = viewModel.nicknameCheckMessage {
@@ -74,7 +87,7 @@ struct SignUpView: View {
                                 .padding(.top, 1)
                         }
                         
-                        InputFieldView(title: "이름", text: $viewModel.name)
+                        InputFieldView(title: "이름", text: $viewModel.name, focus: $focusedField, field: .name)
                         GenderSelectedView(selectedGender: $viewModel.gender)
                         
                         Button(action: {
@@ -142,7 +155,8 @@ struct SignUpView: View {
 struct InputFieldView: View {
     let title: String
     @Binding var text: String
-    @FocusState private var isFocused: Bool
+    var focus: FocusState<SignUpFocusField?>.Binding
+    let field: SignUpFocusField
     
     var body: some View {
         VStack {
@@ -153,16 +167,16 @@ struct InputFieldView: View {
             .frame(width: 320, height: 25, alignment: .leading)
             
             TextField("", text: $text)
-                .focused($isFocused)
+                .focused(focus, equals: field)
                 .frame(width: 300, height: 50)
                 .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                 .frame(width: 330, height: 50)
-                .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
+                .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
                 .overlay {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
-                                lineWidth: isFocused ? 1.2 : 0.6)
-                        .animation(.easeInOut(duration: 0.15), value: isFocused)
+                        .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
+                                lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
+                        .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue == field)
                 }
         }
         .frame(width: 330, height: 90)
@@ -173,7 +187,8 @@ struct PasswordFieldView: View {
     let title: String
     @Binding var text: String
     @Binding var showPassword: Bool
-    @FocusState private var isFocused: Bool
+    var focus: FocusState<SignUpFocusField?>.Binding
+    let field: SignUpFocusField
     
     var body: some View {
         VStack {
@@ -191,13 +206,13 @@ struct PasswordFieldView: View {
                 Section {
                     if showPassword {
                         TextField("", text: $text)
-                            .focused($isFocused)
+                            .focused(focus, equals: field)
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
                     } else {
                         SecureField("", text: $text)
-                            .focused($isFocused)
+                            .focused(focus, equals: field)
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
@@ -215,12 +230,11 @@ struct PasswordFieldView: View {
                 })
             }
             .frame(width: 330, height: 50)
-            .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
+            .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
-                    .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
-                            lineWidth: isFocused ? 1.2 : 0.6)
-                    .animation(.easeInOut(duration: 0.15), value: isFocused)
+                    .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
+                            lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
             }
         }
         .frame(width: 330, height: 90)
@@ -261,7 +275,8 @@ struct ValidatedInputField: View {
     let title: String
     @Binding var text: String
     let onCheckDuplicate: () async -> Void
-    @FocusState private var isFocused: Bool
+    var focus: FocusState<SignUpFocusField?>.Binding
+    let field: SignUpFocusField
 
     var body: some View {
         VStack {
@@ -277,15 +292,15 @@ struct ValidatedInputField: View {
 
             HStack {
                 TextField("", text: $text)
-                    .focused($isFocused)
+                    .focused(focus, equals: field)
                     .frame(width: 210, height: 50)
                     .textInputAutocapitalization(.never)
                     .frame(width: 240, height: 50)
-                    .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
+                    .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: isFocused ? 1.2 : 0.6)
-                            .animation(.easeInOut(duration: 0.15), value: isFocused)
+                            .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
+                            .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue == field)
                     }
 
                 Button("중복 확인") {
