@@ -142,6 +142,7 @@ struct SignUpView: View {
 struct InputFieldView: View {
     let title: String
     @Binding var text: String
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack {
@@ -152,12 +153,16 @@ struct InputFieldView: View {
             .frame(width: 320, height: 25, alignment: .leading)
             
             TextField("", text: $text)
+                .focused($isFocused)
                 .frame(width: 300, height: 50)
                 .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                 .frame(width: 330, height: 50)
-                .overlay() {
+                .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
+                .overlay {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color("FontColor"), lineWidth: 0.6)
+                        .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
+                                lineWidth: isFocused ? 1.2 : 0.6)
+                        .animation(.easeInOut(duration: 0.15), value: isFocused)
                 }
         }
         .frame(width: 330, height: 90)
@@ -168,6 +173,7 @@ struct PasswordFieldView: View {
     let title: String
     @Binding var text: String
     @Binding var showPassword: Bool
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack {
@@ -185,8 +191,16 @@ struct PasswordFieldView: View {
                 Section {
                     if showPassword {
                         TextField("", text: $text)
+                            .focused($isFocused)
+                            .onChange(of: text) { newValue, _ in
+                                if newValue.count > 20 { text = String(newValue.prefix(20)) }
+                            }
                     } else {
                         SecureField("", text: $text)
+                            .focused($isFocused)
+                            .onChange(of: text) { newValue, _ in
+                                if newValue.count > 20 { text = String(newValue.prefix(20)) }
+                            }
                     }
                 }
                 .frame(width: 260, height: 40)
@@ -201,9 +215,12 @@ struct PasswordFieldView: View {
                 })
             }
             .frame(width: 330, height: 50)
+            .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
-                    .stroke(Color("FontColor"), lineWidth: 0.6)
+                    .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
+                            lineWidth: isFocused ? 1.2 : 0.6)
+                    .animation(.easeInOut(duration: 0.15), value: isFocused)
             }
         }
         .frame(width: 330, height: 90)
@@ -244,6 +261,7 @@ struct ValidatedInputField: View {
     let title: String
     @Binding var text: String
     let onCheckDuplicate: () async -> Void
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack {
@@ -259,12 +277,15 @@ struct ValidatedInputField: View {
 
             HStack {
                 TextField("", text: $text)
+                    .focused($isFocused)
                     .frame(width: 210, height: 50)
                     .textInputAutocapitalization(.never)
                     .frame(width: 240, height: 50)
+                    .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                            .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: isFocused ? 1.2 : 0.6)
+                            .animation(.easeInOut(duration: 0.15), value: isFocused)
                     }
 
                 Button("중복 확인") {
