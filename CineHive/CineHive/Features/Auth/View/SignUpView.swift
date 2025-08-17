@@ -155,12 +155,8 @@ struct SignUpView: View {
 struct InputFieldView: View {
     let title: String
     @Binding var text: String
-<<<<<<< HEAD
     var focus: FocusState<SignUpFocusField?>.Binding
     let field: SignUpFocusField
-=======
-    @FocusState private var isFocused: Bool
->>>>>>> origin/feature/refactor-signup
     
     var body: some View {
         VStack {
@@ -171,29 +167,15 @@ struct InputFieldView: View {
             .frame(width: 320, height: 25, alignment: .leading)
             
             TextField("", text: $text)
-<<<<<<< HEAD
                 .focused(focus, equals: field)
                 .frame(width: 300, height: 50)
                 .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                 .frame(width: 330, height: 50)
-                .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
                 .overlay {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
                                 lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
                         .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue == field)
-=======
-                .focused($isFocused)
-                .frame(width: 300, height: 50)
-                .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
-                .frame(width: 330, height: 50)
-                .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
-                                lineWidth: isFocused ? 1.2 : 0.6)
-                        .animation(.easeInOut(duration: 0.15), value: isFocused)
->>>>>>> origin/feature/refactor-signup
                 }
         }
         .frame(width: 330, height: 90)
@@ -204,12 +186,8 @@ struct PasswordFieldView: View {
     let title: String
     @Binding var text: String
     @Binding var showPassword: Bool
-<<<<<<< HEAD
     var focus: FocusState<SignUpFocusField?>.Binding
     let field: SignUpFocusField
-=======
-    @FocusState private var isFocused: Bool
->>>>>>> origin/feature/refactor-signup
     
     var body: some View {
         VStack {
@@ -227,21 +205,14 @@ struct PasswordFieldView: View {
                 Section {
                     if showPassword {
                         TextField("", text: $text)
-<<<<<<< HEAD
                             .focused(focus, equals: field)
-=======
-                            .focused($isFocused)
->>>>>>> origin/feature/refactor-signup
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
                     } else {
                         SecureField("", text: $text)
-<<<<<<< HEAD
                             .focused(focus, equals: field)
-=======
-                            .focused($isFocused)
->>>>>>> origin/feature/refactor-signup
+
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
@@ -259,20 +230,11 @@ struct PasswordFieldView: View {
                 })
             }
             .frame(width: 330, height: 50)
-<<<<<<< HEAD
-            .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
                     .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
                             lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
-=======
-            .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
-            .overlay {
-                RoundedRectangle(cornerRadius: 13)
-                    .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"),
-                            lineWidth: isFocused ? 1.2 : 0.6)
-                    .animation(.easeInOut(duration: 0.15), value: isFocused)
->>>>>>> origin/feature/refactor-signup
+                    .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
             }
         }
         .frame(width: 330, height: 90)
@@ -313,12 +275,8 @@ struct ValidatedInputField: View {
     let title: String
     @Binding var text: String
     let onCheckDuplicate: () async -> Void
-<<<<<<< HEAD
     var focus: FocusState<SignUpFocusField?>.Binding
     let field: SignUpFocusField
-=======
-    @FocusState private var isFocused: Bool
->>>>>>> origin/feature/refactor-signup
 
     var body: some View {
         VStack {
@@ -334,27 +292,14 @@ struct ValidatedInputField: View {
 
             HStack {
                 TextField("", text: $text)
-<<<<<<< HEAD
                     .focused(focus, equals: field)
                     .frame(width: 210, height: 50)
                     .textInputAutocapitalization(.never)
                     .frame(width: 240, height: 50)
-                    .background(focus.wrappedValue == field ? Color("LoginBtnColor").opacity(0.06) : .clear)
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
-                            .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue == field)
-=======
-                    .focused($isFocused)
-                    .frame(width: 210, height: 50)
-                    .textInputAutocapitalization(.never)
-                    .frame(width: 240, height: 50)
-                    .background(isFocused ? Color("LoginBtnColor").opacity(0.06) : .clear)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isFocused ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: isFocused ? 1.2 : 0.6)
-                            .animation(.easeInOut(duration: 0.15), value: isFocused)
->>>>>>> origin/feature/refactor-signup
+                            .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
                     }
 
                 Button("중복 확인") {
