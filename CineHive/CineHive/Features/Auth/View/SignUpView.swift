@@ -254,7 +254,11 @@ struct GenderSelectedView: View {
             HStack {
                 ForEach(genders, id: \.self) { gender in
                     Button(action: {
-                        selectedGender = gender
+                        if selectedGender == gender {
+                            selectedGender = ""
+                        } else {
+                            selectedGender = gender
+                        }
                     }) {
                         Text(gender)
                             .foregroundColor(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"))
