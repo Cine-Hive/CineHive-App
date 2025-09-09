@@ -288,6 +288,16 @@ struct ValidatedInputField: View {
     let field: SignUpFocusField
 
     var body: some View {
+        let maxLength: Int = {
+            switch field {
+            case .email:
+                return 50
+            case .nickname:
+                return 12
+            default:
+                return 30
+            }
+        }()
         VStack {
             HStack {
                 Text(title)
@@ -302,6 +312,11 @@ struct ValidatedInputField: View {
             HStack {
                 TextField("", text: $text)
                     .focused(focus, equals: field)
+                    .onChange(of: text) { newValue, _ in
+                        if newValue.count > maxLength {
+                            text = String(newValue.prefix(maxLength))
+                        }
+                    }
                     .frame(width: 210, height: 50)
                     .textInputAutocapitalization(.never)
                     .frame(width: 240, height: 50)
