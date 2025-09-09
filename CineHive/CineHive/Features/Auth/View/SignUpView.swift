@@ -168,6 +168,11 @@ struct InputFieldView: View {
             
             TextField("", text: $text)
                 .focused(focus, equals: field)
+                .onChange(of: text){ newValue, _ in
+                    if newValue.count > 20 {
+                        text = String(newValue.prefix(20))
+                    }
+                }
                 .frame(width: 300, height: 50)
                 .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
                 .frame(width: 330, height: 50)
