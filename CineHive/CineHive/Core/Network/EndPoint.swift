@@ -142,8 +142,8 @@ enum EndPoint {
     enum Auth {
         static let register = "/register"
         static let login = "/login"
-        static func checkNickname(_ nickname: String) -> String { "/checknickname/\(nickname)" }
-        static func checkEmail(_ email: String) -> String { "/checkemail/\(email)" }
+        static func checkNickname(_ nickname: String) -> String { "/api/v1/auth/check-nickname?nickname=\(nickname)" }
+        static func checkEmail(_ email: String) -> String { "/api/v1/auth/check-email?email=\(email)" }
     }
 
     enum GoogleAuth {

@@ -7,34 +7,31 @@
 
 import Foundation
 
-struct User: Codable, Identifiable {
-    let id: Int?
+struct User: Codable {
     let email: String
     let password: String
-    let nickname: String
     let name: String?
+    let nickname: String
     let gender: String?
-    let type: String
+    let genres: [String]?
     
     enum CodingKeys: String, CodingKey {
-        case id = "mem_id"
-        case email = "memEmail"
-        case password = "memPassword"
-        case nickname = "memNickname"
-        case name = "memName"
-        case gender = "memSex"
-        case type = "memType"
+        case email
+        case password
+        case name
+        case nickname
+        case gender
+        case genres
     }
     
     // 기본 생성자
-    init(id: Int? = nil, email: String, password: String, nickname: String, name: String?, gender: String?, type: String) {
-        self.id = id
+    init(email: String, password: String, name: String?, nickname: String, gender: String?, genres: [String]?) {
         self.email = email
         self.password = password
-        self.nickname = nickname
         self.name = name
+        self.nickname = nickname
         self.gender = gender
-        self.type = type
+        self.genres = genres
     }
 }
 
@@ -48,8 +45,8 @@ struct LoginUser: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case email = "memEmail"
-        case password = "memPassword"
+        case email
+        case password
     }
 }
 
@@ -93,7 +90,47 @@ struct UserData: Codable {
     }
 }
 
+struct SignUpRequest: Codable {
+    let email: String
+    let password: String
+    let confirmPassword: String
+    let name: String?
+    let nickname: String
+    let gender: String?
+    let genres: [String]
+}
+
 struct SignUpResponse: Codable {
+    let success: Bool
+    let data: SignUpResponseData
+    let error: ErrorResponse?
+}
+
+struct SignUpResponseData: Codable {
     let message: String
-    let status: String
+}
+
+struct ErrorResponse: Codable {
+    let timestamp: String
+    let status: Int
+    let code: String
+    let error: String
+    let message: String
+    let path: String
+    let details: [ErrorDetail]?
+}
+
+struct ErrorDetail: Codable {
+    let field: String
+    let rejectedValue: String
+    let reason: String
+}
+
+struct AvailabilityResponse: Decodable {
+    let success: Bool
+    let data: AvailabilityData
+}
+
+struct AvailabilityData: Decodable {
+    let isAvailable: Bool
 }
