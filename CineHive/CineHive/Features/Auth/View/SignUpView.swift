@@ -115,6 +115,7 @@ struct SignUpView: View {
                     }
                     .padding(.bottom, 20)
                 }
+                .scrollIndicators(.hidden)
                 .padding(.horizontal)
             }
             .navigationBarTitleDisplayMode(.inline)
