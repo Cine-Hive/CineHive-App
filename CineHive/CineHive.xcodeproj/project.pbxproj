@@ -379,7 +379,8 @@
 		};
 		9BF396022D61F2A000044A64 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 48637B3AC248900F733A0508 /* Pods-CineHive.debug.xcconfig */;
+			baseConfigurationReferenceAnchor = 9BF395F52D61F29E00044A64 /* CineHive */;
+			baseConfigurationReferenceRelativePath = Config/Config.Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -414,7 +415,8 @@
 		};
 		9BF396032D61F2A000044A64 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B3C0C1512991CDACD0534E14 /* Pods-CineHive.release.xcconfig */;
+			baseConfigurationReferenceAnchor = 9BF395F52D61F29E00044A64 /* CineHive */;
+			baseConfigurationReferenceRelativePath = Config/Config.Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
