@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import Supabase
+import Auth
+import PostgREST
 
 enum PasswordValidationError: String {
     case space = "공백 문자는 사용할 수 없습니다."
@@ -99,13 +102,24 @@ class SignUpViewModel {
     // 닉네임 중복 검사
     @MainActor
     func checkValidateNickname() async {
-        let (_, isAvailable) = await UserState.shared.checkNickname(nickname)
-        
-        if isAvailable {
-            self.nicknameCheckMessage = "사용 가능한 닉네임입니다."
-            self.nicknameAvailable = true
-        }else {
-            self.emailCheckMessage = "이미 사용 중인 닉네임입니다."
+        do {
+            let client = SupabaseConfig.shared.client
+            let response = try await client
+                .from("profiles")
+                .select("nickname", head: true, count: .exact)
+                .eq("nickname", value: nickname)
+                .limit(1)
+                .execute()
+            let available = (response.count ?? 0) == 0
+            if available {
+                self.nicknameCheckMessage = "사용 가능한 닉네임입니다."
+                self.nicknameAvailable = true
+            } else {
+                self.nicknameCheckMessage = "이미 사용 중인 닉네임입니다."
+                self.nicknameAvailable = false
+            }
+        } catch {
+            self.nicknameCheckMessage = "닉네임 확인 실패: \(error.localizedDescription)"
             self.nicknameAvailable = false
         }
     }
@@ -114,27 +128,60 @@ class SignUpViewModel {
     @MainActor
     func signUp() async {
         isSigningUp = true
+        defer { isSigningUp = false }
         generalErrorMessage = nil
         let convertedGender = (gender == "남자") ? "MALE" : "FEMALE"
         
-        let newUser = SignUpRequest(
-            email: email,
-            password: password,
-            confirmPassword: confirmPassword,
-            name: name,
-            nickname: nickname,
-            gender: convertedGender,
-            genres: genres
-        )
-        
-        let success = await UserState.shared.signUp(user: newUser)
-        
-        isSigningUp = false
-        
-        if success {
-            isSignUpSuccess = true
-        } else {
-            generalErrorMessage = UserState.shared.errorMessage ?? "회원가입에 실패했습니다."
+        do {
+            let client = SupabaseConfig.shared.client
+            
+            // 2) Supabase Auth 회원가입 (이메일 중복 시 여기서 에러 발생)
+            let authResponse = try await client.auth.signUp(
+                email: email,
+                password: password,
+                data: [
+                    "nickname": .string(nickname),
+                    "name": .string(name),
+                    "gender": .string(convertedGender)
+                ]
+            )
+            
+            // 2) 세션이 있으면 즉시 로그인 상태이므로 DB write 수행
+            if let session = authResponse.session {
+                let userId = session.user.id.uuidString
+                
+                try await client
+                    .from("profiles")
+                    .upsert([
+                        "id": userId,
+                        "email": email,
+                        "nickname": nickname,
+                        "name": name,
+                        "gender": convertedGender,
+                        "type": "user"
+                    ], onConflict: "id")
+                    .execute()
+                
+                isSignUpSuccess = true
+            }
+            // 3) 세션은 없고 user만 있으면(이메일 인증 필요) → 가입 성공 처리만
+            else if authResponse.user != nil {
+                isSignUpSuccess = true
+                // 프로필 생성은 이메일 인증 후 로그인 시점에 진행
+            } else {
+                throw NSError(domain: "SignUp", code: -2, userInfo: [NSLocalizedDescriptionKey: "회원가입 응답에 세션/사용자 정보가 없습니다."])
+            }
+        } catch {
+            let msg = error.localizedDescription.lowercased()
+            if msg.contains("already registered") || msg.contains("already exists") || msg.contains("user exists") {
+                generalErrorMessage = "이미 사용 중인 이메일입니다."
+            } else if msg.contains("password") {
+                generalErrorMessage = "비밀번호 요건을 확인해 주세요."
+            } else {
+                generalErrorMessage = "회원가입 실패: \(error.localizedDescription)"
+            }
+            isSignUpSuccess = false
+            
         }
     }
 }
