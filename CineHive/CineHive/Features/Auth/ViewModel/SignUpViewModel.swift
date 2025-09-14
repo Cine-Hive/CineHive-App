@@ -41,9 +41,11 @@ class SignUpViewModel {
     
     // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
+        let validEmail = isValidEmail(email)
+        let (validPassword, _) = isValidPassword(password)
+        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
         return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-        isValidEmail(email) && isValidPassword(password).0 &&
-               nicknameAvailable && emailAvailable
+        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
     }
     
     // 비밀번호 유효성 검사: 영문 대소문자, 숫자, 특수문자 포함 8~20자, 공백 불가
@@ -80,29 +82,17 @@ class SignUpViewModel {
         return isValid
     }
     
-    // 이메일 중복 검사
-    @MainActor
-    func checkValidateEmail() async {
-        let (_, isAvailable) = await UserState.shared.checkEmail(email)
-        
-        if isAvailable {
-            self.emailCheckMessage = "사용 가능한 이메일입니다."
-            self.emailAvailable = true
-        } else {
-            self.emailCheckMessage = "이미 사용 중인 이메일입니다."
-            self.emailAvailable = false
-        }
-    }
-
-    // 이메일 형식 검사 후 중복 검사
+    // 이메일 형식 검사
     @MainActor
     func checkEmailWithFormatValidation() async {
-        if isValidEmail(email) {
-            emailFormatInvalidMessage = nil
-            await checkValidateEmail()
+        if !isValidEmail(email) {
+            self.emailFormatInvalidMessage = nil
+            self.emailCheckMessage = "이메일 형식이 유효하지 않습니다."
+            self.emailAvailable = false
         } else {
-            emailCheckMessage = nil
-            emailFormatInvalidMessage = "이메일의 형식이 맞지 않습니다."
+            self.emailFormatInvalidMessage = nil
+            self.emailCheckMessage = ""
+            self.emailAvailable = true
         }
     }
     
