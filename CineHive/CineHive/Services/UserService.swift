@@ -14,7 +14,7 @@ final class UserService {
     // MARK: - 인증 없는 요청 (로그인 전)
 
     /// 회원가입 요청
-    func registerUser(user: SignUpRequest) async throws -> SignUpResponse {
+    func registerUser(user: AuthSignUpRequest) async throws -> SignUpResponse {
         let endpoint = EndPoint.Auth.register
         return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
     }
