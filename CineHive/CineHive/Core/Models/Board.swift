@@ -11,7 +11,7 @@ struct Board: Identifiable, Codable {
     let id: Int
     let title: String
     let content: String
-    let user: User?
+    let user: Profile?
     let createdAt: String
     let viewCount: Int
     var likeCount: Int
@@ -50,13 +50,14 @@ struct Board: Identifiable, Codable {
         self.commentCount = try container.decodeIfPresent(Int.self, forKey: .commentCount) ?? 0
 
         // user가 있는 경우와 없는 경우 모두 대응
-        if let user = try? container.decode(User.self, forKey: .user) {
+        if let user = try? container.decode(Profile.self, forKey: .user) {
             self.user = user
         } else {
             let nickname = try container.decodeIfPresent(String.self, forKey: .nickname) ?? "알 수 없음"
-            self.user = User(
+            self.user = Profile(
+                id: UUID(),
                 email: "unknown@email.com",
-                password: "",
+                //password: "",
                 name: nil,
                 nickname: nickname,
                 gender: nil,
