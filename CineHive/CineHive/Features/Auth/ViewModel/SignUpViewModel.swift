@@ -99,28 +99,42 @@ class SignUpViewModel {
         }
     }
     
-    // 닉네임 중복 검사
+    // 닉네임 중복 검사 (RPC 사용)
     @MainActor
     func checkValidateNickname() async {
+        // 공백이나 줄바꿈 문자 제거
+        let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         do {
             let client = SupabaseConfig.shared.client
+            // 파라미터 타입을 명시적으로 AnyJSON으로 지정
+            let params: [String: AnyJSON] = [
+                "p_nickname": .string(trimmed)
+            ]
             let response = try await client
-                .from("profiles")
-                .select("nickname", head: true, count: .exact)
-                .eq("nickname", value: nickname)
-                .limit(1)
+                .rpc("check_nickname_available", params: params)
                 .execute()
-            let available = (response.count ?? 0) == 0
-            if available {
-                self.nicknameCheckMessage = "사용 가능한 닉네임입니다."
-                self.nicknameAvailable = true
-            } else {
-                self.nicknameCheckMessage = "이미 사용 중인 닉네임입니다."
+            
+            let data = response.data
+            guard !data.isEmpty else {
                 self.nicknameAvailable = false
+                self.nicknameCheckMessage = "닉네임 확인 실패: 빈 응답"
+                return
             }
-        } catch {
-            self.nicknameCheckMessage = "닉네임 확인 실패: \(error.localizedDescription)"
+            
+            // 단일 Bool (true/false)
+            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
+                self.nicknameAvailable = available
+                self.nicknameCheckMessage = available ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다."
+                return
+            }
+            
+            // 파싱 실패
             self.nicknameAvailable = false
+            self.nicknameCheckMessage = "닉네임 확인 실패: 응답 형식 오류"
+        } catch {
+            self.nicknameAvailable = false
+            self.nicknameCheckMessage = "닉네임 확인 실패: \(error.localizedDescription)"
         }
     }
     
@@ -135,35 +149,24 @@ class SignUpViewModel {
         do {
             let client = SupabaseConfig.shared.client
             
-            // 2) Supabase Auth 회원가입 (이메일 중복 시 여기서 에러 발생)
+            let metadata: [String: AnyJSON] = [
+                "nickname": .string(nickname),
+                "name": .string(name),
+                "gender": .string(convertedGender)
+            ]
+            
+            // Supabase Auth 회원가입
             let authResponse = try await client.auth.signUp(
                 email: email,
                 password: password,
-                data: [
-                    "nickname": .string(nickname),
-                    "name": .string(name),
-                    "gender": .string(convertedGender)
-                ]
+                data: metadata
             )
             
-            // 2) 세션이 있으면 즉시 로그인 상태이므로 DB write 수행
+            // 세션 O -> Supabase trigger에서 프로필 생성 처리
             if let session = authResponse.session {
-                let userId = session.user.id.uuidString
-                
-                try await client
-                    .from("profiles")
-                    .upsert([
-                        "id": userId,
-                        "email": email,
-                        "nickname": nickname,
-                        "name": name,
-                        "gender": convertedGender
-                    ], onConflict: "id")
-                    .execute()
-                
-                isSignUpSuccess = true
+                // 프로필 생성은 Supabase 트리거에서 처리
             }
-            // 3) 세션은 없고 user만 있으면(이메일 인증 필요) → 가입 성공 처리만
+            // 세션 X -> 이메일 인증 필요
             else if authResponse.user != nil {
                 isSignUpSuccess = true
                 // 프로필 생성은 이메일 인증 후 로그인 시점에 진행
