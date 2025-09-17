@@ -157,8 +157,7 @@ class SignUpViewModel {
                         "email": email,
                         "nickname": nickname,
                         "name": name,
-                        "gender": convertedGender,
-                        "type": "user"
+                        "gender": convertedGender
                     ], onConflict: "id")
                     .execute()
                 
