@@ -19,6 +19,20 @@ enum PasswordValidationError: String {
     case special = "특수문자를 최소 1개 포함해야 합니다."
 }
 
+extension SignUpViewModel {
+    func isNextEnabled(step: SignUpStep) -> Bool {
+        switch step {
+        case .email:
+            return !email.isEmpty && isValidEmail(email)
+        case .password:
+            return !password.isEmpty && passwordErrorMessage == nil
+        case .confirmPassword:
+            return !confirmPassword.isEmpty && password == confirmPassword
+        case .nickname:
+            return !nickname.isEmpty
+        }
+    }
+}
 
 @Observable
 class SignUpViewModel {

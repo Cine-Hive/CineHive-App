@@ -14,49 +14,30 @@ enum SignUpFocusField: Hashable {
     case nickname
 }
 
+enum SignUpStep: Int, CaseIterable { case email, password, confirmPassword, nickname }
+
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: SignUpFocusField?
-    // 멀티 스텝 진행 상태
-    private enum Step: Int, CaseIterable { case email, password, confirmPassword, nickname }
-    @State private var step: Step = .email
+    @State private var step: SignUpStep = .email
     
     // 회원가입 완료 시 상위 화면으로 성공 콜백 전달
     var onSignUpSuccess: (() -> Void)? = nil
-    
-    // 다음 버튼 활성화 상태
-    private var nextEnabled: Bool { isNextEnabled() }
-    
-    // 다음 버튼 활성화 로직
-    private func isNextEnabled() -> Bool {
-        switch step {
-        case .email:
-            return !viewModel.email.isEmpty && viewModel.isValidEmail(viewModel.email)
-        case .password:
-            return !viewModel.password.isEmpty && viewModel.passwordErrorMessage == nil
-        case .confirmPassword:
-            return !viewModel.confirmPassword.isEmpty && viewModel.password == viewModel.confirmPassword
-        case .nickname:
-            return !viewModel.nickname.isEmpty
-        }
-    }
     
     var body: some View {
             VStack {
                 VStack(spacing: 0) {
                     ZStack {
-                        // Centered title always stays centered
                         Text("회원가입")
-                            .font(.system(size: 20, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                             .frame(maxWidth: .infinity, alignment: .center)
 
-                        // Leading back button layered on top
                         HStack {
                             Button(action: {
                                 switch step {
                                 case .email:
-                                    dismiss() // 첫 단계에서는 실제 뒤로가기(닫기)
+                                    dismiss()
                                 case .password:
                                     step = .email
                                 case .confirmPassword:
@@ -92,7 +73,9 @@ struct SignUpView: View {
                         Text(errorMessage)
                             .font(.system(size: 14))
                             .foregroundColor(.red)
-                            .frame(width: 325, alignment: .leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 30)
+                            .padding(.top, 10)
                     }
                 case .confirmPassword:
                     PasswordFieldView(title: "비밀번호를 한 번 더 입력해 주세요.", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
@@ -140,9 +123,9 @@ struct SignUpView: View {
                         .frame(minHeight: 48)
                 })
                 .foregroundStyle(.white)
-                .background(nextEnabled ? Color("LoginBtnColor") : Color.gray)
+                .background(viewModel.isNextEnabled(step: step) ? Color("LoginBtnColor") : Color.gray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .disabled(!nextEnabled)
+                .disabled(!viewModel.isNextEnabled(step: step))
                 .padding(.horizontal, 16)
                 .padding(.bottom, 5)
             }
@@ -217,7 +200,7 @@ struct PasswordFieldView: View {
                     self.showPassword.toggle()
                 }, label: {
                     Image(systemName: showPassword ? "eye" : "eye.slash")
-                        .padding(.trailing, 1)
+                        .padding(.trailing, 10)
                         .foregroundStyle(.gray)
                 })
             }
