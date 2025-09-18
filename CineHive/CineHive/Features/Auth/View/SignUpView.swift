@@ -46,7 +46,18 @@ struct SignUpView: View {
             VStack {
                 VStack(spacing: 0) {
                     HStack {
-                        Button(action: { dismiss() }) {
+                        Button(action: {
+                            switch step {
+                            case .email:
+                                dismiss() // 첫 단계에서는 실제 뒤로가기(닫기)
+                            case .password:
+                                step = .email
+                            case .confirmPassword:
+                                step = .password
+                            case .nickname:
+                                step = .confirmPassword
+                            }
+                        }) {
                             Image(systemName: "chevron.left")
                                 .foregroundStyle(Color("FontColor"))
                                 .frame(width: 24, height: 24)
