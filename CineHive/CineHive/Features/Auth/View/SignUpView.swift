@@ -69,10 +69,10 @@ struct SignUpView: View {
                     )
                 case .password:
                     PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
-                    if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
+                    if let errorMessage = viewModel.passwordErrorMessage {
                         Text(errorMessage)
                             .font(.system(size: 14))
-                            .foregroundColor(.red)
+                            .foregroundColor(Color("FontColor"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading, 30)
                             .padding(.top, 10)
@@ -186,7 +186,7 @@ struct PasswordFieldView: View {
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
                     } else {
-                        SecureField("", text: $text)
+                        SecureField(title, text: $text, prompt: Text(field == .password ? "대소문자, 숫자, 특수문자 포함한 8자리 이상" : field == .confirmPassword ? "비밀번호를 다시 입력해 주세요.":""))
                             .focused(focus, equals: field)
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
