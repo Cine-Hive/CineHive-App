@@ -67,6 +67,14 @@ struct SignUpView: View {
                         focus: $focusedField,
                         field: .email,
                     )
+                    if let emailError = viewModel.emailCheckMessage {
+                        Text(emailError)
+                            .font(.system(size: 14))
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 25)
+                            .padding(.top, 10)
+                    }
                 case .password:
                     PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
                     VStack(alignment: .leading, spacing: 6) {
@@ -93,12 +101,13 @@ struct SignUpView: View {
                         focus: $focusedField,
                         field: .nickname
                     )
-                    if let nicknameCheck = viewModel.nicknameCheckMessage {
-                        Text(nicknameCheck)
+                    if let nicknameError = viewModel.nicknameCheckMessage {
+                        Text(nicknameError)
                             .font(.system(size: 14))
-                            .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
-                            .frame(width: 325, alignment: .leading)
-                            .padding(.top, 1)
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 25)
+                            .padding(.top, 10)
                     }
                 }
                 Spacer()
@@ -107,13 +116,22 @@ struct SignUpView: View {
                     Task {
                         switch step {
                         case .email:
-                            step = .password
+                            // 버튼 클릭 시 이메일 중복 검사
+                            await viewModel.checkEmailWithFormatValidation()
+                            await viewModel.checkValidateEmail()
+                            if viewModel.emailCheckMessage == nil {
+                                step = .password
+                            }
                         case .password:
                             step = .confirmPassword
                         case .confirmPassword:
                             step = .nickname
                         case .nickname:
-                            await viewModel.signUp()
+                            // 버튼 클릭 시 닉네임 중복 검사
+                            await viewModel.checkValidateNickname()
+                            if viewModel.nicknameCheckMessage == nil {
+                                await viewModel.signUp()
+                            }
                         }
                     }
                 }, label: {
