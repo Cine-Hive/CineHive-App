@@ -265,7 +265,6 @@ struct ValidatedInputField: View {
                             text = String(newValue.prefix(maxLength))
                         }
                     }
-                    .frame(width: .infinity)
                     .frame(height: 50)
                     .textInputAutocapitalization(.never)
                     .overlay {
@@ -275,6 +274,7 @@ struct ValidatedInputField: View {
                     }
             }
         }
+        .frame(maxWidth: .infinity)
         .frame(height: 90)
         .padding(.horizontal, 16)
     }
