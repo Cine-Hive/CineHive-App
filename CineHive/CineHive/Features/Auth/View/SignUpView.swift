@@ -102,8 +102,6 @@ struct SignUpView: View {
                 .disabled(!viewModel.isValid() || viewModel.isSigningUp || viewModel.password != viewModel.confirmPassword)
                 Spacer()
             }
-            .padding(.bottom, 20)
-            
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -118,6 +116,7 @@ struct SignUpView: View {
                         .font(.system(size: 20, weight: .medium))
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(false)
             .safeAreaInset(edge: .top) {
                 Divider()
