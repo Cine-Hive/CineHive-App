@@ -82,15 +82,9 @@ struct SignUpView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 25)
-                    .padding(.top, 15)
+                    .padding(.top, 10)
                 case .confirmPassword:
                     PasswordFieldView(title: "비밀번호를 한 번 더 입력해 주세요.", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
-                    if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
-                        Text("비밀번호가 일치하지 않습니다.")
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(width: 325, alignment: .leading)
-                    }
                 case .nickname:
                     ValidatedInputField(
                         title: "닉네임을 입력해 주세요.",

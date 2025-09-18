@@ -41,7 +41,6 @@ class SignUpViewModel {
     var password: String = ""
     var confirmPassword: String = ""
     var nickname: String = ""
-    var genres: [String] = []
     var showPassword: Bool = false
     
     // 상태 및 오류 메시지
@@ -53,15 +52,6 @@ class SignUpViewModel {
     var isSignUpSuccess: Bool = false
     var isSigningUp: Bool = false
     var generalErrorMessage: String? = nil
-    
-//    // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
-//    func isValid() -> Bool {
-//        let validEmail = isValidEmail(email)
-//        let (validPassword, _) = isValidPassword(password)
-//        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
-//        return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-//        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
-//    }
     
     // 이메일 정규식 검사 함수
     func isValidEmail(_ email: String) -> Bool {
