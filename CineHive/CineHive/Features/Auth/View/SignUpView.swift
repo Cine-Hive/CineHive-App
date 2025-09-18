@@ -43,8 +43,27 @@ struct SignUpView: View {
     }
     
     var body: some View {
-        NavigationStack {
             VStack {
+                VStack(spacing: 0) {
+                    HStack {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundStyle(Color("FontColor"))
+                                .frame(width: 24, height: 24)
+                        }
+                        Spacer()
+                        Text("회원가입")
+                            .font(.system(size: 20, weight: .medium))
+                        Spacer()
+                        // 가운데 정렬 보정을 위한 우측 더미 공간 (좌측 버튼과 너비 맞춤)
+                        Color.clear
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 44)
+
+                    Divider().frame(height: 1)
+                }
                 // 현재 스텝에 따라 하나의 입력 화면만 표시
                 switch step {
                 case .email:
@@ -73,7 +92,7 @@ struct SignUpView: View {
                     }
                 case .nickname:
                     ValidatedInputField(
-                        title: "닉네임",
+                        title: "닉네임을 입력해 주세요.",
                         text: $viewModel.nickname,
                         onCheckDuplicate: { await viewModel.checkValidateNickname() },
                         focus: $focusedField,
@@ -121,26 +140,6 @@ struct SignUpView: View {
                 case .nickname: focusedField = .nickname
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundStyle(Color("FontColor"))
-                    }
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("회원가입")
-                        .font(.system(size: 20, weight: .medium))
-                }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(false)
-            .safeAreaInset(edge: .top) {
-                Divider()
-                    .frame(height: 1)
-            }
             // 회원가입 성공 시 SignUpCompleteView로 이동
             .sheet(isPresented: $viewModel.isSignUpSuccess) {
                 // onSignUpSuccess를 전달하여 SignUpCompleteView가 완료 시 이를 호출하도록 함
@@ -158,7 +157,7 @@ struct SignUpView: View {
             )
         }
     }
-}
+
 
 #Preview {
     NavigationStack {
