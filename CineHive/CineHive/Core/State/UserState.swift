@@ -186,7 +186,7 @@ final class UserState {
     
     /// 회원가입 처리
     @MainActor
-    func signUp(user: SignUpRequest) async -> Bool {
+    func signUp(user: AuthSignUpRequest) async -> Bool {
         isLoading = true
         errorMessage = nil
         

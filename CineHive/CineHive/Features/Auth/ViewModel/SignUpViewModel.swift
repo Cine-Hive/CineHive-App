@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import Supabase
+import Auth
+import PostgREST
 
 enum PasswordValidationError: String {
     case space = "공백 문자는 사용할 수 없습니다."
@@ -41,9 +44,11 @@ class SignUpViewModel {
     
     // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
     func isValid() -> Bool {
+        let validEmail = isValidEmail(email)
+        let (validPassword, _) = isValidPassword(password)
+        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
         return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-        isValidEmail(email) && isValidPassword(password).0 &&
-               nicknameAvailable && emailAvailable
+        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
     }
     
     // 비밀번호 유효성 검사: 영문 대소문자, 숫자, 특수문자 포함 8~20자, 공백 불가
@@ -80,43 +85,56 @@ class SignUpViewModel {
         return isValid
     }
     
-    // 이메일 중복 검사
-    @MainActor
-    func checkValidateEmail() async {
-        let (_, isAvailable) = await UserState.shared.checkEmail(email)
-        
-        if isAvailable {
-            self.emailCheckMessage = "사용 가능한 이메일입니다."
-            self.emailAvailable = true
-        } else {
-            self.emailCheckMessage = "이미 사용 중인 이메일입니다."
-            self.emailAvailable = false
-        }
-    }
-
-    // 이메일 형식 검사 후 중복 검사
+    // 이메일 형식 검사
     @MainActor
     func checkEmailWithFormatValidation() async {
-        if isValidEmail(email) {
-            emailFormatInvalidMessage = nil
-            await checkValidateEmail()
+        if !isValidEmail(email) {
+            self.emailFormatInvalidMessage = nil
+            self.emailCheckMessage = "이메일 형식이 유효하지 않습니다."
+            self.emailAvailable = false
         } else {
-            emailCheckMessage = nil
-            emailFormatInvalidMessage = "이메일의 형식이 맞지 않습니다."
+            self.emailFormatInvalidMessage = nil
+            self.emailCheckMessage = ""
+            self.emailAvailable = true
         }
     }
     
-    // 닉네임 중복 검사
+    // 닉네임 중복 검사 (RPC 사용)
     @MainActor
     func checkValidateNickname() async {
-        let (_, isAvailable) = await UserState.shared.checkNickname(nickname)
+        // 공백이나 줄바꿈 문자 제거
+        let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if isAvailable {
-            self.nicknameCheckMessage = "사용 가능한 닉네임입니다."
-            self.nicknameAvailable = true
-        }else {
-            self.emailCheckMessage = "이미 사용 중인 닉네임입니다."
+        do {
+            let client = SupabaseConfig.shared.client
+            // 파라미터 타입을 명시적으로 AnyJSON으로 지정
+            let params: [String: AnyJSON] = [
+                "p_nickname": .string(trimmed)
+            ]
+            let response = try await client
+                .rpc("check_nickname_available", params: params)
+                .execute()
+            
+            let data = response.data
+            guard !data.isEmpty else {
+                self.nicknameAvailable = false
+                self.nicknameCheckMessage = "닉네임 확인 실패: 빈 응답"
+                return
+            }
+            
+            // 단일 Bool (true/false)
+            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
+                self.nicknameAvailable = available
+                self.nicknameCheckMessage = available ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다."
+                return
+            }
+            
+            // 파싱 실패
             self.nicknameAvailable = false
+            self.nicknameCheckMessage = "닉네임 확인 실패: 응답 형식 오류"
+        } catch {
+            self.nicknameAvailable = false
+            self.nicknameCheckMessage = "닉네임 확인 실패: \(error.localizedDescription)"
         }
     }
     
@@ -124,27 +142,48 @@ class SignUpViewModel {
     @MainActor
     func signUp() async {
         isSigningUp = true
+        defer { isSigningUp = false }
         generalErrorMessage = nil
         let convertedGender = (gender == "남자") ? "MALE" : "FEMALE"
         
-        let newUser = SignUpRequest(
-            email: email,
-            password: password,
-            confirmPassword: confirmPassword,
-            name: name,
-            nickname: nickname,
-            gender: convertedGender,
-            genres: genres
-        )
-        
-        let success = await UserState.shared.signUp(user: newUser)
-        
-        isSigningUp = false
-        
-        if success {
-            isSignUpSuccess = true
-        } else {
-            generalErrorMessage = UserState.shared.errorMessage ?? "회원가입에 실패했습니다."
+        do {
+            let client = SupabaseConfig.shared.client
+            
+            let metadata: [String: AnyJSON] = [
+                "nickname": .string(nickname),
+                "name": .string(name),
+                "gender": .string(convertedGender)
+            ]
+            
+            // Supabase Auth 회원가입
+            let authResponse = try await client.auth.signUp(
+                email: email,
+                password: password,
+                data: metadata
+            )
+            
+            // 세션 O -> Supabase trigger에서 프로필 생성 처리
+            if let session = authResponse.session {
+                // 프로필 생성은 Supabase 트리거에서 처리
+            }
+            // 세션 X -> 이메일 인증 필요
+            else if authResponse.user != nil {
+                isSignUpSuccess = true
+                // 프로필 생성은 이메일 인증 후 로그인 시점에 진행
+            } else {
+                throw NSError(domain: "SignUp", code: -2, userInfo: [NSLocalizedDescriptionKey: "회원가입 응답에 세션/사용자 정보가 없습니다."])
+            }
+        } catch {
+            let msg = error.localizedDescription.lowercased()
+            if msg.contains("already registered") || msg.contains("already exists") || msg.contains("user exists") {
+                generalErrorMessage = "이미 사용 중인 이메일입니다."
+            } else if msg.contains("password") {
+                generalErrorMessage = "비밀번호 요건을 확인해 주세요."
+            } else {
+                generalErrorMessage = "회원가입 실패: \(error.localizedDescription)"
+            }
+            isSignUpSuccess = false
+            
         }
     }
 }

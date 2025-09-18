@@ -6,28 +6,36 @@
 //
 
 import Foundation
+import Supabase
 
-struct User: Codable {
+// MARK: - 도메인 모델: 앱 내부 표준
+struct Profile: Codable {
+    let id: UUID
     let email: String
-    let password: String
     let name: String?
     let nickname: String
-    let gender: String?
+    let gender: Gender?
     let genres: [String]?
     
     enum CodingKeys: String, CodingKey {
+        case id
         case email
-        case password
         case name
         case nickname
         case gender
         case genres
     }
     
+    enum Gender: String, Codable {
+        case male = "MALE"
+        case female = "FEMALE"
+        case other = "OTHER"
+    }
+    
     // 기본 생성자
-    init(email: String, password: String, name: String?, nickname: String, gender: String?, genres: [String]?) {
+    init(id:UUID, email: String, name: String?, nickname: String, gender: Gender?, genres: [String]?) {
+        self.id = id
         self.email = email
-        self.password = password
         self.name = name
         self.nickname = nickname
         self.gender = gender
@@ -88,16 +96,6 @@ struct UserData: Codable {
         case gender
         case genres
     }
-}
-
-struct SignUpRequest: Codable {
-    let email: String
-    let password: String
-    let confirmPassword: String
-    let name: String?
-    let nickname: String
-    let gender: String?
-    let genres: [String]
 }
 
 struct SignUpResponse: Codable {

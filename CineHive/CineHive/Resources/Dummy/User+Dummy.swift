@@ -7,14 +7,14 @@
 
 import Foundation
 
-extension User {
-    static var dummy1: User {
-        User(
+extension Profile {
+    static var dummy1: Profile {
+        Profile(
+            id: UUID(),
             email: "unib335@naver.com",
-            password: "$2a$10$NgKw9sCbuUEa.6Dlj4xKF.4u8XRA9lfEkAfWhWfxYo9kvAcIp7EZy",
             name: "lee",
             nickname: "lee",
-            gender: "남자",
+            gender: Profile.Gender.male,
             genres: []
         )
     }
