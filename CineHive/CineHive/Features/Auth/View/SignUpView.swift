@@ -60,13 +60,12 @@ struct SignUpView: View {
                         }) {
                             Image(systemName: "chevron.left")
                                 .foregroundStyle(Color("FontColor"))
-                                .frame(width: 24, height: 24)
+                                .frame(width: 15, height: 24)
                         }
                         Spacer()
                         Text("회원가입")
                             .font(.system(size: 20, weight: .medium))
                         Spacer()
-                        // 가운데 정렬 보정을 위한 우측 더미 공간 (좌측 버튼과 너비 맞춤)
                         Color.clear
                             .frame(width: 24, height: 24)
                     }
@@ -86,7 +85,7 @@ struct SignUpView: View {
                         field: .email,
                     )
                 case .password:
-                    PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
+                    PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
                     if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
                         Text(errorMessage)
                             .font(.system(size: 14))
@@ -94,7 +93,7 @@ struct SignUpView: View {
                             .frame(width: 325, alignment: .leading)
                     }
                 case .confirmPassword:
-                    PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
+                    PasswordFieldView(title: "비밀번호를 한 번 더 입력해 주세요.", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
                     if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
                         Text("비밀번호가 일치하지 않습니다.")
                             .font(.system(size: 14))
@@ -134,13 +133,15 @@ struct SignUpView: View {
                     }
                 }, label: {
                     Text(step == .nickname ? "회원가입" : "다음")
-                        .font(.system(size: 16, weight: .semibold))
-                        .frame(maxWidth: 330, minHeight: 48)
+                        .font(.system(size: 18, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 48)
                 })
                 .foregroundStyle(.white)
                 .background(nextEnabled ? Color("LoginBtnColor") : Color.gray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .disabled(!nextEnabled)
+                .padding(.horizontal, 16)
             }
             .onAppear { focusedField = .email }
             .onChange(of: step) { newStep, _ in
@@ -185,12 +186,11 @@ struct PasswordFieldView: View {
     
     var body: some View {
         VStack {
-            HStack {
                 Text(title)
-                    .font(.system(size: 17))
-            }
-            .frame(width: 320, height: 25, alignment: .leading)
-            
+                    .font(.system(size: 20, weight: .medium))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 30)
+                    .padding(.top, 20)
             HStack {
                 Section {
                     if showPassword {
@@ -207,7 +207,7 @@ struct PasswordFieldView: View {
                             }
                     }
                 }
-                .frame(width: 260, height: 40)
+                .padding(.leading, 13)
                 .textInputAutocapitalization(.never)
                 
                 Button(action: {
@@ -218,7 +218,8 @@ struct PasswordFieldView: View {
                         .foregroundStyle(.gray)
                 })
             }
-            .frame(width: 330, height: 50)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
                     .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
@@ -226,7 +227,8 @@ struct PasswordFieldView: View {
                     .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
             }
         }
-        .frame(width: 330, height: 90)
+        .frame(height: 90)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -251,20 +253,21 @@ struct ValidatedInputField: View {
         VStack {
             Text(title)
                 .font(.system(size: 20, weight: .medium))
-                .frame(width: 330, height: 30, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 30)
                 .padding(.top, 20)
-            
             HStack {
-                TextField(title, text: $text, prompt: Text(field == .email ? "1 ~ 50자 이내로 입력해 주세요": field == .nickname ? "1 ~ 12자 이내로 입력해 주세요" : ""))
+                TextField(title, text: $text, prompt: Text(field == .email ? "1 ~ 50자 이내로 입력해 주세요.": field == .nickname ? "1 ~ 12자 이내로 입력해 주세요." : ""))
                     .focused(focus, equals: field)
+                    .padding(.leading, 13)
                     .onChange(of: text) { newValue, _ in
                         if newValue.count > maxLength {
                             text = String(newValue.prefix(maxLength))
                         }
                     }
-                    .frame(width: 300, height: 50)
+                    .frame(width: .infinity)
+                    .frame(height: 50)
                     .textInputAutocapitalization(.never)
-                    .frame(width: 330, height: 50)
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
@@ -272,6 +275,7 @@ struct ValidatedInputField: View {
                     }
             }
         }
-        .frame(width: 330, height: 90)
+        .frame(height: 90)
+        .padding(.horizontal, 16)
     }
 }
