@@ -45,29 +45,31 @@ struct SignUpView: View {
     var body: some View {
             VStack {
                 VStack(spacing: 0) {
-                    HStack {
-                        Button(action: {
-                            switch step {
-                            case .email:
-                                dismiss() // 첫 단계에서는 실제 뒤로가기(닫기)
-                            case .password:
-                                step = .email
-                            case .confirmPassword:
-                                step = .password
-                            case .nickname:
-                                step = .confirmPassword
-                            }
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundStyle(Color("FontColor"))
-                                .frame(width: 15, height: 24)
-                        }
-                        Spacer()
+                    ZStack {
+                        // Centered title always stays centered
                         Text("회원가입")
                             .font(.system(size: 20, weight: .medium))
-                        Spacer()
-                        Color.clear
-                            .frame(width: 24, height: 24)
+                            .frame(maxWidth: .infinity, alignment: .center)
+
+                        // Leading back button layered on top
+                        HStack {
+                            Button(action: {
+                                switch step {
+                                case .email:
+                                    dismiss() // 첫 단계에서는 실제 뒤로가기(닫기)
+                                case .password:
+                                    step = .email
+                                case .confirmPassword:
+                                    step = .password
+                                case .nickname:
+                                    step = .confirmPassword
+                                }
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundStyle(Color("FontColor"))
+                            }
+                            Spacer()
+                        }
                     }
                     .padding(.horizontal, 16)
                     .frame(height: 44)
@@ -142,6 +144,7 @@ struct SignUpView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .disabled(!nextEnabled)
                 .padding(.horizontal, 16)
+                .padding(.bottom, 5)
             }
             .onAppear { focusedField = .email }
             .onChange(of: step) { newStep, _ in
