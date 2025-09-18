@@ -10,27 +10,27 @@ import Supabase
 import Auth
 import PostgREST
 
-enum PasswordValidationError: String {
-    case space = "공백 문자는 사용할 수 없습니다."
-    case length = "비밀번호는 8~20자여야 합니다."
-    case upper = "대문자를 최소 1개 포함해야 합니다."
-    case lower = "소문자를 최소 1개 포함해야 합니다."
-    case digit = "숫자를 최소 1개 포함해야 합니다."
-    case special = "특수문자를 최소 1개 포함해야 합니다."
-}
-
 extension SignUpViewModel {
     func isNextEnabled(step: SignUpStep) -> Bool {
         switch step {
         case .email:
             return !email.isEmpty && isValidEmail(email)
         case .password:
-            return !password.isEmpty && passwordErrorMessage == nil
+            // 비밀번호 입력란이 비어 있지 않고, 체크리스트 조건 중 최소 한 가지 이상은 충족해야 다음 단계로 이동 가능
+            return !password.isEmpty && passwordChecks.allSatisfy { $0.passed }
         case .confirmPassword:
             return !confirmPassword.isEmpty && password == confirmPassword
         case .nickname:
             return !nickname.isEmpty
         }
+    }
+    var passwordChecks: [(title: String, passed: Bool)] {
+        [
+            ("8자 이상 입력해 주세요.", password.count >= 8),
+            ("대소문자를 포함해 주세요.", password.range(of: "[A-Z]", options: .regularExpression) != nil &&
+             password.range(of: "[a-z]", options: .regularExpression) != nil),
+            ("숫자 및 특수문자를 포함해 주세요.", password.range(of: "[0-9][!@#$%^&*(),.?\\\":{}|<>]", options: .regularExpression) != nil),
+        ]
     }
 }
 
@@ -54,41 +54,14 @@ class SignUpViewModel {
     var isSigningUp: Bool = false
     var generalErrorMessage: String? = nil
     
-    // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
-    func isValid() -> Bool {
-        let validEmail = isValidEmail(email)
-        let (validPassword, _) = isValidPassword(password)
-        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
-        return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
-    }
-    
-    // 비밀번호 유효성 검사: 영문 대소문자, 숫자, 특수문자 포함 8~20자, 공백 불가
-    func isValidPassword(_ password: String) -> (Bool, PasswordValidationError?) {
-        if password.contains(where: { $0.isWhitespace }) {
-            return (false, .space)
-        }
-        if password.count < 8 || password.count > 20 {
-            return (false, .length)
-        }
-        if password.range(of: "[A-Z]", options: .regularExpression) == nil {
-            return (false, .upper)
-        }
-        if password.range(of: "[a-z]", options: .regularExpression) == nil {
-            return (false, .lower)
-        }
-        if password.range(of: "[0-9]", options: .regularExpression) == nil {
-            return (false, .digit)
-        }
-        if password.range(of: "[!@#$%^&*(),.?\":{}|<>]", options: .regularExpression) == nil {
-            return (false, .special)
-        }
-        return (true, nil)
-    }
-    
-    var passwordErrorMessage: String? {
-        return isValidPassword(password).1?.rawValue
-    }
+//    // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
+//    func isValid() -> Bool {
+//        let validEmail = isValidEmail(email)
+//        let (validPassword, _) = isValidPassword(password)
+//        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
+//        return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
+//        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
+//    }
     
     // 이메일 정규식 검사 함수
     func isValidEmail(_ email: String) -> Bool {

@@ -69,14 +69,20 @@ struct SignUpView: View {
                     )
                 case .password:
                     PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
-                    if let errorMessage = viewModel.passwordErrorMessage {
-                        Text(errorMessage)
-                            .font(.system(size: 14))
-                            .foregroundColor(Color("FontColor"))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 30)
-                            .padding(.top, 10)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(viewModel.passwordChecks, id: \.title) { check in
+                            HStack(spacing: 8) {
+                                Image(systemName: check.passed ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(check.passed ? .green : .gray)
+                                Text(check.title)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(check.passed ? .green : .gray)
+                            }
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 25)
+                    .padding(.top, 15)
                 case .confirmPassword:
                     PasswordFieldView(title: "비밀번호를 한 번 더 입력해 주세요.", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
                     if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
