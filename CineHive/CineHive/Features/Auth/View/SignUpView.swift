@@ -85,7 +85,6 @@ struct SignUpView: View {
                                 .frame(width: 325, alignment: .leading)
                                 .padding(.top, 1)
                         }
-                        GenderSelectedView(selectedGender: $viewModel.gender)
                         
                         Button(action: {
                             Task {
@@ -238,40 +237,6 @@ struct PasswordFieldView: View {
                     .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
                             lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
                     .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
-            }
-        }
-        .frame(width: 330, height: 90)
-    }
-}
-
-struct GenderSelectedView: View {
-    @Binding var selectedGender: String
-    let genders: [String] = ["남자", "여자"]
-    
-    var body: some View {
-        VStack {
-            Text("성별")
-                .frame(width: 320, height: 25, alignment: .leading)
-                .font(.system(size: 17))
-            
-            HStack {
-                ForEach(genders, id: \.self) { gender in
-                    Button(action: {
-                        if selectedGender == gender {
-                            selectedGender = ""
-                        } else {
-                            selectedGender = gender
-                        }
-                    }) {
-                        Text(gender)
-                            .foregroundColor(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"))
-                            .frame(width: 160, height: 50)
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
-                    )
-                }
             }
         }
         .frame(width: 330, height: 90)

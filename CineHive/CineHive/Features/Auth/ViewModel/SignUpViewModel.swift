@@ -27,7 +27,6 @@ class SignUpViewModel {
     var password: String = ""
     var confirmPassword: String = ""
     var nickname: String = ""
-    var gender: String = ""
     var genres: [String] = []
     var showPassword: Bool = false
     
@@ -143,14 +142,12 @@ class SignUpViewModel {
         isSigningUp = true
         defer { isSigningUp = false }
         generalErrorMessage = nil
-        let convertedGender = (gender == "남자") ? "MALE" : "FEMALE"
         
         do {
             let client = SupabaseConfig.shared.client
             
             let metadata: [String: AnyJSON] = [
-                "nickname": .string(nickname),
-                "gender": .string(convertedGender)
+                "nickname": .string(nickname)
             ]
             
             // Supabase Auth 회원가입
