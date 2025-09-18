@@ -12,7 +12,6 @@ enum SignUpFocusField: Hashable {
     case password
     case confirmPassword
     case nickname
-    case name
 }
 
 struct SignUpView: View {
@@ -86,8 +85,6 @@ struct SignUpView: View {
                                 .frame(width: 325, alignment: .leading)
                                 .padding(.top, 1)
                         }
-                        
-                        InputFieldView(title: "이름", text: $viewModel.name, focus: $focusedField, field: .name)
                         GenderSelectedView(selectedGender: $viewModel.gender)
                         
                         Button(action: {

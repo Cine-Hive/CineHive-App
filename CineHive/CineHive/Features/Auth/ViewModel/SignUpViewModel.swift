@@ -26,7 +26,6 @@ class SignUpViewModel {
     var email: String = ""
     var password: String = ""
     var confirmPassword: String = ""
-    var name: String = ""
     var nickname: String = ""
     var gender: String = ""
     var genres: [String] = []
@@ -151,7 +150,6 @@ class SignUpViewModel {
             
             let metadata: [String: AnyJSON] = [
                 "nickname": .string(nickname),
-                "name": .string(name),
                 "gender": .string(convertedGender)
             ]
             
