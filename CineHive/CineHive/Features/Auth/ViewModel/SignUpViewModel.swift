@@ -74,6 +74,41 @@ class SignUpViewModel {
         }
     }
     
+    // 이메일 중복 검사 (RPC 사용)
+    @MainActor
+    func checkValidateEmail() async {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        do {
+            let client = SupabaseConfig.shared.client
+            let params: [String: AnyJSON] = [
+                "p_email": .string(trimmed)
+            ]
+            let response = try await client
+                .rpc("check_email_available", params: params)
+                .execute()
+            
+            let data = response.data
+            guard !data.isEmpty else {
+                self.emailAvailable = false
+                self.emailCheckMessage = "이메일 확인 실패: 빈 응답"
+                return
+            }
+            
+            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
+                self.emailAvailable = available
+                self.emailCheckMessage = available ? nil : "이미 사용 중인 이메일이에요."
+                return
+            }
+            
+            self.emailAvailable = false
+            self.emailCheckMessage = "이메일 확인 실패: 응답 형식 오류"
+        } catch {
+            self.emailAvailable = false
+            self.emailCheckMessage = "이메일 확인 실패: \(error.localizedDescription)"
+        }
+    }
+    
     // 닉네임 중복 검사 (RPC 사용)
     @MainActor
     func checkValidateNickname() async {
@@ -100,7 +135,7 @@ class SignUpViewModel {
             // 단일 Bool (true/false)
             if let available = try? JSONDecoder().decode(Bool.self, from: data) {
                 self.nicknameAvailable = available
-                self.nicknameCheckMessage = available ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다."
+                self.nicknameCheckMessage = available ? nil : "이미 사용 중인 닉네임이에요."
                 return
             }
             
