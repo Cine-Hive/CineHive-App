@@ -245,7 +245,7 @@ struct ValidatedInputField: View {
                 .padding(.top, 20)
             
             HStack {
-                TextField("", text: $text)
+                TextField(title, text: $text, prompt: Text(field == .email ? "1 ~ 50자 이내로 입력해 주세요": field == .nickname ? "1 ~ 12자 이내로 입력해 주세요" : ""))
                     .focused(focus, equals: field)
                     .onChange(of: text) { newValue, _ in
                         if newValue.count > maxLength {
