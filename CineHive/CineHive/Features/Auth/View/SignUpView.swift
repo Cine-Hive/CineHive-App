@@ -22,91 +22,88 @@ struct SignUpView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack {
-                    ValidatedInputField(
-                        title: "이메일",
-                        text: $viewModel.email,
-                        onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() },
-                        focus: $focusedField,
-                        field: .email
-                    )
-                    
-                    if let formatMessage = viewModel.emailFormatInvalidMessage {
-                        Text(formatMessage)
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(width: 325, alignment: .leading)
-                    }
-                    
-                    if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
-                        Text(emailCheck)
-                            .font(.system(size: 14))
-                            .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
-                            .frame(width: 330, alignment: .leading)
-                    }
-                    
-                    PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
-                    
-                    if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
-                        Text(errorMessage)
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(width: 325, alignment: .leading)
-                    }
-                    
-                    PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
-                    
-                    if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
-                        Text("비밀번호가 일치하지 않습니다.")
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(width: 325, alignment: .leading)
-                    }
-                    
-                    ValidatedInputField(
-                        title: "닉네임",
-                        text: $viewModel.nickname,
-                        onCheckDuplicate: { await viewModel.checkValidateNickname() },
-                        focus: $focusedField,
-                        field: .nickname
-                    )
-                    
-                    if let nicknameCheck = viewModel.nicknameCheckMessage {
-                        Text(nicknameCheck)
-                            .font(.system(size: 14))
-                            .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
-                            .frame(width: 325, alignment: .leading)
-                            .padding(.top, 1)
-                    }
-                    
-                    Button(action: {
-                        Task {
-                            await viewModel.signUp()
-                        }
-                    }, label: {
-                        HStack {
-                            if viewModel.isSigningUp {
-                                ProgressView()
-                                    .tint(.white)
-                                    .padding(.trailing, 8)
-                            }
-                            Text("회원가입")
-                        }
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 330, height: 50)
-                        .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    })
-                    .padding(.top, 16)
-                    .disabled(!viewModel.isValid() || viewModel.isSigningUp || viewModel.password != viewModel.confirmPassword)
-                    Spacer()
+            VStack {
+                ValidatedInputField(
+                    title: "이메일",
+                    text: $viewModel.email,
+                    onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() },
+                    focus: $focusedField,
+                    field: .email
+                )
+                
+                if let formatMessage = viewModel.emailFormatInvalidMessage {
+                    Text(formatMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(.red)
+                        .frame(width: 325, alignment: .leading)
                 }
-                .padding(.bottom, 20)
+                
+                if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
+                    Text(emailCheck)
+                        .font(.system(size: 14))
+                        .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
+                        .frame(width: 330, alignment: .leading)
+                }
+                
+                PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
+                
+                if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(.red)
+                        .frame(width: 325, alignment: .leading)
+                }
+                
+                PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
+                
+                if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
+                    Text("비밀번호가 일치하지 않습니다.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.red)
+                        .frame(width: 325, alignment: .leading)
+                }
+                
+                ValidatedInputField(
+                    title: "닉네임",
+                    text: $viewModel.nickname,
+                    onCheckDuplicate: { await viewModel.checkValidateNickname() },
+                    focus: $focusedField,
+                    field: .nickname
+                )
+                
+                if let nicknameCheck = viewModel.nicknameCheckMessage {
+                    Text(nicknameCheck)
+                        .font(.system(size: 14))
+                        .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
+                        .frame(width: 325, alignment: .leading)
+                        .padding(.top, 1)
+                }
+                
+                Button(action: {
+                    Task {
+                        await viewModel.signUp()
+                    }
+                }, label: {
+                    HStack {
+                        if viewModel.isSigningUp {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.trailing, 8)
+                        }
+                        Text("회원가입")
+                    }
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 330, height: 50)
+                    .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                })
+                .padding(.top, 16)
+                .disabled(!viewModel.isValid() || viewModel.isSigningUp || viewModel.password != viewModel.confirmPassword)
+                Spacer()
             }
+            .padding(.bottom, 20)
             
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
