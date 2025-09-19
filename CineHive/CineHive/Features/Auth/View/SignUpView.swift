@@ -12,131 +12,157 @@ enum SignUpFocusField: Hashable {
     case password
     case confirmPassword
     case nickname
-    case name
 }
+
+enum SignUpStep: Int, CaseIterable { case email, password, confirmPassword, nickname }
 
 struct SignUpView: View {
     @State private var viewModel = SignUpViewModel()
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: SignUpFocusField?
+    @State private var step: SignUpStep = .email
+    
+    // 회원가입 완료 시 상위 화면으로 성공 콜백 전달
     var onSignUpSuccess: (() -> Void)? = nil
-
+    
     var body: some View {
-        NavigationStack {
             VStack {
-                ScrollView {
-                    VStack {
+                VStack(spacing: 0) {
+                    ZStack {
                         Text("회원가입")
-                            .frame(width: 320, height: 70)
-                            .font(.system(size: 22, weight: .bold))
-                            .padding(.horizontal, 16)
-                        
-                        ValidatedInputField(
-                            title: "이메일",
-                            text: $viewModel.email,
-                            onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() },
-                            focus: $focusedField,
-                            field: .email
-                        )
+                            .font(.system(size: 18, weight: .medium))
+                            .frame(maxWidth: .infinity, alignment: .center)
 
-                        if let formatMessage = viewModel.emailFormatInvalidMessage {
-                            Text(formatMessage)
-                                .font(.system(size: 14))
-                                .foregroundColor(.red)
-                                .frame(width: 325, alignment: .leading)
+                        HStack {
+                            Button(action: {
+                                switch step {
+                                case .email:
+                                    dismiss()
+                                case .password:
+                                    step = .email
+                                case .confirmPassword:
+                                    step = .password
+                                case .nickname:
+                                    step = .confirmPassword
+                                }
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundStyle(Color("FontColor"))
+                            }
+                            Spacer()
                         }
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 44)
 
-                        if !viewModel.email.isEmpty, let emailCheck = viewModel.emailCheckMessage {
-                            Text(emailCheck)
-                                .font(.system(size: 14))
-                                .foregroundColor(emailCheck == "사용 가능한 이메일입니다." ? .green : .red)
-                                .frame(width: 330, alignment: .leading)
+                    Divider().frame(height: 1)
+                }
+                // 현재 스텝에 따라 하나의 입력 화면만 표시
+                switch step {
+                case .email:
+                    ValidatedInputField(
+                        title: "이메일을 입력해 주세요.",
+                        text: $viewModel.email,
+                        onCheckDuplicate: { await viewModel.checkEmailWithFormatValidation() },
+                        focus: $focusedField,
+                        field: .email,
+                    )
+                    if let emailError = viewModel.emailCheckMessage {
+                        Text(emailError)
+                            .font(.system(size: 14))
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 25)
+                            .padding(.top, 10)
+                    }
+                case .password:
+                    PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(viewModel.passwordChecks, id: \.title) { check in
+                            HStack(spacing: 8) {
+                                Image(systemName: check.passed ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(check.passed ? .green : .gray)
+                                Text(check.title)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(check.passed ? .green : .gray)
+                            }
                         }
-                        
-                        PasswordFieldView(title: "비밀번호", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
-                        
-                        if focusedField != .password, let errorMessage = viewModel.passwordErrorMessage {
-                            Text(errorMessage)
-                                .font(.system(size: 14))
-                                .foregroundColor(.red)
-                                .frame(width: 325, alignment: .leading)
-                        }
-                        
-                        PasswordFieldView(title: "비밀번호 확인", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
-                        
-                        if focusedField != .confirmPassword, !viewModel.confirmPassword.isEmpty && viewModel.password != viewModel.confirmPassword {
-                            Text("비밀번호가 일치하지 않습니다.")
-                                .font(.system(size: 14))
-                                .foregroundColor(.red)
-                                .frame(width: 325, alignment: .leading)
-                        }
-                        
-                        ValidatedInputField(
-                            title: "닉네임",
-                            text: $viewModel.nickname,
-                            onCheckDuplicate: { await viewModel.checkValidateNickname() },
-                            focus: $focusedField,
-                            field: .nickname
-                        )
-                        
-                        if let nicknameCheck = viewModel.nicknameCheckMessage {
-                            Text(nicknameCheck)
-                                .font(.system(size: 14))
-                                .foregroundColor(nicknameCheck == "사용 가능한 닉네임입니다." ? .green : .red)
-                                .frame(width: 325, alignment: .leading)
-                                .padding(.top, 1)
-                        }
-                        
-                        InputFieldView(title: "이름", text: $viewModel.name, focus: $focusedField, field: .name)
-                        GenderSelectedView(selectedGender: $viewModel.gender)
-                        
-                        Button(action: {
-                            Task {
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 25)
+                    .padding(.top, 10)
+                case .confirmPassword:
+                    PasswordFieldView(title: "비밀번호를 한 번 더 입력해 주세요.", text: $viewModel.confirmPassword, showPassword: $viewModel.showPassword, focus: $focusedField, field: .confirmPassword)
+                case .nickname:
+                    ValidatedInputField(
+                        title: "닉네임을 입력해 주세요.",
+                        text: $viewModel.nickname,
+                        onCheckDuplicate: { await viewModel.checkValidateNickname() },
+                        focus: $focusedField,
+                        field: .nickname
+                    )
+                    if let nicknameError = viewModel.nicknameCheckMessage {
+                        Text(nicknameError)
+                            .font(.system(size: 14))
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 25)
+                            .padding(.top, 10)
+                    }
+                }
+                Spacer()
+                // 다음/회원가입 버튼
+                Button(action: {
+                    Task {
+                        switch step {
+                        case .email:
+                            // 버튼 클릭 시 이메일 중복 검사
+                            await viewModel.checkEmailWithFormatValidation()
+                            await viewModel.checkValidateEmail()
+                            if viewModel.emailCheckMessage == nil {
+                                step = .password
+                            }
+                        case .password:
+                            step = .confirmPassword
+                        case .confirmPassword:
+                            step = .nickname
+                        case .nickname:
+                            // 버튼 클릭 시 닉네임 중복 검사
+                            await viewModel.checkValidateNickname()
+                            if viewModel.nicknameCheckMessage == nil {
                                 await viewModel.signUp()
                             }
-                        }, label: {
-                            HStack {
-                                if viewModel.isSigningUp {
-                                    ProgressView()
-                                        .tint(.white)
-                                        .padding(.trailing, 8)
-                                }
-                                Text("회원가입")
-                            }
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 330, height: 50)
-                            .background(viewModel.isValid() ? Color("LoginBtnColor") : Color.gray)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        })
-                        .padding(.top, 16)
-                        .disabled(!viewModel.isValid() || viewModel.isSigningUp || viewModel.password != viewModel.confirmPassword)
-                        Spacer()
+                        }
                     }
-                    .padding(.bottom, 20)
-                }
-                .scrollIndicators(.hidden)
-                .padding(.horizontal)
+                }, label: {
+                    Text(step == .nickname ? "회원가입" : "다음")
+                        .font(.system(size: 18, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 48)
+                })
+                .foregroundStyle(.white)
+                .background(viewModel.isNextEnabled(step: step) ? Color("LoginBtnColor") : Color.gray)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .disabled(!viewModel.isNextEnabled(step: step))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 5)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .foregroundStyle(Color("FontColor"))
-                    }
+            .onAppear { focusedField = .email }
+            .onChange(of: step) { newStep, _ in
+                switch newStep {
+                case .email: focusedField = .email
+                case .password: focusedField = .password
+                case .confirmPassword: focusedField = .confirmPassword
+                case .nickname: focusedField = .nickname
                 }
             }
-            // 회원가입 성공 시 NavigationDestination로 SignUpCompleteView로 이동
-            .navigationDestination(isPresented: $viewModel.isSignUpSuccess) {
+            // 회원가입 성공 시 SignUpCompleteView로 이동
+            .sheet(isPresented: $viewModel.isSignUpSuccess) {
                 // onSignUpSuccess를 전달하여 SignUpCompleteView가 완료 시 이를 호출하도록 함
                 SignUpCompleteView(nickname: viewModel.nickname, onComplete: {
                     dismiss()
                     onSignUpSuccess?()
                 })
-                .navigationBarBackButtonHidden(true)
             }
             .errorToast(
                 message: viewModel.generalErrorMessage,
@@ -147,44 +173,11 @@ struct SignUpView: View {
             )
         }
     }
-}
+
 
 #Preview {
-    SignUpView(onSignUpSuccess: nil)
-}
-
-struct InputFieldView: View {
-    let title: String
-    @Binding var text: String
-    var focus: FocusState<SignUpFocusField?>.Binding
-    let field: SignUpFocusField
-    
-    var body: some View {
-        VStack {
-            HStack {
-                Text(title)
-                    .font(.system(size: 17))
-            }
-            .frame(width: 320, height: 25, alignment: .leading)
-            
-            TextField("", text: $text)
-                .focused(focus, equals: field)
-                .onChange(of: text){ newValue, _ in
-                    if newValue.count > 20 {
-                        text = String(newValue.prefix(20))
-                    }
-                }
-                .frame(width: 300, height: 50)
-                .textInputAutocapitalization(.never)    // 첫 글자 대문자 표출 X
-                .frame(width: 330, height: 50)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
-                                lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
-                        .animation(.easeInOut(duration: 0.15), value: focus.wrappedValue == field)
-                }
-        }
-        .frame(width: 330, height: 90)
+    NavigationStack {
+        SignUpView(onSignUpSuccess: nil)
     }
 }
 
@@ -197,16 +190,11 @@ struct PasswordFieldView: View {
     
     var body: some View {
         VStack {
-            HStack {
                 Text(title)
-                    .font(.system(size: 17))
-                Text("*")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.red)
-                    .offset(x: -7)
-            }
-            .frame(width: 320, height: 25, alignment: .leading)
-            
+                    .font(.system(size: 20, weight: .medium))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 30)
+                    .padding(.top, 20)
             HStack {
                 Section {
                     if showPassword {
@@ -216,26 +204,26 @@ struct PasswordFieldView: View {
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
                     } else {
-                        SecureField("", text: $text)
+                        SecureField(title, text: $text, prompt: Text(field == .password ? "대소문자, 숫자, 특수문자 포함한 8자리 이상" : field == .confirmPassword ? "비밀번호를 다시 입력해 주세요.":""))
                             .focused(focus, equals: field)
-
                             .onChange(of: text) { newValue, _ in
                                 if newValue.count > 20 { text = String(newValue.prefix(20)) }
                             }
                     }
                 }
-                .frame(width: 260, height: 40)
+                .padding(.leading, 13)
                 .textInputAutocapitalization(.never)
                 
                 Button(action: {
                     self.showPassword.toggle()
                 }, label: {
                     Image(systemName: showPassword ? "eye" : "eye.slash")
-                        .padding(.trailing, 1)
+                        .padding(.trailing, 10)
                         .foregroundStyle(.gray)
                 })
             }
-            .frame(width: 330, height: 50)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
             .overlay {
                 RoundedRectangle(cornerRadius: 13)
                     .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"),
@@ -243,41 +231,8 @@ struct PasswordFieldView: View {
                     .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
             }
         }
-        .frame(width: 330, height: 90)
-    }
-}
-
-struct GenderSelectedView: View {
-    @Binding var selectedGender: String
-    let genders: [String] = ["남자", "여자"]
-    
-    var body: some View {
-        VStack {
-            Text("성별")
-                .frame(width: 320, height: 25, alignment: .leading)
-                .font(.system(size: 17))
-            
-            HStack {
-                ForEach(genders, id: \.self) { gender in
-                    Button(action: {
-                        if selectedGender == gender {
-                            selectedGender = ""
-                        } else {
-                            selectedGender = gender
-                        }
-                    }) {
-                        Text(gender)
-                            .foregroundColor(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"))
-                            .frame(width: 160, height: 50)
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedGender == gender ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: 0.6)
-                    )
-                }
-            }
-        }
-        .frame(width: 330, height: 90)
+        .frame(height: 90)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -287,7 +242,7 @@ struct ValidatedInputField: View {
     let onCheckDuplicate: () async -> Void
     var focus: FocusState<SignUpFocusField?>.Binding
     let field: SignUpFocusField
-
+    
     var body: some View {
         let maxLength: Int = {
             switch field {
@@ -300,47 +255,31 @@ struct ValidatedInputField: View {
             }
         }()
         VStack {
+            Text(title)
+                .font(.system(size: 20, weight: .medium))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 30)
+                .padding(.top, 20)
             HStack {
-                Text(title)
-                    .font(.system(size: 17))
-                Text("*")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.red)
-                    .offset(x: -7)
-            }
-            .frame(width: 320, height: 25, alignment: .leading)
-
-            HStack {
-                TextField("", text: $text)
+                TextField(title, text: $text, prompt: Text(field == .email ? "1 ~ 50자 이내로 입력해 주세요.": field == .nickname ? "1 ~ 12자 이내로 입력해 주세요." : ""))
                     .focused(focus, equals: field)
+                    .padding(.leading, 13)
                     .onChange(of: text) { newValue, _ in
                         if newValue.count > maxLength {
                             text = String(newValue.prefix(maxLength))
                         }
                     }
-                    .frame(width: 210, height: 50)
+                    .frame(height: 50)
                     .textInputAutocapitalization(.never)
-                    .frame(width: 240, height: 50)
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(focus.wrappedValue == field ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focus.wrappedValue == field ? 1.2 : 0.6)
                             .animation(.easeInOut(duration: 0.1), value: focus.wrappedValue == field)
                     }
-
-                Button("중복 확인") {
-                    Task {
-                        await onCheckDuplicate()
-                    }
-                }
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(CHColors.Button.primary)
-                .frame(width: 80, height: 50)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(CHColors.Button.primary, lineWidth: 1)
-                )
             }
         }
-        .frame(width: 330, height: 90)
+        .frame(maxWidth: .infinity)
+        .frame(height: 90)
+        .padding(.horizontal, 16)
     }
 }

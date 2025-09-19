@@ -10,15 +10,29 @@ import Supabase
 import Auth
 import PostgREST
 
-enum PasswordValidationError: String {
-    case space = "공백 문자는 사용할 수 없습니다."
-    case length = "비밀번호는 8~20자여야 합니다."
-    case upper = "대문자를 최소 1개 포함해야 합니다."
-    case lower = "소문자를 최소 1개 포함해야 합니다."
-    case digit = "숫자를 최소 1개 포함해야 합니다."
-    case special = "특수문자를 최소 1개 포함해야 합니다."
+extension SignUpViewModel {
+    func isNextEnabled(step: SignUpStep) -> Bool {
+        switch step {
+        case .email:
+            return !email.isEmpty && isValidEmail(email)
+        case .password:
+            // 비밀번호 입력란이 비어 있지 않고, 체크리스트 조건 중 최소 한 가지 이상은 충족해야 다음 단계로 이동 가능
+            return !password.isEmpty && passwordChecks.allSatisfy { $0.passed }
+        case .confirmPassword:
+            return !confirmPassword.isEmpty && password == confirmPassword
+        case .nickname:
+            return !nickname.isEmpty
+        }
+    }
+    var passwordChecks: [(title: String, passed: Bool)] {
+        [
+            ("8자 이상 입력해 주세요.", password.count >= 8),
+            ("대소문자를 포함해 주세요.", password.range(of: "[A-Z]", options: .regularExpression) != nil &&
+             password.range(of: "[a-z]", options: .regularExpression) != nil),
+            ("숫자 및 특수문자를 포함해 주세요.", password.range(of: "[0-9][!@#$%^&*(),.?\\\":{}|<>]", options: .regularExpression) != nil),
+        ]
+    }
 }
-
 
 @Observable
 class SignUpViewModel {
@@ -26,10 +40,7 @@ class SignUpViewModel {
     var email: String = ""
     var password: String = ""
     var confirmPassword: String = ""
-    var name: String = ""
     var nickname: String = ""
-    var gender: String = ""
-    var genres: [String] = []
     var showPassword: Bool = false
     
     // 상태 및 오류 메시지
@@ -41,42 +52,6 @@ class SignUpViewModel {
     var isSignUpSuccess: Bool = false
     var isSigningUp: Bool = false
     var generalErrorMessage: String? = nil
-    
-    // 필수 필드 채워져 있는지 검사 및 중복검사 결과에 따른 회원가입 버튼 활성화
-    func isValid() -> Bool {
-        let validEmail = isValidEmail(email)
-        let (validPassword, _) = isValidPassword(password)
-        let confirmPasswordMatch = !confirmPassword.isEmpty && password == confirmPassword
-        return !email.isEmpty && !password.isEmpty && !confirmPassword.isEmpty && !nickname.isEmpty &&
-        validEmail && validPassword && confirmPasswordMatch && nicknameAvailable
-    }
-    
-    // 비밀번호 유효성 검사: 영문 대소문자, 숫자, 특수문자 포함 8~20자, 공백 불가
-    func isValidPassword(_ password: String) -> (Bool, PasswordValidationError?) {
-        if password.contains(where: { $0.isWhitespace }) {
-            return (false, .space)
-        }
-        if password.count < 8 || password.count > 20 {
-            return (false, .length)
-        }
-        if password.range(of: "[A-Z]", options: .regularExpression) == nil {
-            return (false, .upper)
-        }
-        if password.range(of: "[a-z]", options: .regularExpression) == nil {
-            return (false, .lower)
-        }
-        if password.range(of: "[0-9]", options: .regularExpression) == nil {
-            return (false, .digit)
-        }
-        if password.range(of: "[!@#$%^&*(),.?\":{}|<>]", options: .regularExpression) == nil {
-            return (false, .special)
-        }
-        return (true, nil)
-    }
-    
-    var passwordErrorMessage: String? {
-        return isValidPassword(password).1?.rawValue
-    }
     
     // 이메일 정규식 검사 함수
     func isValidEmail(_ email: String) -> Bool {
@@ -96,6 +71,41 @@ class SignUpViewModel {
             self.emailFormatInvalidMessage = nil
             self.emailCheckMessage = ""
             self.emailAvailable = true
+        }
+    }
+    
+    // 이메일 중복 검사 (RPC 사용)
+    @MainActor
+    func checkValidateEmail() async {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        do {
+            let client = SupabaseConfig.shared.client
+            let params: [String: AnyJSON] = [
+                "p_email": .string(trimmed)
+            ]
+            let response = try await client
+                .rpc("check_email_available", params: params)
+                .execute()
+            
+            let data = response.data
+            guard !data.isEmpty else {
+                self.emailAvailable = false
+                self.emailCheckMessage = "이메일 확인 실패: 빈 응답"
+                return
+            }
+            
+            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
+                self.emailAvailable = available
+                self.emailCheckMessage = available ? nil : "이미 사용 중인 이메일이에요."
+                return
+            }
+            
+            self.emailAvailable = false
+            self.emailCheckMessage = "이메일 확인 실패: 응답 형식 오류"
+        } catch {
+            self.emailAvailable = false
+            self.emailCheckMessage = "이메일 확인 실패: \(error.localizedDescription)"
         }
     }
     
@@ -125,7 +135,7 @@ class SignUpViewModel {
             // 단일 Bool (true/false)
             if let available = try? JSONDecoder().decode(Bool.self, from: data) {
                 self.nicknameAvailable = available
-                self.nicknameCheckMessage = available ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다."
+                self.nicknameCheckMessage = available ? nil : "이미 사용 중인 닉네임이에요."
                 return
             }
             
@@ -144,15 +154,12 @@ class SignUpViewModel {
         isSigningUp = true
         defer { isSigningUp = false }
         generalErrorMessage = nil
-        let convertedGender = (gender == "남자") ? "MALE" : "FEMALE"
         
         do {
             let client = SupabaseConfig.shared.client
             
             let metadata: [String: AnyJSON] = [
-                "nickname": .string(nickname),
-                "name": .string(name),
-                "gender": .string(convertedGender)
+                "nickname": .string(nickname)
             ]
             
             // Supabase Auth 회원가입
