@@ -59,16 +59,21 @@ class LoginViewModel {
         } catch {
             let nsError = error as NSError
             let code = nsError.code
-            if code == 400 {
-                let desc = error.localizedDescription.lowercased()
-                if desc.contains("email not confirmed") || desc.contains("email_not_confirmed") {
-                    errorMessage = "이메일 인증이 필요해요. 메일함에서 인증을 완료한 뒤 다시 로그인해주세요."
-                    shouldOfferEmailVerificationResend = true
-                } else {
-                    errorMessage = "이메일 또는 비밀번호를 다시 확인해주세요."
-                }
+            let raw = String(describing: error).lowercased()
+            if raw.contains("email_not_confirmed") || raw.contains("email not confirmed") {
+                shouldOfferEmailVerificationResend = true
+            } else if code == 429 {
+                errorMessage = "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
+                shouldOfferEmailVerificationResend = false
+            } else if code == -1009 {
+                errorMessage = "네트워크 연결을 확인해주세요."
+                shouldOfferEmailVerificationResend = false
+            } else if code == 400 {
+                errorMessage = "이메일 또는 비밀번호를 다시 확인해주세요."
+                shouldOfferEmailVerificationResend = false
             } else {
                 errorMessage = "로그인 중 오류가 발생했습니다. 다시 시도해주세요."
+                shouldOfferEmailVerificationResend = false
             }
         }
     }
