@@ -122,7 +122,7 @@ struct LoginView: View {
                 .disabled(viewModel.isLoggingIn)
                 
                 HStack {
-                    NavigationLink(destination: SignUpView()) {
+                    NavigationLink(destination: SignUpView().navigationBarBackButtonHidden(true)) {
                         Text("회원이 아니신가요?")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color("FontColor"))
