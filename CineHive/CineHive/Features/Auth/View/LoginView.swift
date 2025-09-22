@@ -45,11 +45,15 @@ struct LoginView: View {
                             }
                         }
                 }
-                .frame(width: 330, height: 250)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .frame(height: 250)
                 
                 Text("이메일로 로그인")
                     .font(.system(size: 16, weight: .semibold))
-                    .frame(width: 330, height: 30, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .frame(height: 30)
                 
                 // 로그인 입력 필드
                 VStack(spacing: 16) {
@@ -87,14 +91,17 @@ struct LoginView: View {
                             .stroke(Color("FontColor"), lineWidth: 0.6)
                     )
                 }
-                .frame(width: 330)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
                 
                 // 오류 메시지
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .font(.system(size: 14))
                         .foregroundColor(.red)
-                        .frame(width: 330, height: 20, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .frame(height: 20)
                         .padding(.top, 4)
                 }
                 
@@ -123,8 +130,8 @@ struct LoginView: View {
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color(uiColor: .systemYellow).opacity(0.5), lineWidth: 1)
                     )
-                    .frame(width: 330, alignment: .leading)
-                    .padding(.leading, 5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
                     .padding(.top, 8)
                 }
                 
@@ -144,10 +151,12 @@ struct LoginView: View {
                     }
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 330, height: 50)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
                     .background(Color("LoginBtnColor"))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .padding(.horizontal, 20)
                 .padding(.top, 16)
                 .disabled(viewModel.isLoggingIn || viewModel.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 
@@ -166,7 +175,8 @@ struct LoginView: View {
                             .foregroundStyle(Color("FontColor"))
                     }
                 }
-                .frame(width: 330)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
                 .padding(.top, 16)
                 
                 Spacer()
