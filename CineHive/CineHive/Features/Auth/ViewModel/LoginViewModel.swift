@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Supabase
 
 @Observable
 class LoginViewModel {
@@ -18,6 +19,7 @@ class LoginViewModel {
     var isLoggingIn: Bool = false
     var navigateToHome: Bool = false
     var errorMessage: String? = nil
+    var shouldOfferEmailVerificationResend: Bool = false
     
     // 이메일 유효성 검사기
     private let emailValidator: (String) -> Bool = { email in
@@ -28,34 +30,46 @@ class LoginViewModel {
     // 로그인
     @MainActor
     func login() async {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         // 입력 유효성 검사
-        guard !email.isEmpty else {
+        guard !trimmedEmail.isEmpty else {
             errorMessage = "이메일을 입력해주세요."
             return
         }
         
-        guard !password.isEmpty else {
+        guard !trimmedPassword.isEmpty else {
             errorMessage = "비밀번호를 입력해주세요."
             return
         }
         
-        if !emailValidator(email) {
+        if !emailValidator(trimmedEmail) {
             errorMessage = "올바른 이메일 형식이 아닙니다."
             return
         }
         
         isLoggingIn = true
+        defer { isLoggingIn = false }
         errorMessage = nil
         
-        // UserState를 통한 로그인 처리
-        let success = await UserState.shared.login(email: email, password: password)
-        
-        isLoggingIn = false
-        
-        if success {
+        do {
+            _ = try await SupabaseConfig.shared.client.auth.signIn(email: trimmedEmail, password: trimmedPassword)
             navigateToHome = true
-        } else {
-            errorMessage = UserState.shared.errorMessage ?? "로그인에 실패했습니다."
+        } catch {
+            let nsError = error as NSError
+            let code = nsError.code
+            if code == 400 {
+                let desc = error.localizedDescription.lowercased()
+                if desc.contains("email not confirmed") || desc.contains("email_not_confirmed") {
+                    errorMessage = "이메일 인증이 필요해요. 메일함에서 인증을 완료한 뒤 다시 로그인해주세요."
+                    shouldOfferEmailVerificationResend = true
+                } else {
+                    errorMessage = "이메일 또는 비밀번호를 다시 확인해주세요."
+                }
+            } else {
+                errorMessage = "로그인 중 오류가 발생했습니다. 다시 시도해주세요."
+            }
         }
     }
     
