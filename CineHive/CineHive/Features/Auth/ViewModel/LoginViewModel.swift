@@ -78,6 +78,32 @@ class LoginViewModel {
         }
     }
     
+    @MainActor
+    func resendSignupVerification() async {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedEmail.isEmpty else {
+            errorMessage = "이메일을 입력한 뒤 다시 시도해주세요."
+            return
+        }
+        guard emailValidator(trimmedEmail) else {
+            errorMessage = "올바른 이메일 형식이 아니에요."
+            return
+        }
+        isLoggingIn = true
+        defer { isLoggingIn = false }
+        errorMessage = nil
+        do {
+            try await SupabaseConfig.shared.client.auth.resend(
+                email: trimmedEmail,
+                type: .signup,
+                emailRedirectTo: nil
+            )
+            shouldOfferEmailVerificationResend = false
+        } catch {
+            errorMessage = "인증 메일 재발송 중 오류가 발생했어요. 잠시 후 다시 시도해주세요."
+        }
+    }
+    
     // 소셜 로그인
     @MainActor
     func socialLogin(provider: SocialLoginProvider) async {
