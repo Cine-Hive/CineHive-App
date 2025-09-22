@@ -49,7 +49,7 @@ struct LoginView: View {
                 
                 Text("이메일로 로그인")
                     .font(.system(size: 16, weight: .semibold))
-                    .frame(width: 320, height: 30, alignment: .leading)
+                    .frame(width: 330, height: 30, alignment: .leading)
                 
                 // 로그인 입력 필드
                 VStack(spacing: 16) {
@@ -94,8 +94,38 @@ struct LoginView: View {
                     Text(errorMessage)
                         .font(.system(size: 14))
                         .foregroundColor(.red)
-                        .frame(width: 320, height: 20, alignment: .leading)
+                        .frame(width: 330, height: 20, alignment: .leading)
                         .padding(.top, 4)
+                }
+                
+                if viewModel.shouldOfferEmailVerificationResend {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "envelope.badge")
+                                .imageScale(.medium)
+                            Text("이 계정은 이메일 인증이 필요해요. 메일함에서 인증 링크를 눌러 완료한 뒤 다시 로그인해주세요.")
+                                .font(.system(size: 14))
+                        }
+                        Button {
+                            Task { await viewModel.resendSignupVerification() }
+                        } label: {
+                            Text("인증 메일 재발송")
+                                .font(.system(size: 14, weight: .semibold))
+                                .padding(.leading, 32)
+                        }
+                    }
+                    .padding(12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(uiColor: .systemYellow).opacity(0.15))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(uiColor: .systemYellow).opacity(0.5), lineWidth: 1)
+                    )
+                    .frame(width: 330, alignment: .leading)
+                    .padding(.leading, 5)
+                    .padding(.top, 8)
                 }
                 
                 // 로그인 버튼
@@ -119,7 +149,7 @@ struct LoginView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.top, 16)
-                .disabled(viewModel.isLoggingIn)
+                .disabled(viewModel.isLoggingIn || viewModel.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 
                 HStack {
                     NavigationLink(destination: SignUpView().navigationBarBackButtonHidden(true)) {
