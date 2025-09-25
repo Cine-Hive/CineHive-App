@@ -10,6 +10,11 @@ import SwiftUI
 struct LoginView: View {
     @State private var viewModel = LoginViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: Field?
+    
+    enum Field {
+        case email, password
+    }
     
     var body: some View {
         NavigationStack {
@@ -59,11 +64,12 @@ struct LoginView: View {
                 VStack(spacing: 16) {
                     // 이메일 필드
                     TextField("이메일", text: $viewModel.email)
+                        .focused($focusedField, equals: .email)
                         .padding()
                         .frame(height: 50)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color("FontColor"), lineWidth: 0.6)
+                                .stroke(focusedField == .email ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focusedField == .email ? 1.5 : 0.6)
                         )
                         .textInputAutocapitalization(.never)
                         .keyboardType(.emailAddress)
@@ -73,12 +79,19 @@ struct LoginView: View {
                     HStack {
                         if viewModel.showPassword {
                             TextField("비밀번호", text: $viewModel.password)
+                                .focused($focusedField, equals: .password)
                         } else {
                             SecureField("비밀번호", text: $viewModel.password)
+                                .focused($focusedField, equals: .password)
                         }
                         
                         Button(action: {
-                            viewModel.showPassword.toggle()
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                viewModel.showPassword.toggle()
+                            }
+                            DispatchQueue.main.async {
+                                focusedField = .password
+                            }
                         }, label: {
                             Image(systemName: viewModel.showPassword ? "eye" : "eye.slash")
                                 .foregroundStyle(.gray)
@@ -88,8 +101,11 @@ struct LoginView: View {
                     .frame(height: 50)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                            .stroke(focusedField == .password ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focusedField == .password ? 1.5 : 0.6)
                     )
+                    .onChange(of: viewModel.showPassword) { _ in
+                        DispatchQueue.main.async { focusedField = .password }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
