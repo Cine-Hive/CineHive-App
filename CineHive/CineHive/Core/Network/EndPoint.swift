@@ -19,7 +19,7 @@ enum ServerEnvironment {
     var baseURL: String {
         switch self {
         case .development:
-            return "http://localhost:8081"
+            return "http://localhost:3000"
         case .staging:
             return "https://staging.api.cinehive.com"
         case .production:
@@ -147,30 +147,30 @@ enum EndPoint {
     }
 
     enum GoogleAuth {
-        static let redirect = "/api/auth/google"
-        static let success = "/api/auth/google/success"
-        static let loginSuccess = "/api/auth/google/login/success"
-        static let callback = "/api/auth/google/callback"
-        static let register = "/api/auth/google/register"
-        static let appLogin = "/api/v1/oauth2/app/login/google"
+        static let redirect = "/api/auth/google"                           // Deprecated
+        static let success = "/api/auth/google/success"                    // Deprecated
+        static let loginSuccess = "/api/auth/google/login/success"         // Deprecated
+        static let callback = "/api/auth/google/callback"                  // Deprecated
+        static let register = "/api/auth/google/register"                  // Deprecated
+        static let appLogin = "/api/v1/oauth2/app/login/google"            // Deprecated
     }
 
     enum NaverAuth {
-        static let redirect = "/api/auth/naver"
-        static let success = "/api/auth/naver/success"
-        static let loginSuccess = "/api/auth/naver/login/success"
-        static let callback = "/api/auth/naver/callback"
-        static let register = "/api/auth/naver/register"
-        static let appLogin = "/api/v1/oauth2/app/login/naver"
+        static let redirect = "/api/auth/naver"                            // Deprecated
+        static let success = "/api/auth/naver/success"                     // Deprecated
+        static let loginSuccess = "/api/auth/naver/login/success"          // Deprecated
+        static let callback = "/api/auth/naver/callback"                   // Deprecated
+        static let register = "/api/auth/naver/register"                   // Deprecated
+        static let appLogin = "/api/v1/oauth2/app/login/naver"             // Deprecated
     }
 
     enum KakaoAuth {
-        static let redirect = "/api/auth/kakao"
-        static let success = "/api/auth/kakao/success"
-        static let loginSuccess = "/api/auth/kakao/login/success"
-        static let callback = "/api/auth/kakao/callback"
-        static let register = "/api/auth/kakao/register"
-        static let appLogin = "/api/v1/oauth2/app/login/kakao"
+        static let redirect = "/api/auth/kakao"                            // Deprecated
+        static let success = "/api/auth/kakao/success"                     // Deprecated
+        static let loginSuccess = "/api/auth/kakao/login/success"          // Deprecated
+        static let callback = "/api/auth/kakao/callback"                   // Deprecated
+        static let register = "/api/auth/kakao/register"                   // Deprecated
+        static let appLogin = "/api/v1/oauth2/app/login/kakao"             // Deprecated
     }
 }
 
