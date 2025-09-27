@@ -11,12 +11,14 @@ import OSLog
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
+import Supabase
 
 @Observable
 class KaKaoLoginViewModel {
     
     private let userService: UserService
     private let userState: UserState
+    private let supabase = SupabaseConfig.shared.client
     
     // 네비게이션 상태
     var shouldNavigateToMain: Bool = false
@@ -28,35 +30,17 @@ class KaKaoLoginViewModel {
     }
     
     func login() {
-        let loginHandler: (OAuthToken?, Error?) -> Void = { (oauthToken, error) in
-            if let error = error {
+        Task {
+            do {
+                try await supabase.auth.signInWithOAuth(
+                    provider: .kakao,
+                    redirectTo: URL(string: SupabaseConfig.Auth.appRedirect)
+                )
+                
+            } catch {
                 Logger.log(.error, category: Logger.auth, message: "카카오 로그인 실패: \(error.localizedDescription)")
-                return
+                self.toast = ToastState(isShowing: true, message: "카카오 로그인에 실패했어요. 잠시 후 다시 시도해주세요.", type: .error)
             }
-            
-            guard let token = oauthToken else {
-                Logger.log(.error, category: Logger.auth, message: "OAuth 토큰 없음")
-                return
-            }
-            
-            Task {
-                let result = await self.userState.socialLogin(provider: .kakao, token: token.accessToken)
-                switch result {
-                case .successNavigateToMain:
-                    // MainTabView로 이동 준비
-                    self.shouldNavigateToMain = true
-                case .failure(let message):
-                    self.toast = ToastState(isShowing: true, message: message.message, type: .error)
-                }
-            }
-        }
-        
-        if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡 앱 로그인
-            UserApi.shared.loginWithKakaoTalk(completion: loginHandler)
-        } else {
-            // 카카오톡 웹 로그인
-            UserApi.shared.loginWithKakaoAccount(completion: loginHandler)
         }
     }
 }
