@@ -22,4 +22,9 @@ class SupabaseConfig {
         self.client = SupabaseClient(supabaseURL: URL(string: supabaseURL)!,
                                      supabaseKey: supabaseKey)
     }
+    // MARK: - Auth Redirect
+    enum Auth {
+        /// 앱 복귀용 URL (Info.plist의 URL Schemes에 등록된 값)
+        static let appRedirect = "cinehive://auth-callback"
+    }
 }
