@@ -11,6 +11,7 @@ import KakaoSDKAuth
 import NaverThirdPartyLogin
 import GoogleSignIn
 import OSLog
+import Supabase
 
 @main
 struct CineHiveApp: App {
@@ -43,17 +44,28 @@ struct CineHiveApp: App {
         WindowGroup {
             // onOpenURL()을 사용해 커스텀 URL 스킴 처리
             ContentView().onOpenURL(perform: { url in
-                if AuthApi.isKakaoTalkLoginUrl(url) {
-                    // Kakao 로그인 URL
+                if let appScheme = URL(string: SupabaseConfig.Auth.appRedirect)?.scheme,
+                   url.scheme == appScheme {
+                    Task {
+                        do {
+                            try await SupabaseConfig.shared.client.auth.session(from: url)
+                            Logger.log(.info, category: Logger.auth, message: "Supabase OAuth 세션 설정 완료: \(url)")
+                        } catch {
+                            print("[OAuth] session(from:) error:", error)
+                        }
+                    }
+                } else if AuthApi.isKakaoTalkLoginUrl(url) {
+                    // Kakao 로그인 URL (SDK 직접 사용 시)
                     AuthController.handleOpenUrl(url: url)
-                } else if url.scheme == Bundle.main.object(forInfoDictionaryKey: "NAVER_URL_SCHEME") as? String,
-                          url.host == "oauth" {
-                    // Naver 로그인 URL
+                } else if url.scheme == (Bundle.main.object(forInfoDictionaryKey: "NAVER_URL_SCHEME") as? String),
+                          (url.host == "oauth" || url.host == "thirdPartyLoginResult") {
+                    // Naver 로그인 URL (앱/브라우저 콜백 모두 처리)
                     NaverThirdPartyLoginConnection.getSharedInstance()?.receiveAccessToken(url)
                 } else if url.scheme?.hasPrefix("com.googleusercontent.apps") == true {
                     // Google 로그인 URL
                     _ = GIDSignIn.sharedInstance.handle(url)
                 } else {
+                    print("[OAuth] Unhandled URL:", url.absoluteString)
                     Logger.log(.info, category: Logger.auth, message: "처리되지 않은 URL: \(url)")
                 }
             })
