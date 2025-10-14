@@ -21,7 +21,8 @@ struct HomeTabView: View {
                 HomeHeaderView(
                     isSearchActive: $viewModel.isSearchActive,
                     showProfileOptions: $viewModel.showProfileOptions,
-                    onProfileTap: viewModel.handleProfileTap
+                    onProfileTap: viewModel.handleProfileTap,
+                    avatarURL: viewModel.profileImageURLString
                 )
                 
                 // 메인 콘텐츠
