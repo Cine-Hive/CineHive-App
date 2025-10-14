@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Observation
 import OSLog
+import Supabase
 
 @Observable
 final class UserState {
@@ -173,15 +174,23 @@ final class UserState {
         self.currentUser = user
     }
     
-    // 로그아웃 처리 (게스트 모드도 종료)
+    // 로그아웃 처리
     @MainActor
     func logout() {
         let userEmail = currentUser?.email ?? "Unknown"
         Logger.log(.info, category: Logger.auth, message: "로그아웃 요청: \(userEmail)")
-        AuthManager.shared.logout()
-        self.currentUser = nil
-        self.isLoggedIn = false
-        self.isGuestMode = false
+        Task {
+            // Supabase 세션 종료
+            do {
+                try await SupabaseConfig.shared.client.auth.signOut()
+                Logger.log(.info, category: Logger.auth, message: "Supabase 세션 로그아웃 완료")
+                self.currentUser = nil
+                self.isLoggedIn = false
+                self.isGuestMode = false
+            } catch {
+                Logger.log(.error, category: Logger.auth, message: "Supabase 세션 로그아웃 실패: \(error.localizedDescription)")
+            }
+        }
     }
     
     /// 회원가입 처리
