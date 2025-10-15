@@ -67,14 +67,15 @@ struct SignUpView: View {
                         focus: $focusedField,
                         field: .email,
                     )
-                    if let emailError = viewModel.emailCheckMessage {
-                        Text(emailError)
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 25)
-                            .padding(.top, 10)
-                    }
+                    
+                    Text(viewModel.emailCheckMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(
+                            !viewModel.emailAvailable ? .red : .green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 25)
+                        .padding(.top, 10)
+                    
                 case .password:
                     PasswordFieldView(title: "비밀번호를 입력해 주세요.", text: $viewModel.password, showPassword: $viewModel.showPassword, focus: $focusedField, field: .password)
                     VStack(alignment: .leading, spacing: 6) {
@@ -101,14 +102,14 @@ struct SignUpView: View {
                         focus: $focusedField,
                         field: .nickname
                     )
-                    if let nicknameError = viewModel.nicknameCheckMessage {
-                        Text(nicknameError)
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 25)
-                            .padding(.top, 10)
-                    }
+                    
+                    Text(viewModel.nicknameCheckMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(!viewModel.nicknameAvailable ? .red : .green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 25)
+                        .padding(.top, 10)
+                    
                 }
                 Spacer()
                 // 다음/회원가입 버튼
@@ -119,7 +120,7 @@ struct SignUpView: View {
                             // 버튼 클릭 시 이메일 중복 검사
                             await viewModel.checkEmailWithFormatValidation()
                             await viewModel.checkValidateEmail()
-                            if viewModel.emailCheckMessage == nil {
+                            if viewModel.emailAvailable == true {
                                 step = .password
                             }
                         case .password:

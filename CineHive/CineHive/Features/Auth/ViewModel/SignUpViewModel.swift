@@ -46,9 +46,9 @@ class SignUpViewModel {
     // 상태 및 오류 메시지
     var emailFormatInvalidMessage: String? = nil
     var nicknameAvailable: Bool = false
-    var nicknameCheckMessage: String? = nil
+    var nicknameCheckMessage: String = ""
     var emailAvailable: Bool = false
-    var emailCheckMessage: String? = nil
+    var emailCheckMessage: String = ""
     var isSignUpSuccess: Bool = false
     var isSigningUp: Bool = false
     var generalErrorMessage: String? = nil
@@ -80,31 +80,17 @@ class SignUpViewModel {
         let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
-            let client = SupabaseConfig.shared.client
-            let params: [String: AnyJSON] = [
-                "p_email": .string(trimmed)
-            ]
-            let response = try await client
-                .rpc("check_email_available", params: params)
-                .execute()
+            let available = try await UserService.shared.fetchUserEmail(email: trimmed)
             
-            let data = response.data
-            guard !data.isEmpty else {
+            if available {
+                self.emailCheckMessage = "사용 가능한 이메일이에요."
+                self.emailAvailable = true
+            } else {
+                self.emailCheckMessage = "이미 사용 중인 이메일이에요."
                 self.emailAvailable = false
-                self.emailCheckMessage = "이메일 확인 실패: 빈 응답"
-                return
             }
-            
-            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
-                self.emailAvailable = available
-                self.emailCheckMessage = available ? nil : "이미 사용 중인 이메일이에요."
-                return
-            }
-            
-            self.emailAvailable = false
-            self.emailCheckMessage = "이메일 확인 실패: 응답 형식 오류"
+
         } catch {
-            self.emailAvailable = false
             self.emailCheckMessage = "이메일 확인 실패: \(error.localizedDescription)"
         }
     }
@@ -116,34 +102,17 @@ class SignUpViewModel {
         let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
-            let client = SupabaseConfig.shared.client
-            // 파라미터 타입을 명시적으로 AnyJSON으로 지정
-            let params: [String: AnyJSON] = [
-                "p_nickname": .string(trimmed)
-            ]
-            let response = try await client
-                .rpc("check_nickname_available", params: params)
-                .execute()
+            let available = try await UserService.shared.fetchUserNickname(nickname: trimmed)
             
-            let data = response.data
-            guard !data.isEmpty else {
+            if available {
+                self.nicknameCheckMessage = "사용 가능한 이메일이에요."
+                self.nicknameAvailable = true
+            } else {
+                self.nicknameCheckMessage = "이미 사용 중인 이메일이에요."
                 self.nicknameAvailable = false
-                self.nicknameCheckMessage = "닉네임 확인 실패: 빈 응답"
-                return
             }
-            
-            // 단일 Bool (true/false)
-            if let available = try? JSONDecoder().decode(Bool.self, from: data) {
-                self.nicknameAvailable = available
-                self.nicknameCheckMessage = available ? nil : "이미 사용 중인 닉네임이에요."
-                return
-            }
-            
-            // 파싱 실패
-            self.nicknameAvailable = false
-            self.nicknameCheckMessage = "닉네임 확인 실패: 응답 형식 오류"
+
         } catch {
-            self.nicknameAvailable = false
             self.nicknameCheckMessage = "닉네임 확인 실패: \(error.localizedDescription)"
         }
     }
