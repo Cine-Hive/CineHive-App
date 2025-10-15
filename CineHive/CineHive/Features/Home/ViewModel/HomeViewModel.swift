@@ -44,21 +44,6 @@ final class HomeViewModel {
     init(movieService: MovieService = .shared, userState: UserState = .shared) {
         self.movieService = movieService
         self.userState = userState
-        // Kakao/Supabase 인증 상태 변화 구독 및 초기 프로필 로드
-        Task {
-            let auth = SupabaseConfig.shared.client.auth
-            if (try? await auth.session) != nil {
-                await self.loadProfileFromSupabase()
-            }
-            for await change in auth.authStateChanges {
-                switch change.event {
-                case .signedIn, .tokenRefreshed, .userUpdated, .initialSession:
-                    await self.loadProfileFromSupabase()
-                default:
-                    break
-                }
-            }
-        }
     }
     
     // MARK: - 데이터 로딩 메소드
@@ -132,97 +117,7 @@ final class HomeViewModel {
         isLoading = false
     }
     
-    // MARK: - 프로필 로딩
-    @MainActor
-    func loadProfileFromSupabase() async {
-        guard let session = try? await SupabaseConfig.shared.client.auth.session else {
-            return
-        }
-        let user = session.user
-        var nameCandidate: String?
-        var imageCandidate: String?
-        let nameKeys = ["nickname", "preferred_username", "full_name", "name", "user_name"]
-        let imageKeys = ["avatar_url", "profile_image_url", "picture", "thumbnail_image_url"]
-
-        if let meta = user.userMetadata as? [String: Any] {
-            for k in nameKeys {
-                if let v = coerceString(meta[k]), !v.isEmpty { nameCandidate = v; break }
-            }
-            for k in imageKeys {
-                if let v = coerceString(meta[k]), !v.isEmpty { imageCandidate = v; break }
-            }
-        }
-
-        if (nameCandidate == nil || imageCandidate == nil), let identities = user.identities {
-            if let kakao = identities.first(where: { $0.provider == "kakao" }) {
-                if let data = kakao.identityData as? [String: Any] {
-                    if nameCandidate == nil {
-                        for k in nameKeys {
-                            if let v = coerceString(data[k]), !v.isEmpty { nameCandidate = v; break }
-                        }
-                    }
-                    if imageCandidate == nil {
-                        for k in imageKeys {
-                            if let v = coerceString(data[k]), !v.isEmpty { imageCandidate = v; break }
-                        }
-                    }
-                    if imageCandidate == nil {
-                        let desc = String(describing: data)
-                        if let url = extractFirstImageURL(in: desc) { imageCandidate = url }
-                    }
-                }
-            }
-        }
-
-        if let img = imageCandidate, img.hasPrefix("http://") {
-            imageCandidate = img.replacingOccurrences(of: "http://", with: "https://")
-        }
-
-        self.profileName = nameCandidate ?? (user.email ?? "")
-        self.profileImageURLString = imageCandidate
-    }
-
-    // MARK: - Helpers (Profile)
-    private func coerceString(_ value: Any?) -> String? {
-        guard let value = value else { return nil }
-        if let s = value as? String { return s }
-        if let u = value as? URL { return u.absoluteString }
-        if let n = value as? NSNumber { return n.stringValue }
-        let s = String(describing: value)
-        return s.isEmpty ? nil : s
-    }
-
-    private func extractFirstImageURL(in text: String) -> String? {
-        let pattern = #"https?:\/\/[\w\-\.]*kakaocdn\.net[^\s\"]+|https?:\/\/[^\s\"]+\.(?:jpg|jpeg|png)"#
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
-        let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        if let match = regex.firstMatch(in: text, options: [], range: range), let r = Range(match.range, in: text) {
-            return String(text[r])
-        }
-        return nil
-    }
-
     // MARK: - 프로필 관련 메소드
-    
-    // 프로필 버튼 탭 핸들러
-    func handleProfileTap() {
-        if userState.isLoggedIn || userState.isGuestMode {
-            // 프로필 옵션 시트 표시
-            showProfileOptions = true
-        } else {
-            // 로그인 필요 - 사용자에게 알림
-            showNotificationWithMessage("로그인이 필요합니다")
-            
-            // 실제 앱에서는 여기서 로그인 화면으로 이동하거나
-            // 탭바의 프로필 탭으로 이동할 수 있음
-            showProfileOptions = true // 임시로 프로필 옵션 표시
-        }
-    }
-    
-    // 프로필 옵션 토글
-    func toggleProfileOptions() {
-        showProfileOptions.toggle()
-    }
     
     // 검색 활성화 토글
     func toggleSearchActive() {

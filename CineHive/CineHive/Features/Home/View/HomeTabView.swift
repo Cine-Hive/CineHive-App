@@ -11,6 +11,7 @@ struct HomeTabView: View {
     // 환경과 뷰모델
     @Environment(UserState.self) private var userState
     @State private var viewModel = HomeViewModel()
+    @State private var profileModel = ProfileViewModel()
     
     var body: some View {
         ZStack {
@@ -21,8 +22,8 @@ struct HomeTabView: View {
                 HomeHeaderView(
                     isSearchActive: $viewModel.isSearchActive,
                     showProfileOptions: $viewModel.showProfileOptions,
-                    onProfileTap: viewModel.handleProfileTap,
-                    avatarURL: viewModel.profileImageURLString
+                    onProfileTap: profileModel.handleProfileTap,
+                    avatarURL: profileModel.profileImageURLString
                 )
                 
                 // 메인 콘텐츠
