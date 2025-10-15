@@ -1,5 +1,5 @@
 //
-//  SignUpRequest.swift
+//  AuthSignUpRequest.swift
 //  CineHive
 //
 //  Created by 존진 on 9/17/25.
