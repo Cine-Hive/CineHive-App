@@ -125,30 +125,17 @@ class SignUpViewModel {
         generalErrorMessage = nil
         
         do {
-            let client = SupabaseConfig.shared.client
-            
-            let metadata: [String: AnyJSON] = [
-                "nickname": .string(nickname)
-            ]
-            
-            // Supabase Auth 회원가입
-            let authResponse = try await client.auth.signUp(
+            let request = AuthSignUpRequest(
                 email: email,
                 password: password,
-                data: metadata
+                nickname: nickname
             )
             
-            // 세션 O -> Supabase trigger에서 프로필 생성 처리
-            if let session = authResponse.session {
-                // 프로필 생성은 Supabase 트리거에서 처리
-            }
-            // 세션 X -> 이메일 인증 필요
-            else if authResponse.user != nil {
-                isSignUpSuccess = true
-                // 프로필 생성은 이메일 인증 후 로그인 시점에 진행
-            } else {
-                throw NSError(domain: "SignUp", code: -2, userInfo: [NSLocalizedDescriptionKey: "회원가입 응답에 세션/사용자 정보가 없습니다."])
-            }
+            // Supabase Auth 회원가입
+            try await UserService.shared.registerUser(user: request)
+            
+            isSignUpSuccess = true
+            
         } catch {
             let msg = error.localizedDescription.lowercased()
             if msg.contains("already registered") || msg.contains("already exists") || msg.contains("user exists") {

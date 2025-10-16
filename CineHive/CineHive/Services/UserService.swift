@@ -18,7 +18,7 @@ final class UserService {
 
     /// 회원가입 요청
     func registerUser(user: AuthSignUpRequest) async throws {
-        try await auth.signUp(email: user.email, password: user.password)
+        try await SupabaseManager.shared.auth.signUp(email: user.email, password: user.password, data: user.data)
     }
     
     /// 닉네임 중복 확인
