@@ -105,10 +105,10 @@ class SignUpViewModel {
             let available = try await UserService.shared.fetchUserNickname(nickname: trimmed)
             
             if available {
-                self.nicknameCheckMessage = "사용 가능한 이메일이에요."
+                self.nicknameCheckMessage = "사용 가능한 닉네임이에요."
                 self.nicknameAvailable = true
             } else {
-                self.nicknameCheckMessage = "이미 사용 중인 이메일이에요."
+                self.nicknameCheckMessage = "이미 사용 중인 닉네임이에요."
                 self.nicknameAvailable = false
             }
 
