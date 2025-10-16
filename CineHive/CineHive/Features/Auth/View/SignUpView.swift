@@ -130,7 +130,7 @@ struct SignUpView: View {
                         case .nickname:
                             // 버튼 클릭 시 닉네임 중복 검사
                             await viewModel.checkValidateNickname()
-                            if viewModel.nicknameCheckMessage == nil {
+                            if viewModel.nicknameAvailable {
                                 await viewModel.signUp()
                             }
                         }
