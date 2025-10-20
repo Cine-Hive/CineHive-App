@@ -31,12 +31,12 @@ struct LoginView: View {
                                 await viewModel.socialLogin(provider: .kakao)
                             }
                         }
-                    NaverLoginBtnView()
-                        .onTapGesture {
-                            Task {
-                                await viewModel.socialLogin(provider: .naver)
-                            }
-                        }
+//                    NaverLoginBtnView()
+//                        .onTapGesture {
+//                            Task {
+//                                await viewModel.socialLogin(provider: .naver)
+//                            }
+//                        }
                     GoogleLoginBtnView()
                         .onTapGesture {
                             Task {

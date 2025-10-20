@@ -9,6 +9,9 @@ import Foundation
 import NaverThirdPartyLogin
 import OSLog
 
+/// NOTE:
+/// 네이버 로그인을 Supabase 백엔드에서 지원하지 않아 앱 정책으로 기능을 비활성화했습니다.
+/// - 남겨둔 ViewModel은 빌드 에러 방지용이며, 호출 시 토스트만 노출하고 바로 반환합니다.
 @Observable
 class NaverLoginViewModel: NSObject, UIApplicationDelegate, NaverThirdPartyLoginConnectionDelegate {
     private let userService: UserService
@@ -24,12 +27,14 @@ class NaverLoginViewModel: NSObject, UIApplicationDelegate, NaverThirdPartyLogin
     
     //MARK: - 로그인 시도
     func login() {
-        NaverThirdPartyLoginConnection.getSharedInstance().delegate = self
-        // 앱을 통한 로그인 & 브라우저를 통한 로그인이 모두 가능
-        NaverThirdPartyLoginConnection
-            .getSharedInstance()
-            .requestThirdPartyLogin()
-        
+        // Naver login is intentionally disabled (Supabase 미지원 정책)
+        self.toast = ToastState(
+            isShowing: true,
+            message: "네이버 로그인은 더 이상 지원하지 않습니다.",
+            type: .warning
+        )
+        Logger.log(.info, category: Logger.auth, message: "Naver login blocked by policy (Supabase unsupported)")
+        return
     }
     
     //MARK: - 토큰 발급 성공

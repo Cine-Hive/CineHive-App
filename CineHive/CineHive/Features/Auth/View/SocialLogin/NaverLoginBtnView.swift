@@ -22,6 +22,7 @@ struct NaverLoginBtnView: View {
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(.white)
             }
+            .hidden()
             .frame(width: 330, height: 44)
             .background(Color("NaverColor"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
