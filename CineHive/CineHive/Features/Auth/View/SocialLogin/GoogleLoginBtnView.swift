@@ -13,7 +13,9 @@ struct GoogleLoginBtnView: View {
     var body: some View {
         Button(action: {
             if let rootVC = UIApplication.shared.rootViewController() {
-                viewModel.login(presentingViewController: rootVC)
+                Task {
+                    await viewModel.googleSignIn(from: rootVC)
+                }
             }
         }, label: {
             HStack {
@@ -34,3 +36,4 @@ struct GoogleLoginBtnView: View {
         }
     }
 }
+

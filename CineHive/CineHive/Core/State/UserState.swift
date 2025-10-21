@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Observation
 import OSLog
+import Supabase
 
 @Observable
 final class UserState {
@@ -64,50 +65,6 @@ final class UserState {
     
     
     // MARK: - 로그인 관련 메소드
-    
-    /// 이메일/비밀번호 로그인 처리
-    @MainActor
-    func login(email: String, password: String) async -> Bool {
-        isLoading = true
-        errorMessage = nil
-        
-        do {
-            let loginData = LoginUser(email: email, password: password)
-            let response = try await UserService.shared.loginUser(user: loginData)
-            
-            // 응답 정보 유효성 확인
-            guard !response.token.isEmpty, response.user.email.count > 0, response.user.nickname.count > 0 else {
-                self.errorMessage = "서버에서 올바른 사용자 정보를 받지 못했습니다"
-                self.isLoading = false
-                Logger.log(.error, category: Logger.auth, message: "로그인 응답 데이터 불완전: \(response)")
-                return false
-            }
-            
-            // JWT 토큰과 사용자 정보 저장
-            AuthManager.shared.saveToken(response.token)
-            AuthManager.shared.saveUser(response.user)
-            // 키체인에 저장된 토큰 값 확인
-            AuthManager.shared.debugPrintToken()
-            
-            // 상태 업데이트
-            self.currentUser = response.user
-            self.isLoggedIn = true
-            self.isLoading = false
-            
-            Logger.log(.info, category: Logger.auth, message: "로그인 성공: \(email), 닉네임: \(response.user.nickname)")
-            return true
-        } catch let error as NetworkError {
-            self.errorMessage = error.localizedDescription
-            self.isLoading = false
-            Logger.log(.error, category: Logger.auth, message: "로그인 실패: \(error.localizedDescription)")
-            return false
-        } catch {
-            self.errorMessage = "로그인 중 오류가 발생했습니다"
-            self.isLoading = false
-            Logger.log(.error, category: Logger.auth, message: "로그인 실패: \(error.localizedDescription)")
-            return false
-        }
-    }
     
     /// 소셜 로그인 처리
     @MainActor
@@ -173,69 +130,22 @@ final class UserState {
         self.currentUser = user
     }
     
-    // 로그아웃 처리 (게스트 모드도 종료)
+    // 로그아웃 처리
     @MainActor
     func logout() {
         let userEmail = currentUser?.email ?? "Unknown"
         Logger.log(.info, category: Logger.auth, message: "로그아웃 요청: \(userEmail)")
-        AuthManager.shared.logout()
-        self.currentUser = nil
-        self.isLoggedIn = false
-        self.isGuestMode = false
-    }
-    
-    /// 회원가입 처리
-    @MainActor
-    func signUp(user: AuthSignUpRequest) async -> Bool {
-        isLoading = true
-        errorMessage = nil
-        
-        do {
-            let response = try await UserService.shared.registerUser(user: user)
-            isLoading = false
-            
-            if response.success == true {
-                Logger.log(.info, category: Logger.auth, message: "회원가입 성공: \(response.data.message)")
-                return true
-            } else {
-                self.errorMessage = response.error?.message
-                Logger.log(.error, category: Logger.auth, message: "회원가입 실패: \(String(describing: errorMessage))")
-                return false
+        Task {
+            // Supabase 세션 종료
+            do {
+                try await SupabaseConfig.shared.client.auth.signOut()
+                Logger.log(.info, category: Logger.auth, message: "Supabase 세션 로그아웃 완료")
+                self.currentUser = nil
+                self.isLoggedIn = false
+                self.isGuestMode = false
+            } catch {
+                Logger.log(.error, category: Logger.auth, message: "Supabase 세션 로그아웃 실패: \(error.localizedDescription)")
             }
-        } catch let error as NetworkError {
-            self.errorMessage = error.localizedDescription
-            self.isLoading = false
-            Logger.log(.error, category: Logger.auth, message: "회원가입 실패: \(error.localizedDescription)")
-            return false
-        } catch {
-            self.errorMessage = "회원가입 중 오류가 발생했습니다"
-            self.isLoading = false
-            Logger.log(.error, category: Logger.auth, message: "회원가입 실패: \(error.localizedDescription)")
-            return false
-        }
-    }
-    
-    /// 닉네임 중복 확인
-    @MainActor
-    func checkNickname(_ nickname: String) async -> (success: Bool, data: Bool) {
-        do {
-            let response = try await UserService.shared.fetchUserNickname(nickname: nickname)
-            return (response.success, response.data.isAvailable)
-        } catch {
-            Logger.log(.error, category: Logger.auth, message: "닉네임 중복 검사 실패: \(error.localizedDescription)")
-            return (false, false)
-        }
-    }
-    
-    /// 이메일 중복 확인
-    @MainActor
-    func checkEmail(_ email: String) async -> (success: Bool, data: Bool) {
-        do {
-            let response = try await UserService.shared.fetchUserEmail(email: email)
-            return (response.success, response.data.isAvailable)
-        } catch {
-            Logger.log(.error, category: Logger.auth, message: "이메일 중복 검사 실패: \(error.localizedDescription)")
-            return (false, false)
         }
     }
     

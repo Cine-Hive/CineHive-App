@@ -10,6 +10,11 @@ import SwiftUI
 struct LoginView: View {
     @State private var viewModel = LoginViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: Field?
+    
+    enum Field {
+        case email, password
+    }
     
     var body: some View {
         NavigationStack {
@@ -26,12 +31,12 @@ struct LoginView: View {
                                 await viewModel.socialLogin(provider: .kakao)
                             }
                         }
-                    NaverLoginBtnView()
-                        .onTapGesture {
-                            Task {
-                                await viewModel.socialLogin(provider: .naver)
-                            }
-                        }
+//                    NaverLoginBtnView()
+//                        .onTapGesture {
+//                            Task {
+//                                await viewModel.socialLogin(provider: .naver)
+//                            }
+//                        }
                     GoogleLoginBtnView()
                         .onTapGesture {
                             Task {
@@ -45,21 +50,26 @@ struct LoginView: View {
                             }
                         }
                 }
-                .frame(width: 330, height: 250)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .frame(height: 250)
                 
                 Text("이메일로 로그인")
                     .font(.system(size: 16, weight: .semibold))
-                    .frame(width: 320, height: 30, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .frame(height: 30)
                 
                 // 로그인 입력 필드
                 VStack(spacing: 16) {
                     // 이메일 필드
                     TextField("이메일", text: $viewModel.email)
+                        .focused($focusedField, equals: .email)
                         .padding()
                         .frame(height: 50)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color("FontColor"), lineWidth: 0.6)
+                                .stroke(focusedField == .email ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focusedField == .email ? 1.5 : 0.6)
                         )
                         .textInputAutocapitalization(.never)
                         .keyboardType(.emailAddress)
@@ -69,12 +79,19 @@ struct LoginView: View {
                     HStack {
                         if viewModel.showPassword {
                             TextField("비밀번호", text: $viewModel.password)
+                                .focused($focusedField, equals: .password)
                         } else {
                             SecureField("비밀번호", text: $viewModel.password)
+                                .focused($focusedField, equals: .password)
                         }
                         
                         Button(action: {
-                            viewModel.showPassword.toggle()
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                viewModel.showPassword.toggle()
+                            }
+                            DispatchQueue.main.async {
+                                focusedField = .password
+                            }
                         }, label: {
                             Image(systemName: viewModel.showPassword ? "eye" : "eye.slash")
                                 .foregroundStyle(.gray)
@@ -84,18 +101,54 @@ struct LoginView: View {
                     .frame(height: 50)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("FontColor"), lineWidth: 0.6)
+                            .stroke(focusedField == .password ? Color("LoginBtnColor") : Color("FontColor"), lineWidth: focusedField == .password ? 1.5 : 0.6)
                     )
+                    .onChange(of: viewModel.showPassword) { _ in
+                        DispatchQueue.main.async { focusedField = .password }
+                    }
                 }
-                .frame(width: 330)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
                 
                 // 오류 메시지
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .font(.system(size: 14))
                         .foregroundColor(.red)
-                        .frame(width: 320, height: 20, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .frame(height: 20)
                         .padding(.top, 4)
+                }
+                
+                if viewModel.shouldOfferEmailVerificationResend {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "envelope.badge")
+                                .imageScale(.medium)
+                            Text("이 계정은 이메일 인증이 필요해요. 메일함에서 인증 링크를 눌러 완료한 뒤 다시 로그인해주세요.")
+                                .font(.system(size: 14))
+                        }
+                        Button {
+                            Task { await viewModel.resendSignupVerification() }
+                        } label: {
+                            Text("인증 메일 재발송")
+                                .font(.system(size: 14, weight: .semibold))
+                                .padding(.leading, 32)
+                        }
+                    }
+                    .padding(12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(uiColor: .systemYellow).opacity(0.15))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(uiColor: .systemYellow).opacity(0.5), lineWidth: 1)
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
                 }
                 
                 // 로그인 버튼
@@ -114,15 +167,17 @@ struct LoginView: View {
                     }
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 330, height: 50)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
                     .background(Color("LoginBtnColor"))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .padding(.horizontal, 20)
                 .padding(.top, 16)
-                .disabled(viewModel.isLoggingIn)
+                .disabled(viewModel.isLoggingIn || viewModel.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 
                 HStack {
-                    NavigationLink(destination: SignUpView()) {
+                    NavigationLink(destination: SignUpView().navigationBarBackButtonHidden(true)) {
                         Text("회원이 아니신가요?")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color("FontColor"))
@@ -136,12 +191,13 @@ struct LoginView: View {
                             .foregroundStyle(Color("FontColor"))
                     }
                 }
-                .frame(width: 330)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
                 .padding(.top, 16)
                 
                 Spacer()
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

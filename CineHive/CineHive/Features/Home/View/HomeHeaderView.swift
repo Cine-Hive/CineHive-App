@@ -12,6 +12,7 @@ struct HomeHeaderView: View {
     @Binding var isSearchActive: Bool
     @Binding var showProfileOptions: Bool
     var onProfileTap: (() -> Void)? = nil
+    var avatarURL: String? = nil
     
     var body: some View {
         HStack(spacing: 15) {
@@ -36,33 +37,65 @@ struct HomeHeaderView: View {
             .buttonStyle(ScaleButtonStyle())
             .accessibilityLabel("검색")
             
-            ProfileButtonView {
+            Button {
                 withAnimation(.spring(duration: 0.3)) {
                     if let customAction = onProfileTap {
                         customAction()
                     } else {
-                        handleProfileTap()
+                        // 기본: 프로필 옵션 표시
+                        showProfileOptions.toggle()
                     }
                 }
+            } label: {
+                if let raw = avatarURL {
+                    let cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let https = cleaned.hasPrefix("http://") ? cleaned.replacingOccurrences(of: "http://", with: "https://") : cleaned
+                    if let url = URL(string: https) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .empty:
+                                Circle().fill(Color.gray.opacity(0.2))
+                            case .success(let image):
+                                image.resizable().scaledToFill()
+                            case .failure:
+                                Image(systemName: "person.crop.circle.fill")
+                                    .resizable().scaledToFill()
+                            @unknown default:
+                                Image(systemName: "person.crop.circle")
+                                    .resizable().scaledToFill()
+                            }
+                        }
+                        .frame(width: 28, height: 28)
+                        .clipShape(Circle())
+                    } else {
+                        // URL 변환 실패 시 기본 아이콘
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable().scaledToFill()
+                            .frame(width: 28, height: 28)
+                            .foregroundStyle(CHColors.textColor)
+                    }
+                } else {
+                    // 로그인 칩 (기존 스타일)
+                    Text("로그인")
+                        .font(.system(size: 12, weight: .semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(Color.black.opacity(0.25))
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(Color.white.opacity(0.3), lineWidth: 0.5)
+                        )
+                        .foregroundStyle(.white)
+                }
             }
+            .buttonStyle(ScaleButtonStyle())
+            .accessibilityLabel("프로필")
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
-    }
-    
-    // 프로필 버튼 탭 처리
-    private func handleProfileTap() {
-        if userState.isLoggedIn || userState.isGuestMode {
-            // 이미 로그인한 상태 - 프로필 옵션 표시
-            showProfileOptions.toggle()
-        } else {
-            // 로그인 필요 상태 - 로그인 화면 또는 프로필 탭으로 이동
-            showProfileOptions.toggle() // 임시로 동일한 동작 수행
-            
-            // 로그인이 필요함을 알리는 방법은 앱 구조에 따라 달라질 수 있음
-            // 예: 탭 바 컨트롤러의 프로필 탭으로 이동
-            // 또는 로그인 모달 표시 등
-        }
     }
 }
 

@@ -43,21 +43,6 @@ struct Profile: Codable {
     }
 }
 
-struct LoginUser: Codable {
-    let email: String
-    let password: String
-    
-    init(email: String, password: String) {
-        self.email = email
-        self.password = password
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case email
-        case password
-    }
-}
-
 struct LoginResponse: Codable {
     let message: String?
     let user: UserData
@@ -122,13 +107,4 @@ struct ErrorDetail: Codable {
     let field: String
     let rejectedValue: String
     let reason: String
-}
-
-struct AvailabilityResponse: Decodable {
-    let success: Bool
-    let data: AvailabilityData
-}
-
-struct AvailabilityData: Decodable {
-    let isAvailable: Bool
 }

@@ -6,35 +6,40 @@
 //
 
 import Foundation
+import Supabase
 
 final class UserService {
     static let shared = UserService()
     private init() {}
     
+    private let auth = SupabaseManager.shared.auth
+    
     // MARK: - 인증 없는 요청 (로그인 전)
 
     /// 회원가입 요청
-    func registerUser(user: AuthSignUpRequest) async throws -> SignUpResponse {
-        let endpoint = EndPoint.Auth.register
-        return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
+    func registerUser(user: AuthSignUpRequest) async throws {
+        try await SupabaseManager.shared.auth.signUp(email: user.email, password: user.password, data: user.data)
     }
     
     /// 닉네임 중복 확인
-    func fetchUserNickname(nickname: String) async throws -> AvailabilityResponse {
-        let endpoint = EndPoint.Auth.checkNickname(nickname)
-        return try await NetworkManager.shared.fetch(endpoint: endpoint)
+    func fetchUserNickname(nickname: String) async throws -> Bool {
+        let params: [String: AnyJSON] = ["p_nickname": .string(nickname)]
+        let available = try await SupabaseManager.shared.callRPCBool("check_nickname_available", params: params)
+        // true = 사용 가능, false = 중복
+        return available
     }
     
     /// 이메일 중복 확인
-    func fetchUserEmail(email: String) async throws -> AvailabilityResponse {
-        let endpoint = EndPoint.Auth.checkEmail(email)
-        return try await NetworkManager.shared.fetch(endpoint: endpoint)
+    func fetchUserEmail(email: String) async throws -> Bool {
+        let params: [String: AnyJSON] = ["p_email": .string(email)]
+        let available = try await SupabaseManager.shared.callRPCBool("check_email_available", params: params)
+        // true = 사용 가능, false = 중복
+        return available
     }
     
     /// 로그인 요청
-    func loginUser(user: LoginUser) async throws -> LoginResponse {
-        let endpoint = EndPoint.Auth.login
-        return try await NetworkManager.shared.post(endpoint: endpoint, body: user)
+    func loginUser(user: AuthSignUpRequest) async throws {
+        try await auth.signIn(email: user.email, password: user.password)
     }
     
     // MARK: - 인증이 필요한 요청 (로그인 후)

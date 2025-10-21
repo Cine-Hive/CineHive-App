@@ -121,18 +121,18 @@ final class MovieViewModel {
         }
     }
     
-    // 사용자 관련 기능
-    func login(email: String, password: String) async -> Bool {
-        do {
-            let loginData = LoginUser(email: email, password: password)
-            let response: LoginResponse = try await UserService.shared.loginUser(user: loginData)
-            isLoggedIn = true
-            currentUser = response.user
-            return true
-        } catch {
-            return false
-        }
-    }
+//    // 사용자 관련 기능
+//    func login(email: String, password: String) async -> Bool {
+//        do {
+//            let loginData = LoginUser(email: email, password: password)
+//            let response: LoginResponse = try await UserService.shared.loginUser(user: loginData)
+//            isLoggedIn = true
+//            currentUser = response.user
+//            return true
+//        } catch {
+//            return false
+//        }
+//    }
     
     func logout() {
         isLoggedIn = false

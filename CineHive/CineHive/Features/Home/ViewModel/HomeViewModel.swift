@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import Supabase
 
 @Observable
 final class HomeViewModel {
@@ -31,6 +32,10 @@ final class HomeViewModel {
     var isSearchActive = false
     var searchText = ""
     var showErrorToast = false
+
+    // 프로필 표시용 상태
+    var profileName: String = ""
+    var profileImageURLString: String?
     
     // 서비스
     private let movieService: MovieService
@@ -113,26 +118,6 @@ final class HomeViewModel {
     }
     
     // MARK: - 프로필 관련 메소드
-    
-    // 프로필 버튼 탭 핸들러
-    func handleProfileTap() {
-        if userState.isLoggedIn || userState.isGuestMode {
-            // 프로필 옵션 시트 표시
-            showProfileOptions = true
-        } else {
-            // 로그인 필요 - 사용자에게 알림
-            showNotificationWithMessage("로그인이 필요합니다")
-            
-            // 실제 앱에서는 여기서 로그인 화면으로 이동하거나
-            // 탭바의 프로필 탭으로 이동할 수 있음
-            showProfileOptions = true // 임시로 프로필 옵션 표시
-        }
-    }
-    
-    // 프로필 옵션 토글
-    func toggleProfileOptions() {
-        showProfileOptions.toggle()
-    }
     
     // 검색 활성화 토글
     func toggleSearchActive() {
